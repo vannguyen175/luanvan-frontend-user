@@ -47,9 +47,7 @@ function PostingProduct() {
 		const id = localStorage.getItem("id_user");
 		const token = localStorage.getItem("access_token");
 		await UserService.getDetailUser(id, token).then((data) => {
-			setAddressSeller(
-				data.result.address
-			);
+			setAddressSeller(data.result.address);
 		});
 	}
 
@@ -166,7 +164,7 @@ function PostingProduct() {
 	};
 
 	const handleChangeInfo = (item, event) => {
-		setInfoList((prevData) => ({ ...prevData, [item]: event }));
+		setInfoList((prevData) => ({ ...prevData, [item.name]: event }));
 	};
 
 	//Gọi hàm mutationCreate + đặt setCallMudation(false);
@@ -258,9 +256,9 @@ function PostingProduct() {
 								<div>
 									{subCategoryInfo.infoSubCate.map((item, index) => (
 										<Select
-											name={item}
+											name={item.name}
 											value="Chưa chọn"
-											options={handleGetSelectOption(StringTocamelCase(item))}
+											options={item.option}
 											onChange={(event) => handleChangeInfo(item, event)}
 											key={index}
 											required

@@ -22,7 +22,7 @@ export const getSellerOrder = async (data) => {
 };
 
 export const getAnalyticsOrder = async (data) => {
-	const res = await Axios.post(`${process.env.REACT_APP_API_URL_BACKEND}/order/analytics/`, data);
+	const res = await Axios.post(`${process.env.REACT_APP_API_URL_BACKEND}/order/analytics`, data);
 	return res.data;
 };
 

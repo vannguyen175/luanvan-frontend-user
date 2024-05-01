@@ -19,7 +19,7 @@ import { toast } from "react-toastify";
 import { Row, Col } from "react-bootstrap";
 import classNames from "classnames/bind";
 import style from "./DetailProduct.module.scss";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Button from "~/components/Button";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import CardProduct from "~/components/CardProduct";
@@ -30,6 +30,7 @@ function DetailProduct() {
 	const { id } = useParams();
 	const idUser = localStorage.getItem("id_user");
 	const navigate = useNavigate();
+	const [buyerDetail, setBuyerDetail] = useState();
 	const location = useLocation();
 	const Breadcrumbs = [
 		{
@@ -45,6 +46,16 @@ function DetailProduct() {
 			to: "active",
 		},
 	];
+
+	const getDetailBuyer = async () => {
+		const res = await UserService.getInfoUser(idUser);
+		setBuyerDetail(res.data);
+	};
+
+	useEffect(() => {
+		getDetailBuyer();
+	}, []);
+
 	const getDetailProduct = async () => {
 		const res = await ProductService.detailProduct(id);
 		return res.data;
@@ -98,7 +109,6 @@ function DetailProduct() {
 
 	const handleAddCart = async () => {
 		if (idUser) {
-			console.log("click add cart");
 			const addCart = await CartService.createCart({ idUser, idProduct: detail._id });
 			if (addCart?.status === "SUCCESS") {
 				toast.success("Thêm vào giỏ hàng thành công!");
@@ -219,10 +229,16 @@ function DetailProduct() {
 						</div>
 						<p style={{ marginLeft: 20 }}>Số điện thoại: {seller?.phone}</p>
 						<div className={cx("button")}>
-							<Button onClick={handleAddCart}>Thêm vào giỏ hàng</Button>
-							<Button primary onClick={handleOrderNow}>
-								Đặt hàng ngay
-							</Button>
+							{detail?.sellerName === buyerDetail?.name ? (
+								<p style={{ textAlign: "center" }}>Đây là sản phẩm của bạn</p>
+							) : (
+								<>
+									<Button onClick={handleAddCart}>Thêm vào giỏ hàng</Button>
+									<Button primary onClick={handleOrderNow}>
+										Đặt hàng ngay
+									</Button>
+								</>
+							)}
 						</div>
 					</div>
 					{/* <div

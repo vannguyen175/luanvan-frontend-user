@@ -24,19 +24,15 @@ const cx = classNames.bind(style);
 const categories = [
 	{
 		name: "Đồ nội thất",
-		to: "/products",
-	},
-	{
-		name: "Xe cộ",
-		to: "/products",
+		to: "/san-pham/noi-that",
 	},
 	{
 		name: "Thiết bị điện tử",
-		to: "/products",
+		to: "/san-pham/do-dien-tu",
 	},
 	{
 		name: "Thú cưng",
-		to: "/products",
+		to: "/san-pham/thu-cung",
 	},
 ];
 
@@ -60,24 +56,12 @@ const ActionUserLogin = [
 		name: "Đăng tải sản phẩm",
 		to: "/dang-tin",
 	},
-	{
-		name: "Đơn mua",
-		to: "/products",
-	},
-	{
-		name: "Đơn bán",
-		to: "/products",
-	},
 ];
 
 const ActionAdminLogin = [
 	{
 		name: "Thông tin tài khoản",
 		to: "/profile",
-	},
-	{
-		name: "Đăng tải sản phẩm",
-		to: "/dang-tin",
 	},
 	{
 		name: "Quản lý hệ thống",
@@ -199,7 +183,7 @@ function Header() {
 				<Col
 					className={cx("col")}
 					xs={1}
-					style={{ padding: "0px 0 0 40px", marginTop: "-8px" }}
+					style={{ padding: "0px 0 0 40px", marginTop: "-8px", marginLeft: 30 }}
 				>
 					<Tooltip title={'<p class="tippy">Giỏ hàng</p>'}>
 						<button>
@@ -212,7 +196,7 @@ function Header() {
 					<Col
 						className={cx("col")}
 						xs={2}
-						style={{ display: "flex", marginTop: "-5px" }}
+						style={{ display: "flex", marginTop: "-5px", marginLeft: 30 }}
 					>
 						<DropdownMenu
 							icon={faUser}
@@ -233,7 +217,7 @@ function Header() {
 					<Col
 						className={cx("col")}
 						xs={2}
-						style={{ display: "flex", marginTop: "-5px" }}
+						style={{ display: "flex", marginTop: "-5px", marginLeft: 30 }}
 					>
 						<DropdownMenu
 							icon={faUser}

@@ -12,11 +12,13 @@ const formatter = (value) => <CountUp end={value} separator="," />;
 function Analytics() {
 	const [analytics, setAnalytics] = useState();
 	const getAnalyticOrder = async () => {
-		const data = await orderService.getAnalyticsOrder(localStorage.getItem("id_user"));
+		const data = await orderService.getAnalyticsOrder({
+			idUser: localStorage.getItem("id_user"),
+		});
 		console.log("data", data);
 		setAnalytics(data);
 	};
-	console.log("analytics", analytics?.listProductBought);
+
 	useEffect(() => {
 		getAnalyticOrder();
 	}, []);

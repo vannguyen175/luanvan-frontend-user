@@ -13,20 +13,27 @@ const cx = classNames.bind(style);
 function Products() {
 	const { slug_category } = useParams();
 	const [subCateChosen, setSubCateChosen] = useState();
+	const [subCategory, setSubCategory] = useState();
 
 	const getSubCategory = async () => {
 		const res = await ProductService.getSubCategory(slug_category);
-		setSubCateChosen(res.subCategory[0].name);
-		return res.subCategory;
+		setSubCategory(res.subCategory);
+		console.log(res);
+		setSubCateChosen(res.subCategory[0]?.name);
+		//return res.subCategory;
 	};
+	useEffect(() => {
+		getSubCategory();
+	}, []);
+
 	const getProductsBySubCate = async () => {
 		const res = await ProductService.getAllProductsBySubCate(convertToSlug(subCateChosen));
 		return res.data;
 	};
 
-	//lấy thông tin sản phẩm khi vừa truy cập hoặc reload trang
-	const querySubCategory = useQuery({ queryKey: ["sub-category"], queryFn: getSubCategory });
-	const { data: subCategory } = querySubCategory;
+	// //lấy thông tin sản phẩm khi vừa truy cập hoặc reload trang
+	// const querySubCategory = useQuery({ queryKey: ["sub-category"], queryFn: getSubCategory });
+	// const { data: subCategory } = querySubCategory;
 
 	//lấy thông tin sản phẩm khi vừa truy cập hoặc reload trang
 	const queryProduct = useQuery({
@@ -49,10 +56,12 @@ function Products() {
 		}
 	}, [subCateChosen, refetchProduct]);
 
+	console.log("subCategory", subCategory);
+
 	return (
 		<div className={cx("container")}>
 			<div className={cx("shop-category", "inner-content")}>
-				<p className={cx("title")}>categoryName</p>
+				<p className={cx("title")}>Danh mục phụ</p>
 				{subCategory?.map((subCate, index) => (
 					<Button
 						key={index}

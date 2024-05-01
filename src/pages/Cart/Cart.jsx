@@ -19,13 +19,11 @@ function Cart() {
 		getCarts();
 	}, [id]);
 	const handleDeleteCart = async (idProduct) => {
-		console.log("idProduct", idProduct);
 		await CartService.deleteCart({ idUser: id, idProduct: idProduct });
 		getCarts();
 	};
 
 	const handlePurchase = (idCart) => {
-		console.log("idCart", idCart);
 		navigate(`/dat-hang/${idCart}`);
 	};
 
@@ -49,7 +47,7 @@ function Cart() {
 									<p className={cx("price")}>
 										{Intl.NumberFormat().format(cart?.price)}đ
 									</p>
-									{cart.selled !== "false" ? (
+									{cart?.selled !== "false" ? (
 										<p style={{ color: "red" }}>Hết hàng</p>
 									) : (
 										""
@@ -57,7 +55,7 @@ function Cart() {
 									<p>Số lượng x 1</p>
 								</div>
 								<div className={cx("col-2", "action")}>
-									{cart.selled !== "false" ? (
+									{cart?.selled !== "false" ? (
 										<Button disabled>Thanh toán</Button>
 									) : (
 										<Button primary onClick={() => handlePurchase(cart._id)}>
