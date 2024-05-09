@@ -10,21 +10,18 @@
 .footer {
 	position: absolute;
 	background-color: var(--main-color);
-	color: white;
+	color: var(--black-color);
 	padding: 20px;
-	height: 100px;
-	text-align: center;
-	z-index: 1000;
+	height: fit-content;
+	z-index: 50;
 	width: 100%;
+	font-weight: 500;
+	padding: 50px 0 50px 70px;
 
-	div {
-		display: flex;
-		justify-content: space-evenly;
-		align-items: center;
-		margin-bottom: 20px;
-		a {
-			color: white;
-		}
+	.title {
+		margin: 0 0 8px 0;
+		font-weight: 700;
+		font-size: 1.1rem;
 	}
 }
 
@@ -32,8 +29,8 @@
 	padding: 0 40px;
 	left: 0px;
 	width: 90%;
-	height: 100px;
-	padding: 40px 40px;
+	height: 70px;
+	padding: 20px 40px;
 	box-shadow: 0px 3px 10px #888888;
 	position: -webkit-sticky;
 	position: sticky;
@@ -79,29 +76,30 @@
 
 .inner {
 	width: 90%;
+	min-height: 100vh;
 	margin: auto;
 }
 
 .search {
 	display: flex;
 	align-items: center;
-	margin-top: -8px;
+	margin-top: -1px;
 	input {
-		min-width: 450px;
-		height: 40px;
+		min-width: 420px;
+		height: 30px;
 		border-radius: 8px 0px 0px 8px;
 		border: 1px solid var(--light-color);
 		padding-left: 10px;
 	}
 
 	button {
-		background-color: var(--main-color);
+		background-color: var(--black-color);
 		color: white;
 		margin-left: -3px;
-		padding: 6px 10px;
+		padding: 3px 10px;
 		border-radius: 0px 8px 8px 0px;
-		border: 1px solid var(--main-color);
-		font-size: 1rem;
+		border: 1px solid var(--black-color);
+		font-size: 0.8rem;
 
 		&:hover {
 			background-color: black;
@@ -112,11 +110,10 @@
 
 .search-result {
 	background-color: white;
-	margin-top: -10px;
 	border-radius: 8px;
-	width: 94%;
+	width: 455px;
 	height: fit-content;
-	padding: 10px;
+	padding: 4px 10px;
 	cursor: pointer;
 
 	li {

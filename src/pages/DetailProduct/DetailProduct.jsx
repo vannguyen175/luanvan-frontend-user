@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-import Breadcrumb from "react-bootstrap/Breadcrumb";
 import Carousel from "react-bootstrap/Carousel";
 import { useQuery } from "@tanstack/react-query";
 import * as ProductService from "~/service/ProductService";
@@ -32,20 +30,6 @@ function DetailProduct() {
 	const navigate = useNavigate();
 	const [buyerDetail, setBuyerDetail] = useState();
 	const location = useLocation();
-	const Breadcrumbs = [
-		{
-			name: "Trang chủ",
-			to: "/",
-		},
-		{
-			name: "Sản phẩm",
-			to: "/products",
-		},
-		{
-			name: "Chi tiết sản phẩm",
-			to: "active",
-		},
-	];
 
 	const getDetailBuyer = async () => {
 		const res = await UserService.getInfoUser(idUser);
@@ -125,18 +109,6 @@ function DetailProduct() {
 			<Row style={{ display: "flex" }}>
 				<Col xs={8}>
 					<div className={cx("inner-content", "left")}>
-						<Breadcrumb>
-							{Breadcrumbs.map((item, index) => (
-								<Breadcrumb.Item
-									key={index}
-									linkAs={Link}
-									linkProps={{ to: item.to }}
-								>
-									{item.name}
-								</Breadcrumb.Item>
-							))}
-						</Breadcrumb>
-
 						<Carousel className={cx("carousel")}>
 							{detail &&
 								[detail.images]?.map((image, index) => (
@@ -200,14 +172,7 @@ function DetailProduct() {
 						</p>
 					</div>
 				</Col>
-				<Col
-					className={cx("inner-content", "right")}
-					// style={{
-					// 	backgroundImage: `url("https://i.pinimg.com/564x/2d/bf/41/2dbf41a04990bd1a30c9638ccfced84a.jpg")`,
-					// 	backgroundRepeat: "no-repeat",
-					// 	backgroundSize: "cover",
-					// }}
-				>
+				<Col className={cx("inner-content", "right")}>
 					<div>
 						<hr style={{ marginTop: 43 }} />
 						<p className="title">Thông tin người bán</p>
@@ -241,14 +206,6 @@ function DetailProduct() {
 							)}
 						</div>
 					</div>
-					{/* <div
-						style={{
-							backgroundImage: `url("https://i.pinimg.com/236x/67/2e/43/672e43bb9b512e30a163012f0974622b.jpg")`,
-							backgroundRepeat: "no-repeat",
-							backgroundSize: "cover",
-							height: "400px",
-						}}
-					></div> */}
 				</Col>
 			</Row>
 			<div className={cx("inner-content", "other-items")}>

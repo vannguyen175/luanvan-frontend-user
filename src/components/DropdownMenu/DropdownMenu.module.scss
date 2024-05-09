@@ -1,15 +1,26 @@
 .button-dropdown {
-    padding: 5px 10px;
-    margin: -1px 5px;
-    border-radius: 3px;
-    border: none;
-    color: var(--main-color);
-    background-color: rgb(255, 255, 255);
-    border: 1px solid var(--main-color);
-    font-weight: 600;
-    transition: 0.2s ease;
-    &:hover {
-        color: var(--main-color);
-        background-color: var(--light-color);
-    }
+	padding: 3px 10px;
+	margin: 0px 5px;
+	border-radius: 3px;
+	border: none;
+	color: var(--black-color);
+	background-color: rgb(255, 255, 255);
+	border: 0.5px solid var(--black-color);
+	font-weight: 500;
+	transition: 0.2s ease;
+	width: fit-content;
+	display: flex;
+	justify-content: space-between;
+	&:hover {
+		color: var(--main-color);
+		background-color: var(--light-color);
+	}
+
+	.btn-check:checked + .btn,
+	.btn.active,
+	.btn.show,
+	.btn:first-child:active,
+	:not(.btn-check) + .btn:active {
+		background-color: aliceblue !important;
+	}
 }

@@ -140,11 +140,11 @@ function Header() {
 				</Col>
 
 				<Col className={cx("col")} xs={2}>
-					<DropdownMenu title="Danh mục" listActions={categories} />
+					<DropdownMenu title="Danh mục" listActions={categories} width="50px" />
 				</Col>
 
 				{/* Tìm kiếm sản phẩm */}
-				<Col className={cx("col")} xs={4}>
+				<Col className={cx("col")} xs={5}>
 					<div className={cx("search")}>
 						<input
 							type="text"
@@ -154,7 +154,7 @@ function Header() {
 							autoComplete="off"
 							placeholder="Tìm kiếm sản phẩm..."
 						/>
-						<button>
+						<button className="button-icon">
 							<FontAwesomeIcon icon={faMagnifyingGlass} />
 						</button>
 					</div>
@@ -180,23 +180,14 @@ function Header() {
 					</ul>
 				</Col>
 
-				<Col
-					className={cx("col")}
-					xs={1}
-					style={{ padding: "0px 0 0 40px", marginTop: "-8px", marginLeft: 30 }}
-				>
-					<Tooltip title={'<p class="tippy">Giỏ hàng</p>'}>
-						<button>
-							<FontAwesomeIcon onClick={handleShowCart} icon={faCartShopping} />
-						</button>
-					</Tooltip>
-				</Col>
-
 				{localStorage.getItem("access_token") === null ? (
 					<Col
 						className={cx("col")}
-						xs={2}
-						style={{ display: "flex", marginTop: "-5px", marginLeft: 30 }}
+						xs={3}
+						style={{
+							display: "flex",
+							justifyContent: "space-evenly",
+						}}
 					>
 						<DropdownMenu
 							icon={faUser}
@@ -208,7 +199,7 @@ function Header() {
 
 						<Button
 							style={{ marginLeft: 20, marginTop: 5 }}
-							children="Đăng nhập"
+							children="Login"
 							to="/login"
 							button
 						/>
@@ -216,9 +207,16 @@ function Header() {
 				) : (
 					<Col
 						className={cx("col")}
-						xs={2}
-						style={{ display: "flex", marginTop: "-5px", marginLeft: 30 }}
+						xs={3}
+						style={{
+							display: "flex",
+							justifyContent: "space-between",
+						}}
 					>
+						<button className="button-icon">
+							<FontAwesomeIcon onClick={handleShowCart} icon={faCartShopping} />
+						</button>
+
 						<DropdownMenu
 							icon={faUser}
 							title={name}
@@ -230,14 +228,9 @@ function Header() {
 							border="none"
 						/>
 
-						{/* <Tooltip
-							title={'<p class="tippy" >Đăng xuất</p>'}
-							style={{ marginLeft: 20, marginTop: -3 }}
-						> */}
-						<button style={{ height: 35, marginTop: 0, marginLeft: 20 }}>
+						<button className="button-icon">
 							<FontAwesomeIcon onClick={handleLogout} icon={faRightFromBracket} />
 						</button>
-						{/* </Tooltip> */}
 					</Col>
 				)}
 			</Row>

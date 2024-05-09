@@ -196,7 +196,7 @@ function PostingProduct() {
 
 	return (
 		<Loading isLoading={isLoadingCreate === true}>
-			<Container style={{ minHeight: "80vh" }} className="inner-content">
+			<Container style={{ minHeight: "80vh", marginLeft: 80 }} className="inner-content">
 				<Row>
 					<Col xs={3}>
 						<div className="title" style={{ textAlign: "center", marginTop: 20 }}>

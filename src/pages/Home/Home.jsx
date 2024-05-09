@@ -35,14 +35,14 @@ function UserHome() {
 				className={cx("section-1")}
 			>
 				<div className={cx("content", "box-shadow")}>
-					<p>Chào mừng đến với website mua bán đồ cũ</p>
-					<Button primary to="/products">
+					<p>Chào mừng đến với website Thanh lý đồ cũ</p>
+					<Button primary href="#categories">
 						Bắt đầu mua sắm
 					</Button>
 				</div>
 			</section>
 
-			<section className={cx("inner-content")}>
+			<section className={cx("inner-content")} id="categories">
 				<p className={cx("title")}>Khám phá danh mục</p>
 				<div>
 					{categories &&

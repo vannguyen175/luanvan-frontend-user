@@ -53,7 +53,7 @@ function Register() {
         e.preventDefault();
     };
     return (
-        <div>
+        <div className={cx("backgroundImage", 'animate__animated', 'animate__fadeIn')}>
             <div
                 className={cx(
                     "inner-content",

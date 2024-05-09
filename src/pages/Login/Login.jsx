@@ -5,6 +5,7 @@ import Input from "~/components/Input";
 import { Link } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { jwtDecode } from "jwt-decode";
+import 'animate.css';
 
 import * as UserService from "~/service/UserService";
 import { useMutationHook } from "~/hooks/useMutaionHook";
@@ -52,7 +53,7 @@ function Login() {
 	}, [data, navigate, location?.state]);
 
 	return (
-		<div>
+		<div className={cx("backgroundImage", 'animate__animated', 'animate__fadeIn')}>
 			<div
 				className={cx("inner-content", "container", "animated", "fadeInDown", "box-shadow")}
 			>
