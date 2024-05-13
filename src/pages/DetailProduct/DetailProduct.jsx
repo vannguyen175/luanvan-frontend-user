@@ -105,118 +105,198 @@ function DetailProduct() {
 	};
 
 	return (
-		<div>
-			<Row style={{ display: "flex" }}>
-				<Col xs={8}>
-					<div className={cx("inner-content", "left")}>
-						<Carousel className={cx("carousel")}>
-							{detail &&
-								[detail.images]?.map((image, index) => (
-									<Carousel.Item key={index}>
-										<img
-											src={`/assets/images-product/${image[index]?.name}`}
-											alt="anh-san-pham"
-										/>
-									</Carousel.Item>
-								))}
-						</Carousel>
+		// <div>
+		// 	<Row style={{ display: "flex" }}>
+		// 		<Col xs={8}>
+		// 			<div className={cx("inner-content", "left")}>
+		// 				<Carousel className={cx("carousel")}>
+		// 					{detail &&
+		// 						[detail.images]?.map((image, index) => (
+		// 							<Carousel.Item key={index}>
+		// 								<img
+		// 									src={`/assets/images-product/${image[index]?.name}`}
+		// 									alt="anh-san-pham"
+		// 								/>
+		// 							</Carousel.Item>
+		// 						))}
+		// 				</Carousel>
 
-						{detail && (
-							<div className={cx("details")} style={{ paddingLeft: 10 }}>
-								<p className={cx("title")}>{detail?.name}</p>
-								<p className={cx("price")}>
-									{Intl.NumberFormat().format(detail?.price)}đ
-								</p>
-								<div style={{ display: "flex" }}>
-									<p className={cx("note")}>
-										<UserOutlined className={cx("icon")} />
-										{detail?.sellerName}
-									</p>
-									<p className={cx("note")}>
-										<ClockCircleOutlined className={cx("icon")} />
-										<ReactTimeAgo
-											date={Date.parse(detail?.createdAt)}
-											locale="vi-VN"
-										/>
-									</p>
-									<p className={cx("note")}>
-										<EnvironmentOutlined className={cx("icon")} />
-										{detail?.address}
-									</p>
-								</div>
-								<p className={cx("note")}>
-									<CheckOutlined className={cx("icon")} />
-									<span>Tin đã được kiểm duyệt</span>
-								</p>
-								<br />
-							</div>
-						)}
-					</div>
-					<div className={cx("inner-content", "description")}>
-						<p className="title">Thông tin chi tiết</p>
-						<p className={cx("description")}>{detail?.description}</p>
+		// 				{detail && (
+		// 					<div className={cx("details")} style={{ paddingLeft: 10 }}>
+		// 						<p className={cx("title")}>{detail?.name}</p>
+		// 						<p className={cx("price")}>
+		// 							{Intl.NumberFormat().format(detail?.price)}đ
+		// 						</p>
+		// 						<div style={{ display: "flex" }}>
+		// 							<p className={cx("note")}>
+		// 								<UserOutlined className={cx("icon")} />
+		// 								{detail?.sellerName}
+		// 							</p>
+		// 							<p className={cx("note")}>
+		// 								<ClockCircleOutlined className={cx("icon")} />
+		// 								<ReactTimeAgo
+		// 									date={Date.parse(detail?.createdAt)}
+		// 									locale="vi-VN"
+		// 								/>
+		// 							</p>
+		// 							<p className={cx("note")}>
+		// 								<EnvironmentOutlined className={cx("icon")} />
+		// 								{detail?.address}
+		// 							</p>
+		// 						</div>
+		// 						<p className={cx("note")}>
+		// 							<CheckOutlined className={cx("icon")} />
+		// 							<span>Tin đã được kiểm duyệt</span>
+		// 						</p>
+		// 						<br />
+		// 					</div>
+		// 				)}
+		// 			</div>
+		// 			<div className={cx("inner-content", "description")}>
+		// 				<p className="title">Thông tin chi tiết</p>
+		// 				<p className={cx("description")}>{detail?.description}</p>
+		// 				{detail &&
+		// 					Object.keys(detail?.info).map((value, index) => (
+		// 						<p className={cx("info")} key={index}>
+		// 							<SendOutlined className={cx("icon")} />
+		// 							<span>
+		// 								{value} : {detail?.info[value]}
+		// 							</span>
+		// 						</p>
+		// 					))}
+
+		// 				<p className={cx("info")}>
+		// 					<SendOutlined className={cx("icon")} />
+		// 					<span>Địa chỉ: </span>
+		// 					<span>{detail?.address}</span>
+		// 				</p>
+		// 			</div>
+		// 		</Col>
+		// 		<Col className={cx("inner-content", "right")}>
+		// 			<div>
+		// 				<hr style={{ marginTop: 43 }} />
+		// 				<p className="title">Thông tin người bán</p>
+		// 				<div className={cx("detail-seller")}>
+		// 					<span className={cx("avatar")}>
+		// 						{seller?.avatar === "" ? (
+		// 							<img src="/assets/images/user-avatar.jpg" alt="avatar" />
+		// 						) : (
+		// 							<img src={`/assets/images/${seller?.avata}`} alt="avatar" />
+		// 						)}
+		// 					</span>
+		// 					<span>
+		// 						<p className={cx("name")}>{seller?.name}</p>
+		// 						<p>
+		// 							Đánh giá:
+		// 							{seller?.rating === 0 ? " Chưa có đánh giá" : seller?.rating}
+		// 						</p>
+		// 					</span>
+		// 				</div>
+		// 				<p style={{ marginLeft: 20 }}>Số điện thoại: {seller?.phone}</p>
+		// 				<div className={cx("button")}>
+		// 					{detail?.sellerName === buyerDetail?.name ? (
+		// 						<p style={{ textAlign: "center" }}>Đây là sản phẩm của bạn</p>
+		// 					) : (
+		// 						<>
+		// 							<Button onClick={handleAddCart}>Thêm vào giỏ hàng</Button>
+		// 							<Button primary onClick={handleOrderNow}>
+		// 								Đặt hàng ngay
+		// 							</Button>
+		// 						</>
+		// 					)}
+		// 				</div>
+		// 			</div>
+		// 		</Col>
+		// 	</Row>
+		// 	<div className={cx("inner-content", "other-items")}>
+		// 		<p className="title">Các sản phẩm tương tự</p>
+		// 		<div style={{ display: "flex", flexWrap: "wrap" }}>
+		// 			{subCategoryProducts &&
+		// 				subCategoryProducts?.map(
+		// 					(product, key) =>
+		// 						product._id !== id && <CardProduct key={key} product={product} />
+		// 				)}
+		// 		</div>
+		// 	</div>
+		// </div>
+		<div className="inner-content" style={{ paddingTop: 20 }}>
+			<div className="row">
+				{/* Hình ảnh sản phẩm */}
+				<div className="col" xs={3}>
+					<Carousel className={cx("carousel")}>
 						{detail &&
-							Object.keys(detail?.info).map((value, index) => (
-								<p className={cx("info")} key={index}>
-									<SendOutlined className={cx("icon")} />
-									<span>
-										{value} : {detail?.info[value]}
-									</span>
-								</p>
+							[detail.images]?.map((image, index) => (
+								<Carousel.Item key={index}>
+									<img
+										src={`/assets/images-product/${image[index]?.name}`}
+										alt="anh-san-pham"
+									/>
+								</Carousel.Item>
 							))}
-
-						<p className={cx("info")}>
-							<SendOutlined className={cx("icon")} />
-							<span>Địa chỉ: </span>
-							<span>{detail?.address}</span>
-						</p>
-					</div>
-				</Col>
-				<Col className={cx("inner-content", "right")}>
-					<div>
-						<hr style={{ marginTop: 43 }} />
-						<p className="title">Thông tin người bán</p>
-						<div className={cx("detail-seller")}>
-							<span className={cx("avatar")}>
-								{seller?.avatar === "" ? (
-									<img src="/assets/images/user-avatar.jpg" alt="avatar" />
-								) : (
-									<img src={`/assets/images/${seller?.avata}`} alt="avatar" />
-								)}
-							</span>
-							<span>
-								<p className={cx("name")}>{seller?.name}</p>
-								<p>
-									Đánh giá:
-									{seller?.rating === 0 ? " Chưa có đánh giá" : seller?.rating}
+					</Carousel>
+				</div>
+				<div className="col" xs={8}>
+					{detail && (
+						<div className={cx("details")} style={{ paddingLeft: 10 }}>
+							<p className={cx("title")}>{detail?.name}</p>
+							<p className={cx("price")}>
+								{Intl.NumberFormat().format(detail?.price)}đ
+							</p>
+							<div>
+								<p className={cx("note")}>
+									<strong>Người đăng:</strong>&nbsp;
+									{detail?.sellerName}
 								</p>
-							</span>
-						</div>
-						<p style={{ marginLeft: 20 }}>Số điện thoại: {seller?.phone}</p>
-						<div className={cx("button")}>
+								<p className={cx("note")}>
+									<strong>Thời gian đăng:</strong> &nbsp;
+									<ReactTimeAgo
+										date={Date.parse(detail?.createdAt)}
+										locale="vi-VN"
+									/>
+								</p>
+								<p className={cx("note")}>
+									<strong>Địa chỉ bán hàng:</strong>&nbsp;
+									{detail?.address}
+								</p>
+							</div>
+							<p className={cx("note")}>
+								<strong>Tin đã được kiểm duyệt</strong>&nbsp;&nbsp;
+								<CheckOutlined className={cx("icon")} />
+							</p>
+							<br />
 							{detail?.sellerName === buyerDetail?.name ? (
 								<p style={{ textAlign: "center" }}>Đây là sản phẩm của bạn</p>
 							) : (
-								<>
-									<Button onClick={handleAddCart}>Thêm vào giỏ hàng</Button>
-									<Button primary onClick={handleOrderNow}>
+								<div style={{ textAlign: 'center' }}>
+									<Button style={{ width: '70%' }} onClick={handleAddCart}>Thêm vào giỏ hàng</Button>
+									<Button style={{ width: '70%' }} primary onClick={handleOrderNow}>
 										Đặt hàng ngay
 									</Button>
-								</>
+								</div>
 							)}
 						</div>
-					</div>
-				</Col>
-			</Row>
-			<div className={cx("inner-content", "other-items")}>
-				<p className="title">Các sản phẩm tương tự</p>
-				<div style={{ display: "flex", flexWrap: "wrap" }}>
-					{subCategoryProducts &&
-						subCategoryProducts?.map(
-							(product, key) =>
-								product._id !== id && <CardProduct key={key} product={product} />
-						)}
+					)}
 				</div>
+			</div>
+			<div className="row">
+				{/* Thông tin chi tiết */}
+				<p className="title">Thông tin chi tiết</p>
+				<p className={cx("description")}>{detail?.description}</p>
+				{detail &&
+					Object.keys(detail?.info).map((value, index) => (
+						<p className={cx("info")} key={index}>
+							<SendOutlined className={cx("icon")} />
+							<span>
+								{value} : {detail?.info[value]}
+							</span>
+						</p>
+					))}
+
+				<p className={cx("info")}>
+					<SendOutlined className={cx("icon")} />
+					<span>Địa chỉ: </span>
+					<span>{detail?.address}</span>
+				</p>
 			</div>
 		</div>
 	);
