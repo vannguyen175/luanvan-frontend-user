@@ -10,14 +10,12 @@ import * as ProductService from "~/service/ProductService";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "~/components/Loading/Loading";
 import { convertToSlug } from "~/utils";
-import * as OptionSelect from "~/components/OptionSelect";
-import { StringTocamelCase } from "~/utils";
 import { useMutationHook } from "~/hooks/useMutaionHook";
 import * as UserService from "~/service/UserService";
 
 import { getBase64 } from "~/utils";
 import { PlusOutlined } from "@ant-design/icons";
-import { Modal, Upload } from "antd";
+import { Modal, Upload, Spin, Result } from "antd";
 import { toast } from "react-toastify";
 
 const cx = classNames.bind(style);
@@ -33,6 +31,8 @@ function PostingProduct() {
 	const addressRef = useRef("");
 	const descriptionRef = useRef("");
 
+	const [createLoading, setCreateLoading] = useState(false);
+	const [createSuccess, setCreateSuccess] = useState(false);
 	const [addressSeller, setAddressSeller] = useState("");
 	const [dataSubmit, setDataSubmit] = useState();
 	const [infoList, setInfoList] = useState([]);
@@ -61,14 +61,15 @@ function PostingProduct() {
 		const res = ProductService.createProduct({ ...rests }.data);
 		return res;
 	});
-	const { data: dataCreate, isLoading: isLoadingCreate } = mutationCreate;
+	const { data: dataCreate } = mutationCreate;
 
 	useEffect(() => {
 		if (dataCreate?.status === "SUCCESS") {
-			toast.success("Tạo bài đăng thành công!");
-			setTimeout(() => {
-				window.location.reload();
-			}, 1000);
+			setCreateLoading(false);
+			setCreateSuccess(true);
+			// setTimeout(() => {
+			// 	window.location.reload();
+			// }, 1000);
 		} else if (dataCreate?.status === "ERROR") {
 			toast.error(dataCreate?.message);
 		}
@@ -79,6 +80,7 @@ function PostingProduct() {
 		if (!file.url && !file.preview) {
 			file.preview = await getBase64(file.originFileObj);
 		}
+		console.log(file.preview);
 		setPreviewImage(file.url || file.preview);
 		setPreviewOpen(true);
 		setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf("/") + 1));
@@ -91,7 +93,9 @@ function PostingProduct() {
 			<div style={{ marginTop: 8 }}>Upload</div>
 		</button>
 	);
-	const handleChangeImage = ({ fileList: newFileList, url }) => setFileList(newFileList, url);
+	const handleChangeImage = ({ fileList: newFileList }) => {
+		return setFileList(newFileList);
+	};
 
 	const getCategories = async () => {
 		const res = await ProductService.getAllCategories();
@@ -109,7 +113,7 @@ function PostingProduct() {
 	};
 
 	//Lấy danh sách category
-	const { data: categoryList, isLoading } = useQuery({
+	const { data: categoryList } = useQuery({
 		queryKey: ["category"],
 		queryFn: getCategories,
 		select: (categoryList) => categoryList.data.map((item) => item.name),
@@ -151,10 +155,6 @@ function PostingProduct() {
 		refetchSubCategoryInfo();
 	};
 
-	const handleGetSelectOption = (camelCaseItem) => {
-		return OptionSelect[camelCaseItem];
-	};
-
 	const handleChangeStateProduct = (e) => {
 		if (e === "Chưa sử dụng") {
 			setDataSubmit((prevData) => ({ ...prevData, stateProduct: "new" }));
@@ -175,12 +175,20 @@ function PostingProduct() {
 		setCallMudation(false);
 	}
 	//Lưu dữ liệu submit vào dataSubmit + đặt setCallMudation(true) để gọi hàm mutation
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		console.log("fileList", fileList);
-		const listImage = fileList.map((file) => ({
-			name: file.name,
-		}));
+
+		// Sử dụng Promise.all để đợi tất cả các promise được giải quyết
+		const listImage = await Promise.all(
+			fileList.map(async (file) => {
+				const base64 = await getBase64(file.originFileObj);
+				return { name: base64 };
+			})
+		);
+
+		console.log("name", listImage);
+
+		// Cập nhật state
 		setDataSubmit((prevData) => ({
 			...prevData,
 			idUser: localStorage.getItem("id_user"),
@@ -191,115 +199,138 @@ function PostingProduct() {
 			address: addressRef.current.value,
 			description: descriptionRef.current.value,
 		}));
+		setCreateLoading(true);
 		setCallMudation(true);
 	};
-
+	console.log(createSuccess);
 	return (
-		<Loading isLoading={isLoadingCreate === true}>
-			<Container style={{ minHeight: "80vh", marginLeft: 80 }} className="inner-content">
-				<Row>
-					<Col xs={3}>
-						<div className="title" style={{ textAlign: "center", marginTop: 20 }}>
-							Đăng tải sản phẩm
-						</div>
-						<div className={cx("upload-image")}>
-							<p>Đăng hình ảnh sản phẩm</p>
-							<p>(Từ 01 đến 06 hình)</p>
-							<Upload
-								action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-								listType="picture-card"
-								//fileList={fileList}
-								onPreview={handlePreview}
-								onChange={handleChangeImage}
-							>
-								{fileList.length >= 6 ? null : uploadButton}
-							</Upload>
-							<Modal
-								open={previewOpen}
-								title={previewTitle}
-								footer={null}
-								onCancel={handleCancel}
-							>
-								<img alt="example" style={{ width: "100%" }} src={previewImage} />
-							</Modal>
-							{/* <UploadImages /> */}
-						</div>
-					</Col>
-					<Col xs={9}>
-						<form style={{ textAlign: "left" }}>
-							{categoryList && (
-								<Loading isLoading={isLoading}>
-									<Select
-										innerRef={categoryRef}
-										name="Chọn danh mục"
-										value="Chưa chọn danh mục"
-										options={categoryList}
-										onChange={handleCategoryChosen}
-										required
+		<Spin spinning={createLoading}>
+			{createSuccess === true ? (
+				<div style={{ backgroundColor: "white" }}>
+					<Result
+						status="success"
+						title="Tạo bài đăng thành công!"
+						subTitle="Vui lòng chờ quản trị viên duyệt bài đăng. Sau khi được duyệt, sản phẩm sẽ được đăng bán công khai trên website."
+						extra={[
+							<Button to={"/"}>Quay về trang chủ</Button>,
+							<Button to={"/dang-tin"}>Ở lại</Button>,
+						]}
+					/>
+				</div>
+			) : (
+				<Container style={{ minHeight: "80vh", marginLeft: 20 }} className="inner-content">
+					<Row>
+						<Col xs={3}>
+							<div className="title" style={{ textAlign: "center", marginTop: 20 }}>
+								Đăng tải sản phẩm
+							</div>
+							<div className={cx("upload-image")}>
+								<p>Đăng hình ảnh sản phẩm</p>
+								<p>(Từ 01 đến 06 hình)</p>
+								<Upload
+									beforeUpload="false"
+									listType="picture-card"
+									accept="image/*"
+									fileList={fileList}
+									onPreview={handlePreview}
+									onChange={handleChangeImage}
+								>
+									{fileList.length >= 6 ? null : uploadButton}
+								</Upload>
+								<Modal
+									open={previewOpen}
+									title={previewTitle}
+									footer={null}
+									onCancel={handleCancel}
+								>
+									<img
+										alt="example"
+										style={{ width: "100%" }}
+										src={previewImage}
 									/>
-								</Loading>
-							)}
+								</Modal>
+								{/* <UploadImages /> */}
+							</div>
+						</Col>
+						<Col xs={9}>
+							<div className="title">Thông tin sản phẩm</div>
+							<form style={{ textAlign: "left" }}>
+								<div style={{ display: "flex" }}>
+									<span style={{ width: "45%" }}>
+										{categoryList && (
+											<Select
+												innerRef={categoryRef}
+												name="Chọn danh mục"
+												value="Chưa chọn danh mục"
+												options={categoryList}
+												onChange={handleCategoryChosen}
+												required
+											/>
+										)}
+									</span>
 
-							{(subCategoryList || isLoadingSubCate) && (
-								<Loading isLoading={isLoadingSubCate}>
-									<Select
-										innerRef={subCategoryRef}
-										name="Chọn danh mục con"
-										value="Chưa chọn danh mục con"
-										options={subCategoryList || [""]}
-										onChange={handleSubCategoryChosen}
-										required
-									/>
-								</Loading>
-							)}
-							{subCategoryInfo && (
-								<div>
-									{subCategoryInfo.infoSubCate.map((item, index) => (
-										<Select
-											name={item.name}
-											value="Chưa chọn"
-											options={item.option}
-											onChange={(event) => handleChangeInfo(item, event)}
-											key={index}
-											required
-										/>
-									))}
-
-									{dataSubmit.category !== "Thú cưng" && (
-										<Select
-											onChange={handleChangeStateProduct}
-											name="Tình trạng"
-											value="Chưa chọn"
-											options={["Chưa sử dụng", "Đã sử dụng"]}
-											required
-										/>
-									)}
-
-									<Input innerRef={nameRef} text="Tên bài đăng" required />
-									<Input innerRef={priceRef} text="Giá bán" required />
-									<Input
-										innerRef={addressRef}
-										text="Địa chỉ bán hàng"
-										value={addressSeller || undefined}
-										required
-									/>
-									<Input
-										innerRef={descriptionRef}
-										text="Mô tả chi tiết"
-										textarea
-									/>
-									<div style={{ textAlign: "center", margin: "20px 0" }}>
-										<Button onClick={handleSubmit}>
-											Đăng sản phẩm và chờ kiểm duyệt
-										</Button>
-									</div>
+									<span style={{ width: "45%" }}>
+										{(subCategoryList || isLoadingSubCate) && (
+											<Loading isLoading={isLoadingSubCate}>
+												<Select
+													innerRef={subCategoryRef}
+													name="Chọn danh mục con"
+													value="Chưa chọn danh mục con"
+													options={subCategoryList || [""]}
+													onChange={handleSubCategoryChosen}
+													required
+												/>
+											</Loading>
+										)}
+									</span>
 								</div>
-							)}
-						</form>
-					</Col>
-				</Row>
-			</Container>
-		</Loading>
+								{subCategoryInfo && (
+									<div>
+										{subCategoryInfo.infoSubCate.map((item, index) => (
+											<Select
+												name={item.name}
+												value="Chưa chọn"
+												options={item.option}
+												onChange={(event) => handleChangeInfo(item, event)}
+												key={index}
+												required
+											/>
+										))}
+
+										{dataSubmit.category !== "Thú cưng" && (
+											<Select
+												onChange={handleChangeStateProduct}
+												name="Tình trạng"
+												value="Chưa chọn"
+												options={["Chưa sử dụng", "Đã sử dụng"]}
+												required
+											/>
+										)}
+
+										<Input innerRef={nameRef} text="Tên bài đăng" required />
+										<Input innerRef={priceRef} text="Giá bán" required />
+										{/* <Input
+											innerRef={addressRef}
+											text="Địa chỉ bán hàng"
+											value={addressSeller || undefined}
+											required
+										/> */}
+										<Input
+											innerRef={descriptionRef}
+											text="Mô tả chi tiết"
+											textarea
+										/>
+										<div style={{ textAlign: "center", margin: "20px 0" }}>
+											<Button onClick={handleSubmit}>Tiếp theo</Button>
+										</div>
+									</div>
+								)}
+							</form>
+						</Col>
+					</Row>
+				</Container>
+			)}
+		</Spin>
 	);
 }
 
