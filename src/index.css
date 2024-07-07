@@ -48,6 +48,19 @@ p {
 	margin: 10px 0 5px 10px;
 }
 
+.icon-button {
+	width: 20px;
+	display: inline-block;
+	margin: 0 15px;
+	cursor: pointer;
+	color: black;
+	transition: 0.2s ease;
+
+	&:hover {
+		color: #a2a05e;
+	}
+}
+
 .inner-content {
 	background-color: white;
 	margin: 10px 5px;
@@ -108,8 +121,6 @@ svg {
 	object-fit: cover;
 	border: 1px solid var(--main-color);
 }
-
-
 
 .tippy {
 	background-color: var(--light-color);

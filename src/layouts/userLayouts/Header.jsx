@@ -6,14 +6,16 @@ import * as UserService from "~/service/UserService";
 import * as productService from "~/service/ProductService";
 import { StringTocamelCase } from "../../utils";
 import { Container, Row, Col } from "react-bootstrap";
+import IconButton from "@mui/material/IconButton";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import SearchIcon from "@mui/icons-material/Search";
+import LogoutIcon from "@mui/icons-material/Logout";
+import Badge from "@mui/material/Badge";
 
 import { Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-	faMagnifyingGlass,
-	faRightFromBracket,
-	faCartShopping,
-} from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import Box from "@mui/material/Box";
@@ -136,7 +138,7 @@ function Header() {
 				</Col>
 
 				{/* Tìm kiếm sản phẩm */}
-				<Col className={cx("col")} xs={5}>
+				<Col className={cx("col")} xs={4}>
 					<div className={cx("search")}>
 						<input
 							type="text"
@@ -147,7 +149,7 @@ function Header() {
 							placeholder="Tìm kiếm sản phẩm..."
 						/>
 						<button className="button-icon">
-							<FontAwesomeIcon icon={faMagnifyingGlass} />
+							<SearchIcon />
 						</button>
 					</div>
 					<ul className={cx("search-result")}>
@@ -170,7 +172,7 @@ function Header() {
 				</Col>
 
 				{localStorage.getItem("access_token") === null ? (
-					<Col className={cx("col")} xs={3}>
+					<Col className={cx("col")} xs={3} style={{ paddingLeft: 30 }}>
 						<DropdownMenu title="Tiện ích" listActions={ActionsUnLogin} />
 
 						<Button
@@ -181,21 +183,23 @@ function Header() {
 						/>
 					</Col>
 				) : (
-					<Col className={cx("col")} xs={3}>
-						<button className="button-icon">
-							<FontAwesomeIcon onClick={handleShowCart} icon={faCartShopping} />
-						</button>
+					<Col className={cx("col")} xs={4}>
+						<div className="icon-button">
+							<ShoppingCartIcon onClick={handleShowCart} />
+						</div>
 
-						<Box ml={4} mr={1} p={0} display="inline-block">
+						<Badge badgeContent={4} color="primary" className="icon-button">
+							<NotificationsIcon onClick={handleShowCart} />
+						</Badge>
+
+						<Box ml={3} mr={1} p={0} display="inline-block">
 							<DropdownMenu
 								title={name}
 								listActions={localStorage.getItem("id_user") && ActionUserLogin}
 							/>
 						</Box>
 
-						<button className="button-icon">
-							<FontAwesomeIcon onClick={handleLogout} icon={faRightFromBracket} />
-						</button>
+						<LogoutIcon className="icon-button" onClick={handleLogout} />
 					</Col>
 				)}
 			</Row>
