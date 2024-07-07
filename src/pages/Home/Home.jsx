@@ -1,32 +1,47 @@
 import style from "./UserHome.module.scss";
 import classNames from "classnames/bind";
-// import { Container, Row, Col } from "react-bootstrap";
 import CategoryButton from "~/components/CategoryButton";
 import CardProduct from "~/components/CardProduct";
 import Button from "~/components/Button";
 import * as ProductService from "~/service/ProductService";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
 const cx = classNames.bind(style);
 
 function UserHome() {
+	const [products, setProducts] = useState(null);
+	const [categories, setCategories] = useState(null);
+	const [pageState, setPageState] = useState({
+		isLoading: false,
+		data: [],
+		total: 0,
+		page: 1,
+		pageSize: 10,
+	});
+
+	//Lấy danh sách sản phẩm đang bán
 	const getProducts = async () => {
-		const res = await ProductService.getAllProducts({ filter: "approved", onSale: true });
-		return res.data;
+		const res = await ProductService.getAllProducts({
+			data: { state: ["approved"], cate: [], subCate: [] },
+			page: `page=${pageState.page}`,
+			limit: `limit=${pageState.pageSize}`,
+		});
+		console.log(res.data);
+		setProducts(res.data);
 	};
 
+	//Lấy danh sách danh mục
 	const getCategory = async () => {
 		const res = await ProductService.getAllCategories();
-		return res.data;
+		setCategories(res.data);
 	};
 
-	//lấy thông tin sản phẩm khi vừa truy cập hoặc reload trang
-	const queryProducts = useQuery({ queryKey: ["products"], queryFn: getProducts });
-	const { data: products } = queryProducts;
-
-	//lấy thông tin danh mục khi vừa truy cập hoặc reload trang
-	const queryCategory = useQuery({ queryKey: ["categories"], queryFn: getCategory });
-	const { data: categories } = queryCategory;
+	useEffect(() => {
+		getCategory();
+		if (pageState.page) {
+			getProducts();
+		}
+	}, []);
 
 	return (
 		<div className={cx("container")}>

@@ -12,12 +12,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
 	faMagnifyingGlass,
 	faRightFromBracket,
-	faUser,
 	faCartShopping,
 } from "@fortawesome/free-solid-svg-icons";
-import { Tooltip } from "react-tippy";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import Box from "@mui/material/Box";
 
 const cx = classNames.bind(style);
 
@@ -58,17 +57,6 @@ const ActionUserLogin = [
 	},
 ];
 
-const ActionAdminLogin = [
-	{
-		name: "Thông tin tài khoản",
-		to: "/profile",
-	},
-	{
-		name: "Quản lý hệ thống",
-		to: "/admin",
-	},
-];
-
 function Header() {
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -93,7 +81,7 @@ function Header() {
 		const id = localStorage.getItem("id_user");
 		const token = localStorage.getItem("access_token");
 		await UserService.getDetailUser(id, token).then((data) => {
-			setName(data.result.name);
+			setName(data.user.name);
 		});
 	}
 	useEffect(() => {
@@ -116,7 +104,11 @@ function Header() {
 	}, []);
 
 	const getProductList = async () => {
-		const result = await productService.getAllProducts({ filter: "approved", onSale: true });
+		const result = await productService.getAllProducts({
+			data: { state: [], cate: [], subCate: [] },
+			page: `page=1`,
+			limit: `limit=10000`,
+		});
 		setProductList(result);
 	};
 
@@ -140,7 +132,7 @@ function Header() {
 				</Col>
 
 				<Col className={cx("col")} xs={2}>
-					<DropdownMenu title="Danh mục" listActions={categories} width="50px" />
+					<DropdownMenu title="Danh mục" listActions={categories} />
 				</Col>
 
 				{/* Tìm kiếm sản phẩm */}
@@ -163,10 +155,7 @@ function Header() {
 							<li key={index} onClick={() => handleClickSearchResult(item._id)}>
 								<div style={{ display: "flex" }}>
 									<div>
-										<img
-											src={`/assets/images-product/${item.images[0]?.name}`}
-											alt="anh-san-pham"
-										/>
+										<img src={`${item.images[0]}`} alt="anh-san-pham" />
 									</div>
 									<div className={cx("detail")}>
 										<p style={{ fontWeight: 500 }}>{item.name}</p>
@@ -181,52 +170,28 @@ function Header() {
 				</Col>
 
 				{localStorage.getItem("access_token") === null ? (
-					<Col
-						className={cx("col")}
-						xs={3}
-						style={{
-							display: "flex",
-							justifyContent: "space-evenly",
-						}}
-					>
-						<DropdownMenu
-							icon={faUser}
-							title="Tiện ích"
-							listActions={ActionsUnLogin}
-							width="300px"
-							border="none"
-						/>
+					<Col className={cx("col")} xs={3}>
+						<DropdownMenu title="Tiện ích" listActions={ActionsUnLogin} />
 
 						<Button
-							style={{ marginLeft: 20, marginTop: 5 }}
+							style={{ marginLeft: 100, marginTop: 5 }}
 							children="Login"
 							to="/login"
 							button
 						/>
 					</Col>
 				) : (
-					<Col
-						className={cx("col")}
-						xs={3}
-						style={{
-							display: "flex",
-							justifyContent: "space-between",
-						}}
-					>
+					<Col className={cx("col")} xs={3}>
 						<button className="button-icon">
 							<FontAwesomeIcon onClick={handleShowCart} icon={faCartShopping} />
 						</button>
 
-						<DropdownMenu
-							icon={faUser}
-							title={name}
-							listActions={
-								localStorage.getItem("isAdmin") === "true"
-									? ActionAdminLogin
-									: ActionUserLogin
-							}
-							border="none"
-						/>
+						<Box ml={4} mr={1} p={0} display="inline-block">
+							<DropdownMenu
+								title={name}
+								listActions={localStorage.getItem("id_user") && ActionUserLogin}
+							/>
+						</Box>
 
 						<button className="button-icon">
 							<FontAwesomeIcon onClick={handleLogout} icon={faRightFromBracket} />

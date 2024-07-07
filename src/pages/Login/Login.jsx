@@ -1,11 +1,11 @@
 import Button from "~/components/Button";
 import classNames from "classnames/bind";
 import style from "./Login.module.scss";
-import Input from "~/components/Input";
 import { Link } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { jwtDecode } from "jwt-decode";
-import 'animate.css';
+import "animate.css";
+import TextField from "@mui/material/TextField";
 
 import * as UserService from "~/service/UserService";
 import { useMutationHook } from "~/hooks/useMutaionHook";
@@ -53,7 +53,7 @@ function Login() {
 	}, [data, navigate, location?.state]);
 
 	return (
-		<div className={cx("backgroundImage", 'animate__animated', 'animate__fadeIn')}>
+		<div className={cx("backgroundImage", "animate__animated", "animate__fadeIn")}>
 			<div
 				className={cx("inner-content", "container", "animated", "fadeInDown", "box-shadow")}
 			>
@@ -62,33 +62,23 @@ function Login() {
 					{data?.status === "ERROR" && (
 						<span style={{ color: "red" }}>{data?.message}</span>
 					)}
-					<Input
-						text="Email"
-						type="email"
-						name="email"
-						autocomplete="on"
-						innerRef={emailRef}
+
+					<TextField
+						sx={{ margin: "20px 0" }}
+						fullWidth
+						label="Email"
+						inputRef={emailRef}
 					/>
-					<Input text="Mật khẩu" type="password" name="password" innerRef={passwordRef} />
+					<TextField type="password" fullWidth label="Mật khẩu" inputRef={passwordRef} />
 
 					<a className={cx("forgot-password")} href="/">
 						Quên mật khẩu?
 					</a>
 
-					<Button
-						primary
-						styleBtn={{
-							display: "flex",
-							margin: "0px auto 20px auto",
-							width: "420px",
-							height: "50px",
-							fontWeight: "500",
-							fontSize: "1.2rem",
-						}}
-						onClick={onsubmit}
-					>
+					<Button primary className={cx("login-btn")} onClick={onsubmit}>
 						Đăng nhập
 					</Button>
+
 					<p className={cx("register-link")}>
 						Chưa có tài khoản? <Link to="/register">Đăng ký tài khoản mới</Link>
 					</p>

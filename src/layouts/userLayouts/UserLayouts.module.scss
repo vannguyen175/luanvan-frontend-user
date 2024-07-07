@@ -37,21 +37,9 @@
 	top: 0;
 	background-color: white;
 	z-index: 1000;
-}
 
-.button-dropdown {
-	padding: 5px 10px;
-	margin: -1px 5px;
-	border-radius: 3px;
-	border: none;
-	color: var(--main-color);
-	background-color: rgb(255, 255, 255);
-	border: 1px solid var(--main-color);
-	font-weight: 600;
-	transition: 0.2s ease;
-	&:hover {
-		color: var(--main-color);
-		background-color: var(--light-color);
+	.button-icon {
+		margin-left: 30px;
 	}
 }
 
@@ -66,6 +54,7 @@
 .navbar-icon {
 	font-size: 1.2rem;
 	margin-top: 3px;
+
 	font-weight: 500;
 	display: flex;
 	justify-content: space-between;

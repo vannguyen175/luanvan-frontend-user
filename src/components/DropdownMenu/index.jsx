@@ -1,39 +1,40 @@
-import Dropdown from "react-bootstrap/Dropdown";
-import classNames from "classnames/bind";
-import style from "./DropdownMenu.module.scss";
-import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
+import { useNavigate, useLocation } from "react-router-dom";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-function DropdownMenu({ title, listActions, border, icon, avatar }) {
-	const cx = classNames.bind(style);
+function DropdownMenu({ title, listActions }) {
+	const navigate = useNavigate();
+	const location = useLocation();
 
+	const handleClick = (item) => {
+		navigate(item.to);
+		if (location.pathname.includes("san-pham")) {
+			navigate(0); //reload page
+		}
+	};
 	return (
-		<Dropdown>
-			<Dropdown.Toggle
-				className={cx("button-dropdown")}
-				// id="button-dropdown"
-                id="dropdown-basic"
-                variant="Secondary"
-				style={{
-					border: { border },
-					display: "flex",
-					justifyContent: "space-evenly",
-					alignItems: "center",
-				}}
-			>
-				{icon && <FontAwesomeIcon icon={icon} style={{ marginRight: 10 }}/>}
-
-				{title}
-			</Dropdown.Toggle>
-
-			<Dropdown.Menu>
-				{listActions?.map((action, index) => (
-					<Link key={index} to={action.to}>
-						{action.name}
-					</Link>
-				))}
-			</Dropdown.Menu>
-		</Dropdown>
+		<PopupState variant="popover">
+			{(popupState) => (
+				<>
+					<Button {...bindTrigger(popupState)}>
+						{title}
+						<KeyboardArrowDownIcon style={{ marginLeft: "3px" }} />
+					</Button>
+					<Menu {...bindMenu(popupState)}>
+						{listActions.map((item, index) => (
+							<div onClick={() => handleClick(item)} key={index}>
+								<MenuItem key={index} onClick={popupState.close}>
+									{item.name}
+								</MenuItem>
+							</div>
+						))}
+					</Menu>
+				</>
+			)}
+		</PopupState>
 	);
 }
 

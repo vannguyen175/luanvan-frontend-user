@@ -1,0 +1,126 @@
+.left {
+  margin: 10px 0 0 0;
+  padding: 20px;
+}
+.left .title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--main-color);
+  margin-bottom: 10px;
+}
+.left .time-order span:not(first-of-type) {
+  margin-right: 10px;
+}
+.left .card-product {
+  margin-top: 20px;
+}
+.left .card-product img {
+  width: 200px;
+  height: 200px;
+  border-radius: 10px;
+}
+.left .card-product .name {
+  font-size: 1.2rem;
+  color: var(--main-color);
+  font-weight: 500;
+}
+.left .card-product .price {
+  color: red;
+  margin-bottom: 20px;
+}
+.left .detail-seller {
+  margin-top: 50px;
+}
+.left .detail-seller .avatar img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 3px solid gray;
+}
+.left .detail-seller .name {
+  margin-left: 10px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--main-color);
+}
+.left .detail-seller .rating {
+  margin-left: 10px;
+}
+
+.right {
+  margin: 10px 0 0 30px;
+  padding: 20px;
+}
+.right .title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--main-color);
+  margin-bottom: 10px;
+}
+.right .detail-order .name {
+  margin-left: 20px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--main-color);
+}
+.right .detail-order .avatar img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 3px solid gray;
+}
+.right .detail-order .info {
+  margin: 30px 0 0 20px;
+}
+.right .detail-order .info p {
+  position: relative;
+  margin: 20px 0;
+  padding-top: 0px;
+}
+.right .detail-order .info svg {
+  margin-right: 10px;
+  width: 15px;
+  padding-top: 4px;
+}
+.right .detail-order .info input {
+  position: absolute;
+  right: 15px;
+  top: -8px;
+  padding: 5px;
+  border: 1px solid gray;
+  width: 70%;
+  margin-left: 10px;
+  border-radius: 8px;
+}
+.right .detail-order .info textarea {
+  position: absolute;
+  top: 0px;
+  margin-left: 10px;
+  border: 1px solid gray;
+  width: 70%;
+  top: -8px;
+  right: 15px;
+  padding: 5px;
+  border-radius: 8px;
+}
+.right .detail-order hr {
+  margin: 50px 0;
+}
+.right .detail-order .price {
+  margin: -20px auto 0 auto;
+  position: relative;
+  width: 300px;
+}
+.right .detail-order .price span {
+  position: absolute;
+  right: 10px;
+  font-weight: 500;
+}
+.right .order-btn {
+  text-align: center;
+  margin-top: 20px;
+}
+.right .order-btn button {
+  width: 90%;
+  padding: 8px 0;
+}/*# sourceMappingURL=OrderProduct.module.css.map */

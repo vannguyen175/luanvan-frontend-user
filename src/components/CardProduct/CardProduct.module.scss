@@ -3,9 +3,10 @@
 	position: relative;
 	border: 1px solid var(--main-color);
 	width: 48%;
-	min-width: 500px;
+	min-width: 550px;
+	min-height: 163px;
 	padding: 5px;
-	margin: 5px 20px;
+	margin: 5px 40px;
 	border-radius: 5px;
 	box-shadow: 0px 0px 8px -3px rgba(0, 0, 0, 0.8);
 	transition: 0.1s ease;
@@ -17,8 +18,9 @@
 }
 
 .image-product {
-	width: 150px;
-	height: 170px;
+	position: absolute;
+	width: 120px;
+	height: 150px;
 }
 
 .detail-product {
@@ -68,7 +70,7 @@
 	display: flex;
 	flex-direction: column;
 	width: 48%;
-	width: 200px;
+	width: 220px;
 	height: 300px;
 	padding: 5px;
 	margin: 15px;

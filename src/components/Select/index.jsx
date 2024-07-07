@@ -18,8 +18,8 @@ const SelectWrapper = styled(SelectAnt)`
 `;
 
 function Select({ innerRef, value, options, name, required, onChange, width, borderColor="black" }) {
-	const filterOption = (input, option) =>
-		(option?.label ?? "").toLowerCase().includes(input.toLowerCase());
+	// const filterOption = (input, option) =>
+	// 	(option?.label ?? "").toLowerCase().includes(input.toLowerCase());
 	return (
 		<div className={cx("container")} style={{ border: `1px solid ${borderColor}` }}>
 			<span className={cx("text")}>

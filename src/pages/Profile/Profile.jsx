@@ -48,26 +48,41 @@ function Profile() {
 		<div>
 			<Row style={{ margin: "10px auto" }}>
 				<Col xs={3}>
-					<div className="inner-content">
-						<Menu
-							onClick={onClick}
-							style={{
-								width: 256,
-							}}
-							defaultSelectedKeys={[selectedKey]}
-							defaultOpenKeys={["sub1"]}
-							mode="inline"
-							items={items}
-						/>
+					<div className={cx("inner-content", "menu-navigate")}>
+						<div
+							className={cx(selectedKey === 1 && "active")}
+							onClick={() => setSelectedKey("1")}
+						>
+							Thông tin tài khoản
+						</div>
+						<div
+							className={cx(selectedKey === 2 && "active")}
+							onClick={() => setSelectedKey("2")}
+						>
+							Sản phẩm đang bán
+						</div>
+						<div
+							className={cx(selectedKey === 3 && "active")}
+							onClick={() => setSelectedKey("3")}
+						>
+							Quản lý đơn hàng
+						</div>
+						<div
+							className={cx(selectedKey === 4 && "active")}
+							onClick={() => setSelectedKey("4")}
+						>
+							Thống kê
+						</div>
+						<div></div>
 					</div>
 				</Col>
 				<Col>
 					<div className={cx("right")}>
 						{selectedKey === "1" ? (
 							<AccountInfo />
-						) : selectedKey === "32" ? (
+						) : selectedKey === "2" ? (
 							<ManagerOrder />
-						) : selectedKey === "31" ? (
+						) : selectedKey === "3" ? (
 							<ProductSell />
 						) : (
 							<Analytics />

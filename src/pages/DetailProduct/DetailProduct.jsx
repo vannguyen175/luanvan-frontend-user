@@ -1,28 +1,24 @@
-import Carousel from "react-bootstrap/Carousel";
-import { useQuery } from "@tanstack/react-query";
 import * as ProductService from "~/service/ProductService";
 import * as UserService from "~/service/UserService";
 import * as CartService from "~/service/CartService";
 import ReactTimeAgo from "react-time-ago";
-import {
-	UserOutlined,
-	ClockCircleOutlined,
-	EnvironmentOutlined,
-	CheckOutlined,
-	SendOutlined,
-} from "@ant-design/icons";
+import TimeAgo from "javascript-time-ago";
+import vi from "javascript-time-ago/locale/vi";
+
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { toast } from "react-toastify";
 
 //import Button from "~/components/Button";
-import { Row, Col } from "react-bootstrap";
 import classNames from "classnames/bind";
 import style from "./DetailProduct.module.scss";
 import { useEffect, useState } from "react";
 import Button from "~/components/Button";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import CardProduct from "~/components/CardProduct";
+import Description from "../../components/Description";
+import ImagePreview from "../../components/ImagePreview";
 
 const cx = classNames.bind(style);
+TimeAgo.addLocale(vi);
 
 function DetailProduct() {
 	const { id } = useParams();
@@ -30,58 +26,44 @@ function DetailProduct() {
 	const navigate = useNavigate();
 	const [buyerDetail, setBuyerDetail] = useState();
 	const location = useLocation();
-
+	const [details, setDetails] = useState({
+		product: {},
+		seller: {},
+		buyer: {},
+		stateShow: "product",
+	});
 	const getDetailBuyer = async () => {
 		const res = await UserService.getInfoUser(idUser);
 		setBuyerDetail(res.data);
 	};
 
+	const getDetailProduct = async () => {
+		const res = await ProductService.detailProduct(id);
+		setDetails((prevDetails) => ({
+			...prevDetails,
+			product: res.data,
+		}));
+
+		getDetailSeller(res.data.idUser);
+	};
 	useEffect(() => {
+		getDetailProduct();
 		getDetailBuyer();
 	}, []);
 
-	const getDetailProduct = async () => {
-		const res = await ProductService.detailProduct(id);
-		return res.data;
-	};
-
-	const getDetailSeller = async () => {
-		const res = await UserService.getInfoUser(detail.idUser);
-		return res.data;
+	const getDetailSeller = async (idUser) => {
+		const res = await UserService.getInfoUser(idUser);
+		console.log(res.data);
+		setDetails((prevDetails) => ({
+			...prevDetails,
+			seller: res.data,
+		}));
 	};
 
 	const getProductWithSubcate = async () => {
-		const res = await ProductService.getAllProductsBySubCate(detail.subCategory);
+		const res = await ProductService.getAllProductsBySubCate(details.product.subCategory);
 		return res.data;
 	};
-
-	//lấy thông tin sản phẩm khi vừa truy cập hoặc reload trang
-	const queryDetail = useQuery({ queryKey: ["product-detail"], queryFn: getDetailProduct });
-	const { data: detail } = queryDetail;
-
-	//lấy thông tin nguời bán sau khi có idUser từ getDetailProduct
-	const queryUser = useQuery({
-		queryKey: ["seller-detail"],
-		queryFn: getDetailSeller,
-		refetchOnWindowFocus: false,
-		enabled: false,
-	});
-	const { data: seller, refetch: refetchSeller } = queryUser;
-
-	//lấy các sản phẩm cùng danh mục sau khi có subCategory từ getDetailProduct
-	const queryProductSubCate = useQuery({
-		queryKey: ["product-subCate"],
-		queryFn: getProductWithSubcate,
-		refetchOnWindowFocus: false,
-		enabled: false,
-	});
-	const { data: subCategoryProducts, refetch: refetchSubCategoryProducts } = queryProductSubCate;
-	useEffect(() => {
-		if (detail) {
-			refetchSeller();
-			refetchSubCategoryProducts();
-		}
-	}, [detail, refetchSeller, refetchSubCategoryProducts]); //detail-seller
 
 	const handleOrderNow = () => {
 		if (idUser) {
@@ -93,7 +75,10 @@ function DetailProduct() {
 
 	const handleAddCart = async () => {
 		if (idUser) {
-			const addCart = await CartService.createCart({ idUser, idProduct: detail._id });
+			const addCart = await CartService.createCart({
+				idUser,
+				idProduct: details.product._id,
+			});
 			if (addCart?.status === "SUCCESS") {
 				toast.success("Thêm vào giỏ hàng thành công!");
 			} else if (addCart?.status === "EXIST") {
@@ -104,200 +89,118 @@ function DetailProduct() {
 		}
 	};
 
+	const handleShowDetail = (value) => {
+		setDetails((prev) => ({ ...prev, stateShow: value }));
+	};
+
 	return (
-		// <div>
-		// 	<Row style={{ display: "flex" }}>
-		// 		<Col xs={8}>
-		// 			<div className={cx("inner-content", "left")}>
-		// 				<Carousel className={cx("carousel")}>
-		// 					{detail &&
-		// 						[detail.images]?.map((image, index) => (
-		// 							<Carousel.Item key={index}>
-		// 								<img
-		// 									src={`/assets/images-product/${image[index]?.name}`}
-		// 									alt="anh-san-pham"
-		// 								/>
-		// 							</Carousel.Item>
-		// 						))}
-		// 				</Carousel>
-
-		// 				{detail && (
-		// 					<div className={cx("details")} style={{ paddingLeft: 10 }}>
-		// 						<p className={cx("title")}>{detail?.name}</p>
-		// 						<p className={cx("price")}>
-		// 							{Intl.NumberFormat().format(detail?.price)}đ
-		// 						</p>
-		// 						<div style={{ display: "flex" }}>
-		// 							<p className={cx("note")}>
-		// 								<UserOutlined className={cx("icon")} />
-		// 								{detail?.sellerName}
-		// 							</p>
-		// 							<p className={cx("note")}>
-		// 								<ClockCircleOutlined className={cx("icon")} />
-		// 								<ReactTimeAgo
-		// 									date={Date.parse(detail?.createdAt)}
-		// 									locale="vi-VN"
-		// 								/>
-		// 							</p>
-		// 							<p className={cx("note")}>
-		// 								<EnvironmentOutlined className={cx("icon")} />
-		// 								{detail?.address}
-		// 							</p>
-		// 						</div>
-		// 						<p className={cx("note")}>
-		// 							<CheckOutlined className={cx("icon")} />
-		// 							<span>Tin đã được kiểm duyệt</span>
-		// 						</p>
-		// 						<br />
-		// 					</div>
-		// 				)}
-		// 			</div>
-		// 			<div className={cx("inner-content", "description")}>
-		// 				<p className="title">Thông tin chi tiết</p>
-		// 				<p className={cx("description")}>{detail?.description}</p>
-		// 				{detail &&
-		// 					Object.keys(detail?.info).map((value, index) => (
-		// 						<p className={cx("info")} key={index}>
-		// 							<SendOutlined className={cx("icon")} />
-		// 							<span>
-		// 								{value} : {detail?.info[value]}
-		// 							</span>
-		// 						</p>
-		// 					))}
-
-		// 				<p className={cx("info")}>
-		// 					<SendOutlined className={cx("icon")} />
-		// 					<span>Địa chỉ: </span>
-		// 					<span>{detail?.address}</span>
-		// 				</p>
-		// 			</div>
-		// 		</Col>
-		// 		<Col className={cx("inner-content", "right")}>
-		// 			<div>
-		// 				<hr style={{ marginTop: 43 }} />
-		// 				<p className="title">Thông tin người bán</p>
-		// 				<div className={cx("detail-seller")}>
-		// 					<span className={cx("avatar")}>
-		// 						{seller?.avatar === "" ? (
-		// 							<img src="/assets/images/user-avatar.jpg" alt="avatar" />
-		// 						) : (
-		// 							<img src={`/assets/images/${seller?.avata}`} alt="avatar" />
-		// 						)}
-		// 					</span>
-		// 					<span>
-		// 						<p className={cx("name")}>{seller?.name}</p>
-		// 						<p>
-		// 							Đánh giá:
-		// 							{seller?.rating === 0 ? " Chưa có đánh giá" : seller?.rating}
-		// 						</p>
-		// 					</span>
-		// 				</div>
-		// 				<p style={{ marginLeft: 20 }}>Số điện thoại: {seller?.phone}</p>
-		// 				<div className={cx("button")}>
-		// 					{detail?.sellerName === buyerDetail?.name ? (
-		// 						<p style={{ textAlign: "center" }}>Đây là sản phẩm của bạn</p>
-		// 					) : (
-		// 						<>
-		// 							<Button onClick={handleAddCart}>Thêm vào giỏ hàng</Button>
-		// 							<Button primary onClick={handleOrderNow}>
-		// 								Đặt hàng ngay
-		// 							</Button>
-		// 						</>
-		// 					)}
-		// 				</div>
-		// 			</div>
-		// 		</Col>
-		// 	</Row>
-		// 	<div className={cx("inner-content", "other-items")}>
-		// 		<p className="title">Các sản phẩm tương tự</p>
-		// 		<div style={{ display: "flex", flexWrap: "wrap" }}>
-		// 			{subCategoryProducts &&
-		// 				subCategoryProducts?.map(
-		// 					(product, key) =>
-		// 						product._id !== id && <CardProduct key={key} product={product} />
-		// 				)}
-		// 		</div>
-		// 	</div>
-		// </div>
-		<div className="inner-content" style={{ paddingTop: 20 }}>
-			<div className="row">
-				{/* Hình ảnh sản phẩm */}
-				<div className="col" xs={3}>
-					<Carousel className={cx("carousel")}>
-						{detail &&
-							[detail.images]?.map((image, index) => (
-								<Carousel.Item key={index}>
-									<img
-										src={`/assets/images-product/${image[index]?.name}`}
-										alt="anh-san-pham"
-									/>
-								</Carousel.Item>
-							))}
-					</Carousel>
-				</div>
-				<div className="col" xs={8}>
-					{detail && (
-						<div className={cx("details")} style={{ paddingLeft: 10 }}>
-							<p className={cx("title")}>{detail?.name}</p>
-							<p className={cx("price")}>
-								{Intl.NumberFormat().format(detail?.price)}đ
-							</p>
-							<div>
-								<p className={cx("note")}>
-									<strong>Người đăng:</strong>&nbsp;
-									{detail?.sellerName}
-								</p>
-								<p className={cx("note")}>
-									<strong>Thời gian đăng:</strong> &nbsp;
-									<ReactTimeAgo
-										date={Date.parse(detail?.createdAt)}
-										locale="vi-VN"
-									/>
-								</p>
-								<p className={cx("note")}>
-									<strong>Địa chỉ bán hàng:</strong>&nbsp;
-									{detail?.address}
-								</p>
-							</div>
-							<p className={cx("note")}>
-								<strong>Tin đã được kiểm duyệt</strong>&nbsp;&nbsp;
-								<CheckOutlined className={cx("icon")} />
-							</p>
-							<br />
-							{detail?.sellerName === buyerDetail?.name ? (
-								<p style={{ textAlign: "center" }}>Đây là sản phẩm của bạn</p>
-							) : (
-								<div style={{ textAlign: 'center' }}>
-									<Button style={{ width: '70%' }} onClick={handleAddCart}>Thêm vào giỏ hàng</Button>
-									<Button style={{ width: '70%' }} primary onClick={handleOrderNow}>
-										Đặt hàng ngay
-									</Button>
-								</div>
-							)}
-						</div>
-					)}
-				</div>
+		<div style={{ display: "flex", minHeight: "100vh" }}>
+			<div className={cx("inner-content", "sticky")} style={{ width: "30%" }}>
+				{details.product.images && <ImagePreview data={details.product.images} />}
 			</div>
-			<div className="row">
-				{/* Thông tin chi tiết */}
-				<p className="title">Thông tin chi tiết</p>
-				<p className={cx("description")}>{detail?.description}</p>
-				{detail &&
-					Object.keys(detail?.info).map((value, index) => (
-						<p className={cx("info")} key={index}>
-							<SendOutlined className={cx("icon")} />
-							<span>
-								{value} : {detail?.info[value]}
-							</span>
+			{details.product.name && (
+				<div style={{ width: "70%" }}>
+					<div className={cx("inner-content", "sticky")} style={{ paddingLeft: 30 }}>
+						<p>
+							{details.product?.subCategory.category.name} /{" "}
+							{details.product?.subCategory.name}
 						</p>
-					))}
+						<h1 style={{ color: "var(--main-color)" }}>{details.product?.name}</h1>
+						{details.product?.sellerName === buyerDetail?.name && (
+							<p>Đây là sản phẩm của bạn</p>
+						)}
+					</div>
 
-				<p className={cx("info")}>
-					<SendOutlined className={cx("icon")} />
-					<span>Địa chỉ: </span>
-					<span>{detail?.address}</span>
-				</p>
-			</div>
+					<div className={cx("inner-content")} style={{ paddingLeft: 10 }}>
+						<div className={cx("tab-button")}>
+							<button
+								className={cx(details.stateShow === "product" && "button-active")}
+								onClick={() => {
+									handleShowDetail("product");
+								}}
+							>
+								Sản phẩm
+							</button>
+							<button
+								className={cx(details.stateShow === "seller" && "button-active")}
+								onClick={() => {
+									handleShowDetail("seller");
+								}}
+							>
+								Người bán
+							</button>
+						</div>
+						{details.stateShow === "product" && (
+							<div style={{ paddingLeft: 30 }}>
+								<h5>Thông tin chung</h5>
+								<Description
+									title="Giá tiền"
+									desc={`${Intl.NumberFormat().format(details.product?.price)}đ`}
+								/>
+								<Description
+									title="Thời điểm đăng"
+									desc={
+										<ReactTimeAgo
+											date={Date.parse(details.product?.createdAt)}
+											locale="vi-VN"
+										/>
+									}
+								/>
+								<Description
+									title="Địa chỉ bán hàng"
+									desc={`${details.product?.address?.address}, ${details.product?.address?.ward}, ${details.product?.address?.district}, ${details.product?.address?.province}`}
+								/>
+								<Description
+									title="Tin đã được kiểm duyệt"
+									desc={<CheckCircleOutlineIcon />}
+								/>
+								<hr />
+
+								<h5>Thông tin chi tiết sản phẩm</h5>
+								{Object.keys(details.product?.info).map((value, index) => (
+									<p className={cx("info")} key={index}>
+										<Description
+											title={value}
+											desc={details.product?.info[value]}
+										/>
+									</p>
+								))}
+								<Description
+									title="Mô tả sản phẩm"
+									desc={details.product?.description || "Không có"}
+								/>
+							</div>
+						)}
+						{details.stateShow === "seller" && (
+							<div style={{ paddingLeft: 30 }}>
+								<h5>Thông tin nhà bán hàng</h5>
+								<Description title="Tên nhà bán hàng" desc={details.seller?.name} />
+								<Description title="Đánh giá" desc={details.seller?.rating} />
+								<Description title="Số điện thoại" desc={details.seller?.phone} />
+								<Description
+									title="Địa chỉ"
+									desc={details.seller?.address || "Không có"}
+								/>
+							</div>
+						)}
+
+						{details.product?.sellerName === buyerDetail?.name ? (
+							<p style={{ textAlign: "center" }}>Đây là sản phẩm của bạn</p>
+						) : (
+							<div style={{ textAlign: "center" }}>
+								<Button style={{ width: "70%" }} onClick={handleAddCart}>
+									Thêm vào giỏ hàng
+								</Button>
+								<Button style={{ width: "70%" }} primary onClick={handleOrderNow}>
+									Đặt hàng ngay
+								</Button>
+							</div>
+						)}
+					</div>
+
+					<div className="row"></div>
+				</div>
+			)}
 		</div>
 	);
 }

@@ -66,6 +66,11 @@ p {
 	}
 }
 
+.text-field {
+	width: 100%;
+	margin: 10px 0px;
+}
+
 .dropdown-menu {
 	flex-direction: column;
 	a {
@@ -78,6 +83,12 @@ p {
 			background-color: var(--light-color);
 		}
 	}
+}
+
+.center {
+	display: flex;
+	justify-content: center;
+	margin: auto;
 }
 
 .spaceEvenly {
@@ -97,6 +108,8 @@ svg {
 	object-fit: cover;
 	border: 1px solid var(--main-color);
 }
+
+
 
 .tippy {
 	background-color: var(--light-color);

@@ -7,8 +7,8 @@ export const isJsonString = (data) => {
 	return true;
 };
 
-export const getBase64 = (file) =>
-	new Promise((resolve, reject) => {
+export const getBase64 = async (file) =>
+	await new Promise((resolve, reject) => {
 		const reader = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onload = () => resolve(reader.result);
@@ -39,5 +39,3 @@ export const StringTocamelCase = (str) => {
 			return b.toLowerCase();
 		});
 };
-
-

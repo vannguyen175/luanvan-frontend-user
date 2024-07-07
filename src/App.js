@@ -1,14 +1,7 @@
 import React from "react";
-// import axios from "axios";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { routes } from "./routes";
 import NotFoundPage from "~/pages/NotFoundPage/NotFoundPage";
-
-// window.addEventListener("touchstart, wheel", (event) => {
-// 	event.preventDefault();
-// }, {passive: true});
-
-// import { useQuery } from "@tanstack/react-query";
 
 export function App() {
 	const getisAdminString = localStorage.getItem("isAdmin");
@@ -25,6 +18,7 @@ export function App() {
 						return (
 							<Route
 								key={index}
+								exact
 								path={isCheckAuth === true ? route.path : "*"}
 								element={
 									<Layout>

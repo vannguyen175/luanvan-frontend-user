@@ -3,14 +3,15 @@
 
 import style from "./CardProduct.module.scss";
 import classNames from "classnames/bind";
-import { Row, Col } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { useNavigate } from "react-router-dom";
 import vi from "javascript-time-ago/locale/vi";
 import ReactTimeAgo from "react-time-ago";
 import TimeAgo from "javascript-time-ago";
-import { UserOutlined, ClockCircleOutlined, EnvironmentOutlined } from "@ant-design/icons";
+
+import Grid from "@mui/material/Grid";
+import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
+import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 const cx = classNames.bind(style);
 TimeAgo.addLocale(vi);
@@ -22,30 +23,30 @@ function CardProduct({ type, product }) {
 	};
 	return (
 		<div>
-			{type === "horizontal" ? (  //ngang
+			{type === "horizontal" ? ( //ngang
 				<div className={cx("container")} onClick={() => handleClick()}>
-					<Row>
-						<Col xs={4}>
+					<Grid container>
+						<Grid item xs={3}>
 							<img
 								className={cx("image-product")}
-								src={`/assets/images-product/${product.images[0].name}`}
+								src={`${product.images[0]}`}
 								alt="anh-san-pham"
 							/>
-						</Col>
-						<Col xs={7} className={cx("detail-product")}>
+						</Grid>
+						<Grid item xs={8} className={cx("detail-product")}>
 							<p className={cx("name")}>{product.name}</p>
-
 							<p className={cx("price")}>
 								{Intl.NumberFormat().format(product.price)}đ
 							</p>
 							<div className={cx("info-seller")}>
 								<p>
-									<UserOutlined className={cx("icon")}/>
+									<PersonOutlineOutlinedIcon className={cx("icon")} />
+
 									{product.sellerName}
 								</p>
 
 								<p className={cx("time-post")}>
-									<ClockCircleOutlined className={cx("icon")}/>
+									<AccessTimeOutlinedIcon className={cx("icon")} />
 									<ReactTimeAgo
 										date={Date.parse(product.createdAt)}
 										locale="vi-VN"
@@ -53,21 +54,18 @@ function CardProduct({ type, product }) {
 								</p>
 
 								<p className={cx("place")}>
-									<EnvironmentOutlined className={cx("icon")}/>
-									{product.address}
+									<LocationOnIcon className={cx("icon")} />
+									{product.address.province}
 								</p>
 							</div>
-						</Col>
-						<Col className={cx("like-btn")}>
-							<FontAwesomeIcon size="1x" icon={faHeart} />
-						</Col>
-					</Row>
+						</Grid>
+					</Grid>
 				</div>
 			) : (
 				<div className={cx("container-vertical")} onClick={() => handleClick()}>
 					<img
 						className={cx("image-product-vertical")}
-						src={`/assets/images-product/${product.images[0].name}`}
+						src={`${product.images[0]}`}
 						alt="anh-san-pham"
 					/>
 
@@ -78,7 +76,7 @@ function CardProduct({ type, product }) {
 							<div className={cx("time-post")}>
 								<ReactTimeAgo date={Date.parse(product.createdAt)} locale="vi-VN" />
 							</div>
-							<div className={cx("place")}>{product.address}</div>
+							<div className={cx("place")}>{product.address.province}</div>
 						</div>
 					</div>
 				</div>
