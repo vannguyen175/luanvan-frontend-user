@@ -8,6 +8,7 @@ import ProductForm from "../../components/ProductForm";
 import AddressForm from "../../components/AddressForm";
 import UploadImage from "../../components/UploadImage";
 import * as ProductService from "~/service/ProductService";
+import Button from "../../components/Button";
 
 function PostingProduct() {
 	const idUser = localStorage.getItem("id_user");
@@ -65,16 +66,18 @@ function PostingProduct() {
 				</Grid>
 			</Box>
 
-			<button onClick={handleSubmit} className="center">
-				{loading ? (
-					<>
-						Đang tiến hành đăng bài, vui lòng chờ trong giây lát...
-						<CircularProgress size={20} />
-					</>
-				) : (
-					<>Đăng tải</>
-				)}
-			</button>
+			<div style={{ textAlign: "center" }}>
+				<Button onClick={handleSubmit} className="center">
+					{loading ? (
+						<>
+							Đang tiến hành đăng bài, vui lòng chờ trong giây lát...
+							<CircularProgress size={20} />
+						</>
+					) : (
+						<>Đăng tải</>
+					)}
+				</Button>
+			</div>
 		</div>
 	);
 }

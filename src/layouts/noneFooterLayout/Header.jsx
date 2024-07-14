@@ -93,7 +93,8 @@ function Header() {
 		const id = localStorage.getItem("id_user");
 		const token = localStorage.getItem("access_token");
 		await UserService.getDetailUser(id, token).then((data) => {
-			setName(data.result.name);
+			console.log(data);
+			setName(data.user.name);
 		});
 	}
 	useEffect(() => {
@@ -116,7 +117,11 @@ function Header() {
 	}, []);
 
 	const getProductList = async () => {
-		const result = await productService.getAllProducts({ filter: "approved", onSale: true });
+		const result = await productService.getAllProducts({
+			data: { state: [], cate: [], subCate: [] },
+			page: `page=1`,
+			limit: `limit=10000`,
+		});
 		setProductList(result);
 	};
 

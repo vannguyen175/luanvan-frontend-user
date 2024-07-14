@@ -7,7 +7,7 @@
 //     background-color: var(--main-color);
 // }
 
-button {
+.button {
 	padding: 5px 10px;
 	margin: 3px 5px;
 	border-radius: 3px;
@@ -22,7 +22,7 @@ button {
 	}
 }
 
-button.primary,
+.primary-btn,
 a[href].primary {
 	background-color: var(--main-color);
 	color: white;
@@ -35,7 +35,7 @@ a[href].primary {
 	}
 }
 
-button.chosenBtn,
+.button.chosenBtn,
 a[href].chosenBtn {
 	background-color: var(--light-color);
 	color: var(--main-color);

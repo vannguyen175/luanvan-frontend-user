@@ -1,95 +1,71 @@
-import { Row, Col } from "react-bootstrap";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import MenuIcon from "@mui/icons-material/Menu";
+import IconButton from "@mui/material/IconButton";
+
 import classNames from "classnames/bind";
 import style from "./Profile.module.scss";
 import { useState } from "react";
-import { Menu } from "antd";
-import { HomeOutlined, SettingOutlined } from "@ant-design/icons";
-import AccountInfo from "./AccountInfo";
-import Analytics from "./Analytics";
-import ManagerOrder from "./ManagerOrder";
-import ProductSell from "./ProductSell";
+import AccountInfo from "../../components/Profile/AccountInfo";
+import Activities from "../../components/Profile/Activities";
+import Seller from "../../components/Profile/Seller";
 
 const cx = classNames.bind(style);
 
-function getItem(label, key, icon, children, type) {
-	return {
-		key,
-		icon,
-		children,
-		label,
-		type,
-	};
-}
-
-const items = [
-	getItem("Tài khoản", "sub1", <HomeOutlined />, [
-		getItem("Thông tin", "1"),
-		getItem("Nhà bán hàn", "3", null, [
-			getItem("Sản phẩm đang bán", "31"),
-			getItem("Quản lý đơn hàng", "32"),
-		]),
-		getItem("Thống kê", "2"),
-	]),
-	getItem("Hệ thống", "sub2", <SettingOutlined />, [
-		getItem("Cài đặt", "5"),
-		getItem("Trợ giúp", "6"),
-	]),
-];
-
 function Profile() {
-	const [selectedKey, setSelectedKey] = useState(localStorage.getItem("profile_option") || "1"); //selected key menu
+	const [menuClose, setMenuClose] = useState(true);
+	const [menuState, setMenuState] = useState(localStorage.getItem("menu_profile"));
 
-	const onClick = (e) => {
-		localStorage.setItem("profile_option", e.key);
-		setSelectedKey(e.key);
+	const handleState = (value) => {
+		setMenuState(value);
+		localStorage.setItem("menu_profile", value);
 	};
 
 	return (
-		<div>
-			<Row style={{ margin: "10px auto" }}>
-				<Col xs={3}>
-					<div className={cx("inner-content", "menu-navigate")}>
-						<div
-							className={cx(selectedKey === 1 && "active")}
-							onClick={() => setSelectedKey("1")}
-						>
-							Thông tin tài khoản
-						</div>
-						<div
-							className={cx(selectedKey === 2 && "active")}
-							onClick={() => setSelectedKey("2")}
-						>
-							Sản phẩm đang bán
-						</div>
-						<div
-							className={cx(selectedKey === 3 && "active")}
-							onClick={() => setSelectedKey("3")}
-						>
-							Quản lý đơn hàng
-						</div>
-						<div
-							className={cx(selectedKey === 4 && "active")}
-							onClick={() => setSelectedKey("4")}
-						>
-							Thống kê
-						</div>
-						<div></div>
+		<div style={{ display: "flex" }}>
+			<div className={cx("menu-navigate", "inner-content", { close: !menuClose })}>
+				<div className={cx("menu-navigate-header")}>
+					<IconButton onClick={() => setMenuClose(!menuClose)}>
+						{menuClose ? <ArrowBackIosIcon /> : <MenuIcon />}
+					</IconButton>
+				</div>
+				<div className={cx("menu")}>
+					<div
+						className={cx({ "menu-active": menuState === "1" })}
+						onClick={() => handleState("1")}
+					>
+						Thông tin tài khoản
 					</div>
-				</Col>
-				<Col>
-					<div className={cx("right")}>
-						{selectedKey === "1" ? (
-							<AccountInfo />
-						) : selectedKey === "2" ? (
-							<ManagerOrder />
-						) : selectedKey === "3" ? (
-							<ProductSell />
-						) : (
-							<Analytics />
-						)}
+					<div
+						className={cx({ "menu-active": menuState === "2" })}
+						onClick={() => handleState("2")}
+					>
+						Hoạt động
 					</div>
-				</Col>
-			</Row>
+					<div
+						className={cx({ "menu-active": menuState === "3" })}
+						onClick={() => handleState("3")}
+					>
+						Nhà bán hàng
+					</div>
+					<div
+						className={cx({ "menu-active": menuState === "4" })}
+						onClick={() => handleState("4")}
+					>
+						Thống kê
+					</div>
+					<div
+						className={cx({ "menu-active": menuState === "5" })}
+						onClick={() => handleState("5")}
+					>
+						Cài đặt
+					</div>
+				</div>
+			</div>
+			<div className={cx("body")}>
+				{menuState === "1" && <AccountInfo />}
+				{menuState === "2" && <Activities />}
+				{menuState === "3" && <Seller />}
+			</div>
 		</div>
 	);
 }

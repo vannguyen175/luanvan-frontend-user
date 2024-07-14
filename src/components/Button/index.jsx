@@ -5,42 +5,43 @@ import classNames from "classnames/bind";
 const cx = classNames.bind(style);
 
 function Button({
-    styleBtn,
-    to,
-    href,
-    primary,
-    chosenBtn,
-    children,
-    onClick,
-    button,
-    disabled,
-    danger,
-    ...passProps
+	styleBtn,
+	to,
+	href,
+	primary,
+	chosenBtn,
+	children,
+	onClick,
+	button,
+	disabled,
+	danger,
+	...passProps
 }) {
-    let Comp = "button";
-    const props = {
-        onClick,
-        ...passProps,
-    };
-    if (to) {
-        props.to = to;
-        Comp = Link;
-    } else if (href) {
-        props.href = href;
-        Comp = "a";
-    }
-    const classes = cx("wrapper", {
-        chosenBtn,
-        primary,
-        button,
-        disabled,
-        danger
-    });
-    return (
-        <Comp style={{ ...styleBtn }} className={classes} {...props}>
-            {children}
-        </Comp>
-    );
+	let Comp = "button";
+	const props = {
+		onClick,
+		...passProps,
+	};
+	if (to) {
+		props.to = to;
+		Comp = Link;
+	} else if (href) {
+		props.href = href;
+		Comp = "a";
+	}
+	const classes = cx("wrapper", "button", {
+		"chosen-btn": chosenBtn,
+		"primary-btn": primary,
+		button: button,
+		disabled: disabled,
+		danger: danger,
+	});
+	return (
+		<Comp style={{ ...styleBtn }} className={classes} onClick={onClick}>
+			{children}
+		</Comp>
+		// <button className={classes}  >CAI DIT CONME  EBHJGJK</button>
+	);
 }
 
 export default Button;

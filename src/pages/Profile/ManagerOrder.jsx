@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { EditOutlined } from "@ant-design/icons";
 import { Table, Tag } from "antd";
 import { useQuery } from "@tanstack/react-query";
-import Modal from "~/components/Modal/Modal";
+import Modal from "~/components/Modal";
 import Description from "../../components/Description/Description";
 import { toast } from "react-toastify";
 
@@ -228,7 +228,9 @@ function ManagerOrder() {
 								<p>
 									Vai trò
 									<span>
-										{userProfile?.isAdmin===true ? "Quản trị viên" : "Người dùng"}
+										{userProfile?.isAdmin === true
+											? "Quản trị viên"
+											: "Người dùng"}
 									</span>
 								</p>
 								<p>

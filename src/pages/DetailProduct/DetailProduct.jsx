@@ -49,20 +49,15 @@ function DetailProduct() {
 	useEffect(() => {
 		getDetailProduct();
 		getDetailBuyer();
+		// eslint-disable-next-line
 	}, []);
 
 	const getDetailSeller = async (idUser) => {
 		const res = await UserService.getInfoUser(idUser);
-		console.log(res.data);
 		setDetails((prevDetails) => ({
 			...prevDetails,
 			seller: res.data,
 		}));
-	};
-
-	const getProductWithSubcate = async () => {
-		const res = await ProductService.getAllProductsBySubCate(details.product.subCategory);
-		return res.data;
 	};
 
 	const handleOrderNow = () => {
@@ -107,7 +102,10 @@ function DetailProduct() {
 						</p>
 						<h1 style={{ color: "var(--main-color)" }}>{details.product?.name}</h1>
 						{details.product?.sellerName === buyerDetail?.name && (
-							<p>Đây là sản phẩm của bạn</p>
+							<div style={{ display: "flex" }}>
+								<p style={{ marginRight: 10 }}>Đây là sản phẩm của bạn</p>
+								<a href="/#">Chỉnh sửa</a>
+							</div>
 						)}
 					</div>
 
@@ -191,7 +189,7 @@ function DetailProduct() {
 								<Button style={{ width: "70%" }} onClick={handleAddCart}>
 									Thêm vào giỏ hàng
 								</Button>
-								<Button style={{ width: "70%" }} primary onClick={handleOrderNow}>
+								<Button primary style={{ width: "70%" }} onClick={handleOrderNow}>
 									Đặt hàng ngay
 								</Button>
 							</div>

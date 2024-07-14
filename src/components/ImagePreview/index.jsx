@@ -2,21 +2,19 @@ import { useState } from "react";
 import classNames from "classnames/bind";
 import style from "./ImagePreview.module.scss";
 import { Box, Modal } from "@mui/material";
-import { BorderRight } from "@mui/icons-material";
 
 const styleModal = {
 	position: "absolute",
 	top: "50%",
 	left: "50%",
 	transform: "translate(-50%, -50%)",
-	// maxWidth: 400,
 	bgcolor: "background.paper",
 	border: "2px solid #000",
 	boxShadow: 24,
-	p: 4,
+	p: 2,
 	borderRadius: "10px",
 	textAlight: "center",
-	backdropFilter: "blur(15px)",
+	transition: "0.2s ease",
 };
 
 const cx = classNames.bind(style);
@@ -37,7 +35,7 @@ function ImagePreview({ data }) {
 					data.map((image, index) => (
 						<img
 							key={index}
-							onMouseEnter={() => setPreview(image)}
+							onClick={() => setPreview(image)}
 							src={image}
 							alt="anh-san-pham"
 						/>
@@ -45,12 +43,13 @@ function ImagePreview({ data }) {
 			</div>
 			<Modal
 				open={open}
+				style={{ backdropFilter: "blur(10px)" }}
 				onClose={handleClose}
 				aria-labelledby="modal-modal-title"
 				aria-describedby="modal-modal-description"
 			>
 				<Box sx={styleModal}>
-					<img src={preview} alt="anh-san-pham" />
+					<img style={{ maxWidth: 450 }} src={preview} alt="anh-san-pham" />
 				</Box>
 			</Modal>
 		</div>

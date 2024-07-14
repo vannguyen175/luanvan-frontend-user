@@ -5,17 +5,14 @@ import Button from "~/components/Button";
 import * as UserService from "~/service/UserService";
 import * as productService from "~/service/ProductService";
 import { StringTocamelCase } from "../../utils";
-import { Container, Row, Col } from "react-bootstrap";
-import IconButton from "@mui/material/IconButton";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Badge from "@mui/material/Badge";
+import Grid from "@mui/material/Grid";
 
 import { Link, useLocation } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import Box from "@mui/material/Box";
@@ -52,6 +49,10 @@ const ActionUserLogin = [
 	{
 		name: "Thông tin tài khoản",
 		to: "/profile",
+	},
+	{
+		name: "Nhà bán hàng",
+		to: "/nha-ban-hang",
 	},
 	{
 		name: "Đăng tải sản phẩm",
@@ -125,85 +126,92 @@ function Header() {
 	};
 
 	return (
-		<Container fluid className={cx("header")}>
-			<Row style={{ display: "flex" }}>
-				<Col className={cx("col")} xs={2}>
-					<Link to={"/"} className={cx("logo")}>
-						TradeGoods
-					</Link>
-				</Col>
+		<Grid
+			container
+			spacing={2}
+			style={{
+				width: "90%",
+				margin: "0 auto",
+				boxShadow:
+					"rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px",
+			}}
+		>
+			<Grid item xs={2} className={cx("col")}>
+				<Link to={"/"} className={cx("logo")}>
+					TradeGoods
+				</Link>
+			</Grid>
 
-				<Col className={cx("col")} xs={2}>
-					<DropdownMenu title="Danh mục" listActions={categories} />
-				</Col>
+			<Grid item xs={2} className={cx("col")}>
+				<DropdownMenu title="Danh mục" listActions={categories} />
+			</Grid>
 
-				{/* Tìm kiếm sản phẩm */}
-				<Col className={cx("col")} xs={4}>
-					<div className={cx("search")}>
-						<input
-							type="text"
-							onChange={(e) => setInputSearch(e.target.value)}
-							name="search"
-							ref={searchInputRef}
-							autoComplete="off"
-							placeholder="Tìm kiếm sản phẩm..."
-						/>
-						<button className="button-icon">
-							<SearchIcon />
-						</button>
-					</div>
-					<ul className={cx("search-result")}>
-						{searchResult?.map((item, index) => (
-							<li key={index} onClick={() => handleClickSearchResult(item._id)}>
-								<div style={{ display: "flex" }}>
-									<div>
-										<img src={`${item.images[0]}`} alt="anh-san-pham" />
-									</div>
-									<div className={cx("detail")}>
-										<p style={{ fontWeight: 500 }}>{item.name}</p>
-										<p style={{ color: "red" }}>
-											{Intl.NumberFormat().format(item?.price)}đ
-										</p>
-									</div>
+			{/* Tìm kiếm sản phẩm */}
+			<Grid item xs={4} className={cx("col")}>
+				<div className={cx("search")}>
+					<input
+						type="text"
+						onChange={(e) => setInputSearch(e.target.value)}
+						name="search"
+						ref={searchInputRef}
+						autoComplete="off"
+						placeholder="Tìm kiếm sản phẩm..."
+					/>
+					<button className="button-icon">
+						<SearchIcon />
+					</button>
+				</div>
+				<ul className={cx("search-result")}>
+					{searchResult?.map((item, index) => (
+						<li key={index} onClick={() => handleClickSearchResult(item._id)}>
+							<div style={{ display: "flex" }}>
+								<div>
+									<img src={`${item.images[0]}`} alt="anh-san-pham" />
 								</div>
-							</li>
-						))}
-					</ul>
-				</Col>
+								<div className={cx("detail")}>
+									<p style={{ fontWeight: 500 }}>{item.name}</p>
+									<p style={{ color: "red" }}>
+										{Intl.NumberFormat().format(item?.price)}đ
+									</p>
+								</div>
+							</div>
+						</li>
+					))}
+				</ul>
+			</Grid>
 
-				{localStorage.getItem("access_token") === null ? (
-					<Col className={cx("col")} xs={3} style={{ paddingLeft: 30 }}>
-						<DropdownMenu title="Tiện ích" listActions={ActionsUnLogin} />
+			{localStorage.getItem("access_token") === null ? (
+				<Grid item xs={3} className={cx("col")}>
+					<DropdownMenu title="Tiện ích" listActions={ActionsUnLogin} />
 
-						<Button
-							style={{ marginLeft: 100, marginTop: 5 }}
-							children="Login"
-							to="/login"
-							button
+					<Button
+						style={{ marginLeft: 100, marginTop: 5 }}
+						children="Login"
+						to="/login"
+						button
+					/>
+				</Grid>
+			) : (
+				<Grid item xs={4} className={cx("col")} style={{ paddingLeft: 30 }}>
+					<div className="icon-button">
+						<ShoppingCartIcon onClick={handleShowCart} />
+					</div>
+
+					<Badge badgeContent={4} color="primary" className="icon-button">
+						<NotificationsIcon onClick={handleShowCart} />
+					</Badge>
+
+					<Box ml={3} mr={1} p={0} display="inline-block">
+						<DropdownMenu
+							title={name}
+							listActions={localStorage.getItem("id_user") && ActionUserLogin}
 						/>
-					</Col>
-				) : (
-					<Col className={cx("col")} xs={4}>
-						<div className="icon-button">
-							<ShoppingCartIcon onClick={handleShowCart} />
-						</div>
+					</Box>
 
-						<Badge badgeContent={4} color="primary" className="icon-button">
-							<NotificationsIcon onClick={handleShowCart} />
-						</Badge>
-
-						<Box ml={3} mr={1} p={0} display="inline-block">
-							<DropdownMenu
-								title={name}
-								listActions={localStorage.getItem("id_user") && ActionUserLogin}
-							/>
-						</Box>
-
-						<LogoutIcon className="icon-button" onClick={handleLogout} />
-					</Col>
-				)}
-			</Row>
-		</Container>
+					<LogoutIcon className="icon-button" onClick={handleLogout} />
+				</Grid>
+			)}
+		</Grid>
 	);
 }
 

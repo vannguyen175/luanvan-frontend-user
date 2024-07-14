@@ -17,6 +17,8 @@ function ProductForm({ setDataSubmit }) {
 		getCategories();
 	}, []);
 
+
+
 	const getCategories = async () => {
 		const res = await ProductService.getAllCategories();
 		const data = res.data.map((value) => value.name);

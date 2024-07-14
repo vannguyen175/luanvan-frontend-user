@@ -3,8 +3,6 @@ import Products from "~/pages/Products/Products";
 import DetailProduct from "~/pages/DetailProduct/DetailProduct";
 import NotFoundPage from "~/pages/NotFoundPage/NotFoundPage";
 import UserLayout from "~/layouts/userLayouts/userLayout";
-//import AdminLayout from "~/layouts/adminLayouts/adminLayout";
-import AdminLayout from "../layouts/adminLayouts/adminLayout";
 import NoneFooterLayout from "../layouts/noneFooterLayout/noneFooterLayout";
 import OrderProduct from "../pages/OrderProduct/OrderProduct";
 import Cart from "../pages/Cart/Cart";
@@ -13,7 +11,6 @@ import { Fragment } from "react";
 import Profile from "~/pages/Profile/Profile";
 import Login from "~/pages/Login/Login"
 import Register from "~/pages/Register/Register"
-import AdminHomePage from "../pages/Admin/Home";
 import PostingProduct from "../pages/PostingProduct/PostingProduct";
 
 export const routes = [
@@ -61,13 +58,6 @@ export const routes = [
         path: "/dang-tin",
         page: PostingProduct,
         layout: UserLayout
-    },
-
-    {
-        path: "/admin",
-        page: AdminHomePage,
-        layout: AdminLayout,
-        isPrivate: true
     },
     {
         path: "*",
