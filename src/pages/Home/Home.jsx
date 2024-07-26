@@ -41,6 +41,7 @@ function UserHome() {
 		if (pageState.page) {
 			getProducts();
 		}
+		// eslint-disable-next-line
 	}, []);
 
 	return (

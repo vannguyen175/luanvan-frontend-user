@@ -1,7 +1,7 @@
 import classNames from "classnames/bind";
 import style from "./UserLayouts.module.scss";
 import DropdownMenu from "~/components/DropdownMenu";
-import Button from "~/components/Button";
+import Button from "@mui/material/Button";
 import * as UserService from "~/service/UserService";
 import * as productService from "~/service/ProductService";
 import { StringTocamelCase } from "../../utils";
@@ -48,7 +48,7 @@ const ActionsUnLogin = [
 const ActionUserLogin = [
 	{
 		name: "Thông tin tài khoản",
-		to: "/profile",
+		to: "/tai-khoan",
 	},
 	{
 		name: "Nhà bán hàng",
@@ -78,6 +78,7 @@ function Header() {
 			});
 			setSearchResult(filteredProducts);
 		}
+		// eslint-disable-next-line
 	}, [inputSearch]);
 
 	async function getNameAccount() {
@@ -125,10 +126,13 @@ function Header() {
 		setInputSearch("");
 	};
 
+	const handleLogin = () => {
+		navigate("/login");
+	};
+
 	return (
 		<Grid
 			container
-			spacing={2}
 			style={{
 				width: "90%",
 				margin: "0 auto",
@@ -181,15 +185,18 @@ function Header() {
 			</Grid>
 
 			{localStorage.getItem("access_token") === null ? (
-				<Grid item xs={3} className={cx("col")}>
+				<Grid item xs={4} className={cx("col")}>
 					<DropdownMenu title="Tiện ích" listActions={ActionsUnLogin} />
 
 					<Button
-						style={{ marginLeft: 100, marginTop: 5 }}
-						children="Login"
+						style={{ marginLeft: 100 }}
+						variant="contained"
+						size="small"
 						to="/login"
-						button
-					/>
+						onClick={handleLogin}
+					>
+						Đăng nhập
+					</Button>
 				</Grid>
 			) : (
 				<Grid item xs={4} className={cx("col")} style={{ paddingLeft: 30 }}>

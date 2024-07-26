@@ -17,6 +17,7 @@ function Cart() {
 	};
 	useEffect(() => {
 		getCarts();
+		// eslint-disable-next-line
 	}, [id]);
 	const handleDeleteCart = async (idProduct) => {
 		await CartService.deleteCart({ idUser: id, idProduct: idProduct });

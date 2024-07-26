@@ -29,6 +29,7 @@ function Products() {
 	};
 	useEffect(() => {
 		getSubCategory();
+		// eslint-disable-next-line
 	}, []);
 
 	const getProductsBySubCate = async () => {
@@ -51,6 +52,7 @@ function Products() {
 		if (subCateChosen) {
 			getProductsBySubCate();
 		}
+		// eslint-disable-next-line
 	}, [subCateChosen]);
 
 	return (

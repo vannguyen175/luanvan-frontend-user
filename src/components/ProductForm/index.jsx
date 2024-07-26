@@ -1,4 +1,3 @@
-import { Container } from "react-bootstrap";
 import { useEffect, useState } from "react";
 
 import { convertToSlug } from "~/utils";
@@ -79,7 +78,6 @@ function ProductForm({ setDataSubmit }) {
 	};
 
 	return (
-		<Container>
 			<form
 				style={{
 					textAlign: "left",
@@ -167,7 +165,7 @@ function ProductForm({ setDataSubmit }) {
 					</div>
 				)}
 			</form>
-		</Container>
+
 	);
 }
 

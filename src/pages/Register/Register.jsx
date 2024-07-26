@@ -1,113 +1,97 @@
-import Button from "~/components/Button";
+import Button from "@mui/material/Button";
 import classNames from "classnames/bind";
 import style from "./Register.module.scss";
-import Input from "~/components/Input";
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import * as UserService from "../../service/UserService";
 import TextField from "@mui/material/TextField";
 
-import { useMutationHook } from "../../hooks/useMutaionHook";
 import { toast } from "react-toastify";
 
 const cx = classNames.bind(style);
 
 function Register() {
 	const navigate = useNavigate();
-	const [name, setName] = useState("");
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [confirmPassword, setConfirmPassword] = useState("");
-	const [phone, setPhone] = useState("");
+	const [dataRegister, setDataRegister] = useState({
+		name: "",
+		email: "",
+		password: "",
+		confirmPassword: "",
+		phone: "",
+	});
+	const [message, setMessage] = useState("");
 
-	const mutation = useMutationHook((data) => UserService.registerUser(data));
-	const { data } = mutation;
-
-	const handleOnchangeName = (e) => {
-		setName(e.target.value);
-	};
-	const handleOnchangeEmail = (e) => {
-		setEmail(e.target.value);
-	};
-	const handleOnchangePassword = (e) => {
-		setPassword(e.target.value);
-	};
-	const handleOnchangeConfirmPassword = (e) => {
-		setConfirmPassword(e.target.value);
-	};
-	const handleOnchangePhoneNumber = (e) => {
-		setPhone(e.target.value);
+	const handleChange = (e) => {
+		setDataRegister((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 	};
 
-	useEffect(() => {
-		if (data?.status === "SUCCESS") {
+	const onsubmit = async (e) => {
+		e.preventDefault();
+		const res = await UserService.registerUser(dataRegister);
+		if (res?.status === "SUCCESS") {
 			toast.success("Đăng ký tài khoản thành công!");
 			setTimeout(() => {
 				navigate("/login");
 			}, 1000);
+		} else {
+			setMessage(res.message);
 		}
-	}, [data, navigate]);
-
-	const onsubmit = (e) => {
-		//console.log('inputRef.current.value', inputRef.current.value);
-		mutation.mutate({ name, email, password, confirmPassword, phone });
-		e.preventDefault();
 	};
+	//127
 	return (
 		<div className={cx("backgroundImage", "animate__animated", "animate__fadeIn")}>
 			<div className={cx("inner-content", "container", "animated", "fadeInDown")}>
 				<h2 className={cx("title")}>Đăng ký tài khoản</h2>
 				<form action="" method="POST">
-					{data?.status === "ERROR" && (
-						<span style={{ color: "red" }}>{data?.message}</span>
-					)}
+					{message !== "" && <span style={{ color: "red" }}>{message}</span>}
 					<TextField
-						sx={{ margin: "10px 0" }}
-						fullWidth
+						name="email"
+						onChange={handleChange}
 						label="Email"
-						handleOnChange={handleOnchangeName}
+						variant="outlined"
+						style={{ margin: "15px 0" }}
+						fullWidth
 					/>
 					<TextField
-						sx={{ margin: "10px 0" }}
-						fullWidth
+						name="name"
+						onChange={handleChange}
 						label="Tên tài khoản"
-						handleOnChange={handleOnchangeEmail}
+						variant="outlined"
+						style={{ margin: "15px 0" }}
+						fullWidth
 					/>
 					<TextField
-						sx={{ margin: "10px 0" }}
-						fullWidth
+						name="phone"
+						onChange={handleChange}
 						label="Số điện thoại"
-						handleOnChange={handleOnchangePhoneNumber}
+						variant="outlined"
+						style={{ margin: "15px 0" }}
+						fullWidth
 					/>
 					<TextField
-						sx={{ margin: "10px 0" }}
-						fullWidth
+						name="password"
+						onChange={handleChange}
 						label="Mật khẩu"
+						variant="outlined"
+						style={{ margin: "15px 0" }}
+						fullWidth
 						type="password"
-						handleOnChange={handleOnchangePassword}
 					/>
 					<TextField
-						sx={{ margin: "10px 0" }}
-						fullWidth
+						name="confirmPassword"
+						onChange={handleChange}
 						label="Nhập lại mật khẩu"
+						variant="outlined"
+						style={{ margin: "15px 0" }}
+						fullWidth
 						type="password"
-						handleOnChange={handleOnchangeConfirmPassword}
 					/>
+					<div style={{ padding: "0 30px" }}>
+						<Button variant="contained" fullWidth onClick={onsubmit}>
+							Đăng ký
+						</Button>
+					</div>
 
-					<Button
-						primary
-						styleBtn={{
-							display: "flex",
-							margin: "30px auto",
-							width: "420px",
-							height: "50px",
-							fontWeight: "500",
-							fontSize: "1.2rem",
-						}}
-						onClick={onsubmit}
-					>
-						Đăng ký
-					</Button>
 					<p className={cx("register-link")}>
 						Đã có tài khoản? <Link to="/login">Đăng nhập</Link>
 					</p>

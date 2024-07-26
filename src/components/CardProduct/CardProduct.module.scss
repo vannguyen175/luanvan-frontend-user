@@ -29,6 +29,9 @@
 		font-size: 1.2rem;
 		color: black;
 		font-weight: 600;
+		white-space: nowrap; /* Ngăn cách dòng, giữ văn bản trên một dòng duy nhất */
+		overflow: hidden; /* Ẩn phần vượt quá khung chứa */
+		text-overflow: ellipsis;
 	}
 
 	.price {
@@ -94,6 +97,15 @@
 		color: black;
 		font-weight: 600;
 		margin: 0;
+		display: -webkit-box; /* Sử dụng box layout của webkit */
+		-webkit-box-orient: vertical; /* Đặt hướng box thành vertical (dọc) */
+		-webkit-line-clamp: 2; 
+		line-clamp: 2;/* Giới hạn số dòng là 2 */
+		overflow: hidden; /* Ẩn phần vượt quá khung chứa */
+		text-overflow: ellipsis; /* Thêm dấu ba chấm ở cuối văn bản bị cắt */
+		max-width: 100%; /* Đảm bảo phần tử không vượt quá khung chứa */
+		line-height: 1.5; /* Chiều cao dòng, điều chỉnh theo thiết kế của bạn */
+		height: 3em;
 	}
 
 	.price {

@@ -8,10 +8,11 @@ import OrderProduct from "../pages/OrderProduct/OrderProduct";
 import Cart from "../pages/Cart/Cart";
 
 import { Fragment } from "react";
-import Profile from "~/pages/Profile/Profile";
+import Profile from "~/pages/Profile";
 import Login from "~/pages/Login/Login"
 import Register from "~/pages/Register/Register"
 import PostingProduct from "../pages/PostingProduct/PostingProduct";
+import ForSeller from "../pages/ForSeller";
 
 export const routes = [
     {
@@ -40,8 +41,13 @@ export const routes = [
         layout: UserLayout
     },
     {
-        path: "/profile",
+        path: "/tai-khoan",
         page: Profile,
+        layout: UserLayout
+    },
+    {
+        path: "/nha-ban-hang",
+        page: ForSeller,
         layout: UserLayout
     },
     {

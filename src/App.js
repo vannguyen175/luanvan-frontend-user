@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { routes } from "./routes";
 import NotFoundPage from "~/pages/NotFoundPage/NotFoundPage";
+import ScrollToTop from "./scrollToTop";
 
 export function App() {
 	const getisAdminString = localStorage.getItem("isAdmin");
@@ -10,6 +11,7 @@ export function App() {
 	return (
 		<div>
 			<Router>
+				<ScrollToTop />
 				<Routes>
 					{routes.map((route, index) => {
 						let Page = route.page;

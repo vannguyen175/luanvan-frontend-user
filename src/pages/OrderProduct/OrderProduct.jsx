@@ -1,16 +1,10 @@
 import classNames from "classnames/bind";
 import style from "./OrderProduct.module.scss";
-import {
-	CalendarOutlined,
-	MailOutlined,
-	PhoneOutlined,
-	EnvironmentOutlined,
-} from "@ant-design/icons";
 import moment from "moment";
 import Button from "~/components/Button";
 import Select from "~/components/Select";
 import vi from "moment/locale/vi";
-import { Row, Col } from "react-bootstrap";
+import Grid from "@mui/material/Grid";
 import { useNavigate, useParams } from "react-router-dom";
 import * as ProductService from "~/service/ProductService";
 import * as UserService from "~/service/UserService";
@@ -18,7 +12,7 @@ import * as OrderService from "~/service/OrderService";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Modal from "~/components/Modal";
-import Description from "~/components/Description/Description";
+import Description from "~/components/Description";
 
 const cx = classNames.bind(style);
 
@@ -33,7 +27,6 @@ function OrderProduct() {
 		seller: {},
 		buyer: {},
 	});
-
 	const getDetailProduct = async () => {
 		const res = await ProductService.detailProduct(id);
 		setDetails((prevDetails) => ({
@@ -49,7 +42,6 @@ function OrderProduct() {
 			...prevDetails,
 			buyer: res.data,
 		}));
-		console.log(res);
 	};
 
 	const getDetailSeller = async (id) => {
@@ -63,6 +55,7 @@ function OrderProduct() {
 	useEffect(() => {
 		getDetailProduct();
 		getDetailBuyer();
+		// eslint-disable-next-line
 	}, []); //detail-seller
 
 	//Cập nhật gtri select khi người dùng thay đổi PaymentMethod
@@ -100,7 +93,7 @@ function OrderProduct() {
 
 	//tiến hành lưu thông tin order
 	const handleOrder = async () => {
-		console.log("handleOrder", details);
+		console.log(details.buyer._id, idBuyer);
 		const dataOrder = {
 			product: details.product._id,
 			paymentMethod: paymentMethod,
@@ -108,12 +101,12 @@ function OrderProduct() {
 				email: details.buyer.email,
 				address:
 					details.buyer.address +
-					", " +
-					details.buyer.ward +
-					", " +
-					details.buyer.district +
-					", " +
-					details.buyer.province,
+						", " +
+						details.buyer.ward +
+						", " +
+						details.buyer.district +
+						", " +
+						details.buyer.province || "chưa có",
 				phone: details.buyer.phone,
 				shippingPrice: 30000,
 			},
@@ -121,7 +114,6 @@ function OrderProduct() {
 			seller: details.seller._id,
 		};
 		const res = await OrderService.createOrder(dataOrder);
-		console.log(res);
 		if (res?.status === "SUCCESS") {
 			toast.success("Đặt hàng thành công!");
 			setTimeout(() => {
@@ -137,22 +129,21 @@ function OrderProduct() {
 
 	return (
 		<div style={{ margin: "5px auto 30px auto" }}>
-			<Row style={{ display: "flex", justifyContent: "center" }}>
-				<Col xs={6} className={cx("inner-content", "left")}>
+			<Grid container item style={{ display: "flex", justifyContent: "center" }}>
+				<Grid item xs={6} className={cx("inner-content", "left")}>
 					<p className={cx("title")}>Thông tin sản phẩm</p>
 					<p className={cx("time-order")}>
-						<CalendarOutlined />
 						<span>{moment().locale("vi", vi).format("DD-MM-YYYY")}</span>
 						<span>{moment().locale("vi", vi).format("hh:mm")}</span>
 					</p>
 
 					<div className={cx("card-product")}>
 						{details.product?.name && (
-							<Row>
-								<Col xs={4}>
+							<Grid container>
+								<Grid item xs={4}>
 									<img src={`${details.product?.images[0]}`} alt="anh-san-pham" />
-								</Col>
-								<Col xs={8}>
+								</Grid>
+								<Grid item xs={8}>
 									<p className={cx("name")}>{details.product?.name}</p>
 									<p className={cx("price")}>
 										{Intl.NumberFormat().format(details.product?.price)}đ
@@ -164,15 +155,15 @@ function OrderProduct() {
 											</span>
 										</p>
 									))}
-								</Col>
-							</Row>
+								</Grid>
+							</Grid>
 						)}
 					</div>
 					<hr style={{ marginTop: 40, marginBottom: -20 }} />
 					<div className={cx("detail-seller")}>
 						<p className={cx("title")}>Thông tin người bán</p>
-						<Row style={{ display: "flex", alignItems: "center" }}>
-							<Col xs={1}>
+						<Grid container style={{ display: "flex", alignItems: "center" }}>
+							<Grid item xs={1}>
 								<span className={cx("avatar")}>
 									{details.seller?.avatar === "" ? (
 										<img src="/assets/images/user-avatar.jpg" alt="avatar" />
@@ -180,8 +171,8 @@ function OrderProduct() {
 										<img src={details.seller?.avatar} alt="avatar" />
 									)}
 								</span>
-							</Col>
-							<Col>
+							</Grid>
+							<Grid item>
 								<p className={cx("name")}>{details.seller?.name}</p>
 								<p className={cx("rating")}>
 									Đánh giá:
@@ -189,16 +180,16 @@ function OrderProduct() {
 										? " Chưa có đánh giá"
 										: details.seller?.rating}
 								</p>
-							</Col>
-						</Row>
-						<Description label="Số điện thoại" infor={details.seller?.phone} oneLine />
+							</Grid>
+						</Grid>
+						<Description title="Số điện thoại" desc={details.seller?.phone} />
 					</div>
-				</Col>
-				<Col xs={5} className={cx("inner-content", "right")}>
+				</Grid>
+				<Grid item xs={5} className={cx("inner-content", "right")}>
 					<p className={cx("title")}>Thông tin đơn đặt hàng</p>
 					<div className={cx("detail-order")}>
-						<Row style={{ display: "flex", alignItems: "center" }}>
-							<Col xs={1}>
+						<Grid container style={{ display: "flex", alignItems: "center" }}>
+							<Grid item xs={1}>
 								<span className={cx("avatar")}>
 									{details.buyer?.avatar === "" ? (
 										<img src="/assets/images/user-avatar.jpg" alt="avatar" />
@@ -206,14 +197,14 @@ function OrderProduct() {
 										<img src={details.buyer?.avatar} alt="avatar" />
 									)}
 								</span>
-							</Col>
-							<Col>
+							</Grid>
+							<Grid item>
 								<p className={cx("name")}>{details.buyer?.name}</p>
-							</Col>
-						</Row>
+							</Grid>
+						</Grid>
 						<div className={cx("info")}>
 							<p>
-								<MailOutlined /> Email:
+								Email:
 								<input
 									onChange={handleOnchange}
 									placeholder={details.buyer?.email || ""}
@@ -221,7 +212,7 @@ function OrderProduct() {
 								/>
 							</p>
 							<p>
-								<PhoneOutlined /> Số điện thoại:
+								Số điện thoại:
 								<input
 									onChange={handleOnchange}
 									placeholder={details.buyer?.phone || ""}
@@ -229,7 +220,6 @@ function OrderProduct() {
 								/>
 							</p>
 							<p>
-								<EnvironmentOutlined />
 								Địa chỉ:{" "}
 								<textarea
 									onChange={handleOnchange}
@@ -263,11 +253,11 @@ function OrderProduct() {
 						</div>
 						<hr style={{ marginBlock: 30 }} />
 						<Select
-							onChange={handleChangePaymentMethod}
 							borderColor="gray"
 							name="Hình thức thanh toán"
 							value="Thanh toán khi nhận hàng"
 							options={["Thanh toán khi nhận hàng", "Thanh toán qua ngân hàng"]}
+							onChange={handleChangePaymentMethod}
 						/>
 						<div className={cx("order-btn")}>
 							<Button primary onClick={handleCheckOrder}>
@@ -275,8 +265,8 @@ function OrderProduct() {
 							</Button>
 						</div>
 					</div>
-				</Col>
-			</Row>
+				</Grid>
+			</Grid>
 			<Modal
 				isOpen={modelConfirm}
 				title="Xác nhận đặt hàng"
@@ -285,16 +275,15 @@ function OrderProduct() {
 			>
 				{
 					<div>
-						<Description label="Tên sản phẩm" infor={details.product?.name} oneLine />
+						<Description title="Tên sản phẩm" desc={details.product?.name} />
 						<Description
-							label="Tổng giá tiền"
-							infor={`${Intl.NumberFormat().format(details.product?.price + 30000)}đ`}
-							oneLine
+							title="Tổng giá tiền"
+							desc={`${Intl.NumberFormat().format(details.product?.price + 30000)}đ`}
 						/>
-						<Description label="Số điện thoại" infor={details.buyer?.phone} oneLine />
+						<Description title="Số điện thoại" desc={details.buyer?.phone} />
 						<Description
-							label="Địa chỉ giao hàng"
-							infor={
+							title="Địa chỉ giao hàng"
+							desc={
 								[
 									details.buyer?.address,
 									details.buyer?.ward,
@@ -305,8 +294,8 @@ function OrderProduct() {
 							oneLine
 						/>
 						<Description
-							label="Hình thức thanh toán"
-							infor={
+							title="Hình thức thanh toán"
+							desc={
 								paymentMethod === "cash"
 									? "Thanh toán khi nhận hàng"
 									: "Thanh toán qua ngân hàng"

@@ -1,51 +1,27 @@
-import classNames from "classnames/bind";
-import style from "./Select.module.scss";
-import { Select as SelectAnt } from "antd";
-import styled from "styled-components";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 
-const cx = classNames.bind(style);
-
-const SelectWrapper = styled(SelectAnt)`
-	& .ant-select-selector {
-		background-color: transparent !important;
-		border: none !important;
-		outline: none !important;
-		padding: 5px !important;
-	}
-	& .ant-select-selector:focus {
-		outline: none !important;
-	}
-`;
-
-function Select({ innerRef, value, options, name, required, onChange, width, borderColor="black" }) {
-	// const filterOption = (input, option) =>
-	// 	(option?.label ?? "").toLowerCase().includes(input.toLowerCase());
+function SelectComp({ name, value, onChange, options }) {
 	return (
-		<div className={cx("container")} style={{ border: `1px solid ${borderColor}` }}>
-			<span className={cx("text")}>
-				{name}:{required && <strong style={{ color: "red" }}>*</strong>}
-			</span>
-			<SelectWrapper
-				className={cx("select")}
+		<FormControl fullWidth>
+			<InputLabel id="demo-simple-select-label">{name}</InputLabel>
+			<Select
+				labelId="demo-simple-select-label"
+				id="demo-simple-select"
 				defaultValue={value}
-				placeholder={name}
-				name="isAdmin"
-				ref={innerRef}
+				label={name}
 				onChange={onChange}
-				showSearch
-				width={width || ''}
-
 			>
-				{options.map((option) => {
-					return (
-						<SelectWrapper.Option value={option} key={option}>
-							{option}
-						</SelectWrapper.Option>
-					);
-				})}
-			</SelectWrapper>
-		</div>
+				{options.map((item, index) => (
+					<MenuItem key={index} value={item}>
+						{item}
+					</MenuItem>
+				))}
+			</Select>
+		</FormControl>
 	);
 }
 
-export default Select;
+export default SelectComp;

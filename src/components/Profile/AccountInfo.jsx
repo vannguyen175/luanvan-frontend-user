@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import * as UserService from "~/service/UserService";
 import classNames from "classnames/bind";
 import style from "./Profile.module.scss";
@@ -60,6 +60,7 @@ function AccountInfo() {
 	const getAccountInfo = async () => {
 		const res = await UserService.getDetailUser(id, token);
 		setDataSubmit({
+			avatar: res.user?.avatar,
 			name: res.user?.name,
 			email: res.user?.email,
 			password: res.user?.password,
@@ -80,6 +81,7 @@ function AccountInfo() {
 	};
 	useEffect(() => {
 		getAccountInfo();
+		// eslint-disable-next-line
 	}, []);
 
 	const handleChangeInput = (e) => {
@@ -123,7 +125,7 @@ function AccountInfo() {
 				{dataSubmit?.name && (
 					<div className={cx("account-info")}>
 						<img
-							src={dataSubmit.avatar || "assets/images/user-avatar.jpg"}
+							src={dataSubmit?.avatar || "assets/images/user-avatar.jpg"}
 							alt="avatar"
 						/>
 						<div style={{ width: "100%" }}>

@@ -3,21 +3,22 @@ import MenuIcon from "@mui/icons-material/Menu";
 import IconButton from "@mui/material/IconButton";
 
 import classNames from "classnames/bind";
-import style from "./Profile.module.scss";
+import style from "./ForSeller.module.scss";
 import { useState } from "react";
-import AccountInfo from "../../components/Profile/AccountInfo";
-import Activities from "../../components/Profile/Activities";
-import Seller from "../../components/Profile/Seller";
+import OrderManager from "../../components/ForSeller/OrderManager";
+import ProductManager from "../../components/ForSeller/ProductManager";
+import ProfileSeller from "../../components/ForSeller/ProfileSeller";
+import Analytic from "../../components/ForSeller/Analytic";
 
 const cx = classNames.bind(style);
 
-function Profile() {
+function ForSeller() {
 	const [menuClose, setMenuClose] = useState(true);
-	const [menuState, setMenuState] = useState(localStorage.getItem("menu_profile"));
+	const [menuState, setMenuState] = useState(localStorage.getItem("menu_seller"));
 
 	const handleState = (value) => {
 		setMenuState(value);
-		localStorage.setItem("menu_profile", value);
+		localStorage.setItem("menu_seller", value);
 	};
 
 	return (
@@ -33,19 +34,19 @@ function Profile() {
 						className={cx({ "menu-active": menuState === "1" })}
 						onClick={() => handleState("1")}
 					>
-						Thông tin tài khoản
+						Thông tin nhà bán hàng
 					</div>
 					<div
 						className={cx({ "menu-active": menuState === "2" })}
 						onClick={() => handleState("2")}
 					>
-						Hoạt động
+						Quản lý sản phẩm
 					</div>
 					<div
 						className={cx({ "menu-active": menuState === "3" })}
 						onClick={() => handleState("3")}
 					>
-						Nhà bán hàng
+						Quản lý đơn hàng
 					</div>
 					<div
 						className={cx({ "menu-active": menuState === "4" })}
@@ -53,21 +54,16 @@ function Profile() {
 					>
 						Thống kê
 					</div>
-					<div
-						className={cx({ "menu-active": menuState === "5" })}
-						onClick={() => handleState("5")}
-					>
-						Cài đặt
-					</div>
 				</div>
 			</div>
 			<div className={cx("body")}>
-				{menuState === "1" && <AccountInfo />}
-				{menuState === "2" && <Activities />}
-				{menuState === "3" && <Seller />}
+				{menuState === "1" && <OrderManager />}
+				{menuState === "2" && <ProductManager />}
+				{menuState === "3" && <ProfileSeller />}
+				{menuState === "4" && <Analytic />}
 			</div>
 		</div>
 	);
 }
 
-export default Profile;
+export default ForSeller;

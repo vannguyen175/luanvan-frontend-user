@@ -1,25 +1,21 @@
 import Axios from "axios";
 
 export const createOrder = async (data) => {
+	console.log("idBuyer", data);
+
 	const res = await Axios.post(`${process.env.REACT_APP_API_URL_BACKEND}/order/create`, data);
 	return res.data;
 };
 
-export const getUserOrder = async (data) => {
-	const res = await Axios.get(
-		`${process.env.REACT_APP_API_URL_BACKEND}/order/getAll/${data.id}`,
-		data.stateOrder
-	);
+export const getAllOrders = async (data) => {
+	const res = await Axios.post(`${process.env.REACT_APP_API_URL_BACKEND}/order/getAll`, data);
+	return res.data;
+};
+export const cancelOrder = async (data) => {
+	const res = await Axios.post(`${process.env.REACT_APP_API_URL_BACKEND}/order/cancel`, data);
 	return res.data;
 };
 
-export const getSellerOrder = async (data) => {
-	const res = await Axios.post(
-		`${process.env.REACT_APP_API_URL_BACKEND}/order/getAll/seller/${data.id}`,
-		data
-	);
-	return res.data;
-};
 
 export const getAnalyticsOrder = async (data) => {
 	const res = await Axios.post(`${process.env.REACT_APP_API_URL_BACKEND}/order/analytics`, data);

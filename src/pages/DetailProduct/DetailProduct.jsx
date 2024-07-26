@@ -48,7 +48,9 @@ function DetailProduct() {
 	};
 	useEffect(() => {
 		getDetailProduct();
-		getDetailBuyer();
+		if (idUser) {
+			getDetailBuyer();
+		}
 		// eslint-disable-next-line
 	}, []);
 
@@ -90,7 +92,10 @@ function DetailProduct() {
 
 	return (
 		<div style={{ display: "flex", minHeight: "100vh" }}>
-			<div className={cx("inner-content", "sticky")} style={{ width: "30%" }}>
+			<div
+				className={cx("inner-content", "sticky")}
+				style={{ width: "30%", height: "fit-content" }}
+			>
 				{details.product.images && <ImagePreview data={details.product.images} />}
 			</div>
 			{details.product.name && (
@@ -100,7 +105,9 @@ function DetailProduct() {
 							{details.product?.subCategory.category.name} /{" "}
 							{details.product?.subCategory.name}
 						</p>
-						<h1 style={{ color: "var(--main-color)" }}>{details.product?.name}</h1>
+						<h2 style={{ color: "var(--main-color)", marginTop: 10 }}>
+							{details.product?.name}
+						</h2>
 						{details.product?.sellerName === buyerDetail?.name && (
 							<div style={{ display: "flex" }}>
 								<p style={{ marginRight: 10 }}>Đây là sản phẩm của bạn</p>
