@@ -16,13 +16,12 @@ export const cancelOrder = async (data) => {
 	return res.data;
 };
 
-
 export const getAnalyticsOrder = async (data) => {
 	const res = await Axios.post(`${process.env.REACT_APP_API_URL_BACKEND}/order/analytics`, data);
 	return res.data;
 };
 
-export const updateOrder = async (data, id) => {
+export const updateOrder = async (id, data) => {
 	const res = await Axios.put(
 		`${process.env.REACT_APP_API_URL_BACKEND}/order/update/${id}`,
 		data

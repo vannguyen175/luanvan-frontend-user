@@ -1,0 +1,41 @@
+.menu-navigate {
+	position: -webkit-sticky; /* Safari */
+	position: sticky;
+	top: 0px;
+	display: block;
+	width: 340px;
+	transition: all 0.4s ease;
+	.menu-navigate-header {
+		float: right;
+	}
+	.menu {
+		margin-top: 50px;
+		div {
+			box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+			padding: 10px 10px;
+			border-radius: 5px;
+			margin: 10px 0;
+			cursor: pointer;
+		}
+
+		div:hover,
+		.menu-active {
+			background-color: var(--light-color);
+		}
+	}
+}
+
+.close {
+	width: 60px;
+	transition: all 0.4s ease;
+
+	.menu {
+		display: none;
+	}
+}
+
+.body {
+	overflow: unset;
+	width: 100%;
+	transition: all 0.4s ease;
+}
