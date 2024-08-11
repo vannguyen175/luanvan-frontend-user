@@ -2,11 +2,12 @@ import classNames from "classnames/bind";
 import style from "./ForSeller.module.scss";
 import * as OrderService from "../../service/OrderService";
 import Description from "../Description";
+import { useApp } from "~/context/AppProvider";
+
 
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import { useEffect, useState } from "react";
-import StorefrontIcon from "@mui/icons-material/Storefront";
 import Grid from "@mui/material/Grid";
 import { toast } from "react-toastify";
 import * as React from "react";
@@ -15,14 +16,13 @@ const cx = classNames.bind(style);
 
 function OrderManager() {
 	const [alignment, setAlignment] = useState("0");
-	const idUser = localStorage.getItem("id_user");
+	const { user } = useApp();
 	const [orders, setOrders] = useState([]);
 
 	const getOrders = async () => {
 		const res = await OrderService.getAllOrders({
-			data: { seller: idUser, status: alignment },
+			data: { seller: user.id, status: alignment },
 		});
-		console.log(res.data);
 		setOrders(res.data);
 	};
 
@@ -36,7 +36,6 @@ function OrderManager() {
 	};
 
 	const handleUpdateOrder = async (id, data) => {
-		console.log(id);
 		const res = await OrderService.updateOrder(id, data);
 		if (res.status === "SUCCESS") {
 			toast.success(res.message);

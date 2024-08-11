@@ -14,15 +14,16 @@ import style from "./DetailProduct.module.scss";
 import { useEffect, useState } from "react";
 import Button from "~/components/Button";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import Description from "../../components/Description";
-import ImagePreview from "../../components/ImagePreview";
+import Description from "~/components/Description";
+import ImagePreview from "~/components/ImagePreview";
+import { useApp } from "~/context/AppProvider";
 
 const cx = classNames.bind(style);
 TimeAgo.addLocale(vi);
 
 function DetailProduct() {
 	const { id } = useParams();
-	const idUser = localStorage.getItem("id_user");
+	const { user } = useApp();
 	const navigate = useNavigate();
 	const [buyerDetail, setBuyerDetail] = useState();
 	const location = useLocation();
@@ -33,7 +34,7 @@ function DetailProduct() {
 		stateShow: "product",
 	});
 	const getDetailBuyer = async () => {
-		const res = await UserService.getInfoUser(idUser);
+		const res = await UserService.getInfoUser(user.id);
 		setBuyerDetail(res.data);
 	};
 
@@ -48,7 +49,7 @@ function DetailProduct() {
 	};
 	useEffect(() => {
 		getDetailProduct();
-		if (idUser) {
+		if (user.id) {
 			getDetailBuyer();
 		}
 		// eslint-disable-next-line
@@ -63,7 +64,7 @@ function DetailProduct() {
 	};
 
 	const handleOrderNow = () => {
-		if (idUser) {
+		if (user.id) {
 			navigate(`/dat-hang/${id}`);
 		} else {
 			navigate("/login", { state: location.pathname });
@@ -71,9 +72,9 @@ function DetailProduct() {
 	};
 
 	const handleAddCart = async () => {
-		if (idUser) {
+		if (user.id) {
 			const addCart = await CartService.createCart({
-				idUser,
+				id: user.id,
 				idProduct: details.product._id,
 			});
 			if (addCart?.status === "SUCCESS") {

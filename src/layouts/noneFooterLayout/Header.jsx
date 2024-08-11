@@ -2,7 +2,6 @@ import classNames from "classnames/bind";
 import style from "./UserLayouts.module.scss";
 import DropdownMenu from "~/components/DropdownMenu";
 import Button from "@mui/material/Button";
-import * as UserService from "~/service/UserService";
 import * as productService from "~/service/ProductService";
 import { StringTocamelCase } from "../../utils";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
@@ -16,6 +15,8 @@ import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import Box from "@mui/material/Box";
+import { useApp } from "~/context/AppProvider";
+
 
 const cx = classNames.bind(style);
 
@@ -61,10 +62,10 @@ const ActionUserLogin = [
 ];
 
 function Header() {
+	const { user, token } = useApp();
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [productList, setProductList] = useState();
-	const [name, setName] = useState("");
 	const [inputSearch, setInputSearch] = useState("");
 	const [searchResult, setSearchResult] = useState([]);
 	const searchInputRef = useRef();
@@ -81,26 +82,13 @@ function Header() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [inputSearch]);
 
-	async function getNameAccount() {
-		const id = localStorage.getItem("id_user");
-		const token = localStorage.getItem("access_token");
-		await UserService.getDetailUser(id, token).then((data) => {
-			setName(data.user.name);
-		});
-	}
-	useEffect(() => {
-		if (localStorage.getItem("id_user")) {
-			getNameAccount();
-		}
-	}, []);
 	const handleLogout = async () => {
 		await localStorage.clear();
 		navigate("/");
 	};
 
 	const handleShowCart = () => {
-		let idUser = localStorage.getItem("id_user");
-		navigate(`/gio-hang/${idUser}`);
+		navigate(`/gio-hang/${user.id}`);
 	};
 
 	useEffect(() => {
@@ -184,7 +172,7 @@ function Header() {
 				</ul>
 			</Grid>
 
-			{localStorage.getItem("access_token") === null ? (
+			{token === null ? (
 				<Grid item xs={4} className={cx("col")}>
 					<DropdownMenu title="Tiện ích" listActions={ActionsUnLogin} />
 
@@ -210,7 +198,7 @@ function Header() {
 
 					<Box ml={3} mr={1} p={0} display="inline-block">
 						<DropdownMenu
-							title={name}
+							title={user.name}
 							listActions={localStorage.getItem("id_user") && ActionUserLogin}
 						/>
 					</Box>

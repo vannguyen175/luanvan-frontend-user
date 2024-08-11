@@ -4,6 +4,7 @@ import classNames from "classnames/bind";
 import style from "./Profile.module.scss";
 import Input from "../Input";
 import { getBase64 } from "../../utils";
+import { useApp } from "~/context/AppProvider";
 
 import { toast } from "react-toastify";
 import Box from "@mui/material/Box";
@@ -13,8 +14,7 @@ import subVn from "sub-vn";
 const cx = classNames.bind(style);
 
 function AccountInfo() {
-	const id = localStorage.getItem("id_user");
-	const token = localStorage.getItem("access_token");
+	const { user, token } = useApp();
 	const [dataSubmit, setDataSubmit] = useState();
 	const [dataAddress, setDataAddress] = useState({
 		province: "",
@@ -58,25 +58,15 @@ function AccountInfo() {
 	};
 
 	const getAccountInfo = async () => {
-		const res = await UserService.getDetailUser(id, token);
 		setDataSubmit({
-			avatar: res.user?.avatar,
-			name: res.user?.name,
-			email: res.user?.email,
-			password: res.user?.password,
-			confirmPassword: res.user?.password,
-			phone: res.address?.phone,
-			province: res.address?.province,
-			district: res.address?.district,
-			ward: res.address?.ward,
-			address: res.address?.address,
+			...user,
 		});
-		if (res.user.avatar) {
-			setPreviewAvatar(res.user.avatar);
+		if (user.avatar) {
+			setPreviewAvatar(user.avatar);
 		}
-		if (res.address.province && res.address.district) {
-			hanldeChangeProvince(res.address.province);
-			hanldeChangeDistrict(res.address.district);
+		if (user.province && user.district) {
+			hanldeChangeProvince(user.province);
+			hanldeChangeDistrict(user.district);
 		}
 	};
 	useEffect(() => {
@@ -93,7 +83,7 @@ function AccountInfo() {
 
 	const handleUpdate = async (e) => {
 		e.preventDefault();
-		const res = await UserService.updateUser(id, token, {
+		const res = await UserService.updateUser(user.id, token, {
 			...dataSubmit,
 			avatar: previewAvatar,
 			province: dataAddress.province || dataSubmit.province,

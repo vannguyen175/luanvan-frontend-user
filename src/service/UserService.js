@@ -1,5 +1,7 @@
 import Axios from "axios";
 
+export const axiosJWT = Axios.create();
+
 export const loginUser = async (data) => {
 	const res = await Axios.post(`${process.env.REACT_APP_API_URL_BACKEND}/user/login`, data);
 	return res.data;
@@ -16,7 +18,7 @@ export const logoutUser = async () => {
 };
 
 export const getDetailUser = async (id, access_token) => {
-	const res = await Axios.get(`${process.env.REACT_APP_API_URL_BACKEND}/user/details/${id}`, {
+	const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL_BACKEND}/user/details/${id}`, {
 		headers: { token: `Bearer ${access_token}` },
 	});
 	return res.data;
@@ -47,6 +49,13 @@ export const deleteUser = async (id, access_token) => {
 export const getAllUsers = async (access_token) => {
 	const res = await Axios.get(`${process.env.REACT_APP_API_URL_BACKEND}/user/getAll`, {
 		headers: { token: `Bearer ${access_token}` },
+	});
+	return res.data;
+};
+
+export const refreshToken = async () => {
+	const res = await Axios.post(`${process.env.REACT_APP_API_URL_BACKEND}/user/refresh-token`, {
+		withCredentials: true,
 	});
 	return res.data;
 };

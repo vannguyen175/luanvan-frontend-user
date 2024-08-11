@@ -26,7 +26,6 @@ function UserHome() {
 			page: `page=${pageState.page}`,
 			limit: `limit=${pageState.pageSize}`,
 		});
-		console.log(res.data);
 		setProducts(res.data);
 	};
 

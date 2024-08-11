@@ -13,15 +13,20 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Modal from "~/components/Modal";
 import Description from "~/components/Description";
+import { useApp } from "~/context/AppProvider";
+import AddressForm from "~/components/AddressForm";
+import { formatPhoneNumber } from "../../utils";
 
 const cx = classNames.bind(style);
 
 function OrderProduct() {
 	const navigate = useNavigate();
 	const { id } = useParams(); //id product
-	const idBuyer = localStorage.getItem("id_user");
+	const { user } = useApp();
 	const [modelConfirm, setModelConfirm] = useState(false);
+	const [modelChangeAddress, setModalChangeAddress] = useState(false);
 	const [paymentMethod, setPaymentMethod] = useState("cash");
+	const [addressInfo, setAddressInfo] = useState({ address: {} });
 	const [details, setDetails] = useState({
 		product: {},
 		seller: {},
@@ -37,11 +42,13 @@ function OrderProduct() {
 	};
 
 	const getDetailBuyer = async () => {
-		const res = await UserService.getInfoUser(idBuyer);
-		setDetails((prevDetails) => ({
-			...prevDetails,
-			buyer: res.data,
-		}));
+		if (user.id) {
+			const res = await UserService.getInfoUser(user.id);
+			setDetails((prevDetails) => ({
+				...prevDetails,
+				buyer: res.data,
+			}));
+		}
 	};
 
 	const getDetailSeller = async (id) => {
@@ -54,9 +61,18 @@ function OrderProduct() {
 
 	useEffect(() => {
 		getDetailProduct();
-		getDetailBuyer();
+		if (user.id) {
+			getDetailBuyer();
+			setAddressInfo({
+				address: user.address,
+				district: user.district,
+				phone: user.phone,
+				province: user.province,
+				ward: user.ward,
+			});
+		}
 		// eslint-disable-next-line
-	}, []); //detail-seller
+	}, [user]); //detail-seller
 
 	//Cập nhật gtri select khi người dùng thay đổi PaymentMethod
 	const handleChangePaymentMethod = (e) => {
@@ -93,7 +109,6 @@ function OrderProduct() {
 
 	//tiến hành lưu thông tin order
 	const handleOrder = async () => {
-		console.log(details.buyer._id, idBuyer);
 		const dataOrder = {
 			product: details.product._id,
 			paymentMethod: paymentMethod,
@@ -125,6 +140,16 @@ function OrderProduct() {
 				setModelConfirm(false);
 			}, 1000);
 		}
+	};
+	const handleChangeAddress = () => {
+		setDetails((prevDetails) => ({
+			...prevDetails,
+			buyer: {
+				...prevDetails.buyer,
+				...addressInfo.address,
+			},
+		}));
+		setModalChangeAddress(false);
 	};
 
 	return (
@@ -182,7 +207,10 @@ function OrderProduct() {
 								</p>
 							</Grid>
 						</Grid>
-						<Description title="Số điện thoại" desc={details.seller?.phone} />
+						<Description
+							title="Số điện thoại"
+							desc={formatPhoneNumber(details.seller?.phone)}
+						/>
 					</div>
 				</Grid>
 				<Grid item xs={5} className={cx("inner-content", "right")}>
@@ -207,7 +235,8 @@ function OrderProduct() {
 								Email:
 								<input
 									onChange={handleOnchange}
-									placeholder={details.buyer?.email || ""}
+									//placeholder={details.buyer?.email || ""}
+									value={details.buyer?.email || ""}
 									name="email"
 								/>
 							</p>
@@ -215,15 +244,16 @@ function OrderProduct() {
 								Số điện thoại:
 								<input
 									onChange={handleOnchange}
-									placeholder={details.buyer?.phone || ""}
+									//placeholder={formatPhoneNumber(details.buyer?.phone) || ""}
+									value={formatPhoneNumber(details?.buyer.phone) || ""}
 									name="phone"
 								/>
 							</p>
 							<p>
 								Địa chỉ:{" "}
 								<textarea
-									onChange={handleOnchange}
-									placeholder={
+									onClick={() => setModalChangeAddress(true)}
+									value={
 										[
 											details.buyer?.address,
 											details.buyer?.ward,
@@ -280,7 +310,10 @@ function OrderProduct() {
 							title="Tổng giá tiền"
 							desc={`${Intl.NumberFormat().format(details.product?.price + 30000)}đ`}
 						/>
-						<Description title="Số điện thoại" desc={details.buyer?.phone} />
+						<Description
+							title="Số điện thoại"
+							desc={formatPhoneNumber(details.buyer?.phone)}
+						/>
 						<Description
 							title="Địa chỉ giao hàng"
 							desc={
@@ -311,6 +344,21 @@ function OrderProduct() {
 						</div>
 					</div>
 				}
+			</Modal>
+			<Modal
+				isOpen={modelChangeAddress}
+				title="Thay đổi địa chỉ giao hàng"
+				setIsOpen={setModalChangeAddress}
+				width={500}
+			>
+				<AddressForm setDataSubmit={setAddressInfo} />
+				<div style={{ textAlign: "center" }}>
+					<Button onClick={() => setModalChangeAddress(false)}>Thoát</Button>
+
+					<Button type="submit" primary onClick={() => handleChangeAddress()}>
+						Cập nhập
+					</Button>
+				</div>
 			</Modal>
 		</div>
 	);

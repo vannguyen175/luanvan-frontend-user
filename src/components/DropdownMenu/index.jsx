@@ -24,7 +24,7 @@ function DropdownMenu({ title, listActions }) {
 						<KeyboardArrowDownIcon style={{ marginLeft: "3px" }} />
 					</Button>
 					<Menu {...bindMenu(popupState)}>
-						{listActions.map((item, index) => (
+						{listActions?.map((item, index) => (
 							<div onClick={() => handleClick(item)} key={index}>
 								<MenuItem key={index} onClick={popupState.close}>
 									{item.name}

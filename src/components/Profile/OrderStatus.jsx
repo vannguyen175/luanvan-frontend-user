@@ -3,6 +3,7 @@ import style from "./Profile.module.scss";
 import * as OrderService from "../../service/OrderService";
 import Description from "../Description";
 import Modal from "../Modal";
+import { useApp } from "~/context/AppProvider";
 
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
@@ -18,24 +19,29 @@ import { toast } from "react-toastify";
 const cx = classNames.bind(style);
 
 function OrderStatus() {
+	const { user, token } = useApp();
 	const [alignment, setAlignment] = useState("0");
 	const [cancelOpen, setCancelOpen] = useState(false);
 	const [reasonCancel, setReasonCancel] = useState({
 		idOrder: "",
 		reason: "",
 	});
-	const idUser = localStorage.getItem("id_user");
 	const [orders, setOrders] = useState([]);
 
 	const getOrders = async () => {
-		const res = await OrderService.getAllOrders({ data: { buyer: idUser, status: alignment } });
-		setOrders(res.data);
+		if (user.id) {
+			console.log(alignment);
+			const res = await OrderService.getAllOrders({
+				data: { buyer: user.id, status: alignment, token: token },
+			});
+			setOrders(res.data);
+		}
 	};
 
 	useEffect(() => {
 		getOrders();
 		// eslint-disable-next-line
-	}, [alignment]);
+	}, [alignment, user]);
 
 	const handleChange = (event, newAlignment) => {
 		setAlignment(newAlignment);

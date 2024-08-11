@@ -4,18 +4,19 @@ import Box from "@mui/material/Box";
 import { toast } from "react-toastify";
 import CircularProgress from "@mui/material/CircularProgress";
 
-import ProductForm from "../../components/ProductForm";
-import AddressForm from "../../components/AddressForm";
-import UploadImage from "../../components/UploadImage";
+import ProductForm from "~/components/ProductForm";
+import AddressForm from "~/components/AddressForm";
+import UploadImage from "~/components/UploadImage";
+import { useApp } from "~/context/AppProvider";
 import * as ProductService from "~/service/ProductService";
-import Button from "../../components/Button";
+import Button from "~/components/Button";
 
 function PostingProduct() {
-	const idUser = localStorage.getItem("id_user");
+	const { user } = useApp();
 	const [imageList, setImageList] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [dataSubmit, setDataSubmit] = useState({
-		idUser: idUser,
+		idUser: user.id,
 		subCategory: "",
 		info: {},
 		images: "",
@@ -32,8 +33,6 @@ function PostingProduct() {
 			images: imageList,
 		};
 		const res = await ProductService.createProduct(data);
-		console.log(loading);
-		console.log(res);
 		if (res.status === "SUCCESS") {
 			setLoading(false);
 			toast.success(res.message);
