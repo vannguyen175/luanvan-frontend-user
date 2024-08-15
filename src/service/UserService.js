@@ -7,6 +7,21 @@ export const loginUser = async (data) => {
 	return res.data;
 };
 
+export const loginWithGoogle = async (data) => {
+	const res = await Axios.post(
+		`${process.env.REACT_APP_API_URL_BACKEND}/user/login/google`,
+		data
+	);
+	return res.data;
+};
+export const loginWithFacebook = async (data) => {
+	const res = await Axios.post(
+		`${process.env.REACT_APP_API_URL_BACKEND}/user/login/facebook`,
+		data
+	);
+	return res.data;
+};
+
 export const registerUser = async (data) => {
 	const res = await Axios.post(`${process.env.REACT_APP_API_URL_BACKEND}/user/register`, data);
 	return res.data;

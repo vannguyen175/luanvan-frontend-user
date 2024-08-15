@@ -58,6 +58,8 @@ function AccountInfo() {
 	};
 
 	const getAccountInfo = async () => {
+		console.log("getAccountInfo", user);
+
 		setDataSubmit({
 			...user,
 		});
@@ -70,9 +72,11 @@ function AccountInfo() {
 		}
 	};
 	useEffect(() => {
-		getAccountInfo();
+		if (user?.name) {
+			getAccountInfo();
+		}
 		// eslint-disable-next-line
-	}, []);
+	}, [user]);
 
 	const handleChangeInput = (e) => {
 		setDataSubmit((prevData) => ({

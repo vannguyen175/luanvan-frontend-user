@@ -17,6 +17,7 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 import Description from "~/components/Description";
 import ImagePreview from "~/components/ImagePreview";
 import { useApp } from "~/context/AppProvider";
+import { formatPhoneNumber } from "../../utils";
 
 const cx = classNames.bind(style);
 TimeAgo.addLocale(vi);
@@ -34,7 +35,7 @@ function DetailProduct() {
 		stateShow: "product",
 	});
 	const getDetailBuyer = async () => {
-		const res = await UserService.getInfoUser(user.id);
+		const res = await UserService.getInfoUser(user?.id);
 		setBuyerDetail(res.data);
 	};
 
@@ -49,7 +50,7 @@ function DetailProduct() {
 	};
 	useEffect(() => {
 		getDetailProduct();
-		if (user.id) {
+		if (user?.id) {
 			getDetailBuyer();
 		}
 		// eslint-disable-next-line
@@ -180,18 +181,31 @@ function DetailProduct() {
 						{details.stateShow === "seller" && (
 							<div style={{ paddingLeft: 30 }}>
 								<h5>Thông tin nhà bán hàng</h5>
-								<Description title="Tên nhà bán hàng" desc={details.seller?.name} />
+								<Description
+									style={{ fontWeight: 500, cursor: "pointer" }}
+									onClick={() => navigate(`/seller/${details.seller?._id}`)}
+									title="Tên nhà bán hàng"
+									desc={details.seller?.name}
+								/>
 								<Description title="Đánh giá" desc={details.seller?.rating} />
-								<Description title="Số điện thoại" desc={details.seller?.phone} />
+								<Description
+									title="Số điện thoại"
+									desc={formatPhoneNumber(details.seller?.phone)}
+								/>
 								<Description
 									title="Địa chỉ"
-									desc={details.seller?.address || "Không có"}
+									desc={[
+										details.seller?.address,
+										details.seller?.ward,
+										details.seller?.district,
+										details.seller?.province,
+									].join(", ") || "" }
 								/>
 							</div>
 						)}
 
 						{details.product?.sellerName === buyerDetail?.name ? (
-							<p style={{ textAlign: "center" }}>Đây là sản phẩm của bạn</p>
+							<p style={{ textAlign: "center", marginTop: 20 }}>Đây là sản phẩm của bạn</p>
 						) : (
 							<div style={{ textAlign: "center" }}>
 								<Button style={{ width: "70%" }} onClick={handleAddCart}>

@@ -2,7 +2,7 @@ import Button from "~/components/Button";
 import classNames from "classnames/bind";
 import style from "./Login.module.scss";
 import { Link } from "react-router-dom";
-import {  useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import "animate.css";
 import TextField from "@mui/material/TextField";
@@ -12,6 +12,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import { useApp } from "../../context/AppProvider";
+import axios from "axios";
+import FacebookLogin from "react-facebook-login";
 
 const cx = classNames.bind(style);
 const clientID = "105139517728-qa77n1q8768ek3tpmi2thvd94p2lqqdh.apps.googleusercontent.com";
@@ -26,10 +28,38 @@ function Login() {
 	const passwordRef = useRef(null);
 
 	const loginGoogle = useGoogleLogin({
-		onSuccess: (credentialResponse) => console.log(jwtDecode(credentialResponse.credential)),
-		onError: () => console.log("Login Failed"),
-		flow: "auth-code",
+		onSuccess: async (response) => {
+			try {
+				const dataUser = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
+					headers: {
+						Authorization: `Bearer ${response.access_token}`,
+					},
+				});
+				if (dataUser?.data?.email) {
+					const res = await UserService.loginWithGoogle({
+						email: dataUser?.data?.email,
+						name: dataUser?.data?.name,
+						picture: dataUser?.data?.picture,
+					});
+					checkLoginResult(res);
+				}
+			} catch (error) {
+				console.log("Have an error with login google", error);
+			}
+		},
 	});
+
+	const responseFacebook = async (response) => {
+		console.log("responseFacebook", response);
+		if (response?.email) {
+			const res = await UserService.loginWithFacebook({
+				email: response?.email,
+				name: response?.name,
+				picture: response?.picture.url,
+			});
+			checkLoginResult(res);
+		}
+	};
 
 	//xu ly khi nguoi dung nhan submit
 	const onsubmit = async (e) => {
@@ -38,11 +68,15 @@ function Login() {
 		const password = passwordRef.current.value;
 		const res = await UserService.loginUser({ email, password });
 		setData(res);
-		if (res?.status === "SUCCESS") {
+		checkLoginResult(res);
+	};
+
+	const checkLoginResult = (result) => {
+		if (result.status === "SUCCESS") {
 			toast.success("Đăng nhập thành công!");
-			localStorage.setItem("access_token", res?.access_token)
-			setToken(res?.access_token)
-			const decoded = jwtDecode(res?.access_token);
+			localStorage.setItem("access_token", result?.access_token);
+			setToken(result?.access_token);
+			const decoded = jwtDecode(result?.access_token);
 			setUser({
 				id: decoded?.id,
 				isAdmin: decoded?.isAdmin,
@@ -96,23 +130,19 @@ function Login() {
 							Đăng nhập
 						</Button>
 						<div className={cx("login-with")}>
-							<p>Đăng nhập bằng:</p>
+							<p>Hoặc đăng nhập bằng:</p>
 							<img onClick={loginGoogle} src="/assets/google-icon.webp" alt="#" />
-							<img src="/assets/facebook-icon.png" alt="#" />
+							<span>
+								<FacebookLogin
+									appId="1138022350625642"
+									fields="name,email,picture"
+									callback={responseFacebook}
+									className={cx("my-facebook-button-class")}
+									textButton=""
+									icon={<img src="/assets/facebook-icon.png" alt="#" />}
+								/>
+							</span>
 						</div>
-						{/* <div style={{ textAlign: "center", width: "100%" }}>
-							<GoogleLogin
-								onSuccess={(credentialResponse) => {
-									console.log(jwtDecode(credentialResponse.credential));
-								}}
-								onError={() => {
-									console.log("Login Failed");
-								}}
-								useOneTap
-							>
-								<img onClick={loginGoogle} src="/assets/google-icon.webp" alt="#" />
-							</GoogleLogin>
-						</div> */}
 
 						<p className={cx("register-link")}>
 							Chưa có tài khoản? <Link to="/register">Đăng ký tài khoản mới</Link>

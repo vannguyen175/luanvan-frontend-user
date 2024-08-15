@@ -13,6 +13,7 @@ import Login from "~/pages/Login/Login";
 import Register from "~/pages/Register/Register";
 import PostingProduct from "../pages/PostingProduct/PostingProduct";
 import ForSeller from "../pages/ForSeller";
+import SellerHomePage from "../pages/SellerHomePage";
 
 export const routes = [
 	{
@@ -28,6 +29,11 @@ export const routes = [
 	{
 		path: "/detail-product/:id",
 		page: DetailProduct,
+		layout: UserLayout,
+	},
+	{
+		path: "/seller/:id",
+		page: SellerHomePage,
 		layout: UserLayout,
 	},
 	{

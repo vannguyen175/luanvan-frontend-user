@@ -20,16 +20,16 @@ export const AppProvider = ({ children }) => {
 		try {
 			const res = await UserService.getDetailUser(decoded?.id, token);
 			setUser({
-				id: res.user._id,
-				name: res.user.name,
-				email: res.user.email,
-				avatar: res.user.avatar || "assets/images/user-avatar.jpg",
-				isAdmin: res.user.isAdmin,
-				phone: res.address.phone || "",
-				province: res.address.province || "",
-				district: res.address.district || "",
-				ward: res.address.ward || "",
-				address: res.address.address || "",
+				id: res?.user?._id,
+				name: res?.user?.name,
+				email: res?.user?.email,
+				avatar: res?.user?.avatar || "assets/images/user-avatar.jpg",
+				isAdmin: res?.user?.isAdmin,
+				phone: res?.address?.phone || "",
+				province: res?.address?.province || "",
+				district: res?.address?.district || "",
+				ward: res?.address?.ward || "",
+				address: res?.address?.address || "",
 			});
 		} catch (error) {
 			if (error.response?.data?.message === "The authemtication") {
@@ -57,6 +57,7 @@ export const AppProvider = ({ children }) => {
 	useEffect(() => {
 		getUserInfo();
 	}, [token]);
+
 
 	return (
 		<AppContext.Provider value={{ user, setUser, token, setToken }}>

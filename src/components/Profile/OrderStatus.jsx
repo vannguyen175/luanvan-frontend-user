@@ -15,11 +15,13 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(style);
 
 function OrderStatus() {
 	const { user, token } = useApp();
+	const navigate = useNavigate();
 	const [alignment, setAlignment] = useState("0");
 	const [cancelOpen, setCancelOpen] = useState(false);
 	const [reasonCancel, setReasonCancel] = useState({
@@ -30,7 +32,6 @@ function OrderStatus() {
 
 	const getOrders = async () => {
 		if (user.id) {
-			console.log(alignment);
 			const res = await OrderService.getAllOrders({
 				data: { buyer: user.id, status: alignment, token: token },
 			});
@@ -99,7 +100,9 @@ function OrderStatus() {
 							<Grid container>
 								<Grid item xs={12} className={cx("shop")}>
 									<StorefrontIcon style={{ marginRight: 10 }} />
-									{item.product.sellerName}
+									<span onClick={() => navigate(`/seller/${item.seller}`)}>
+										{item.product.sellerName}
+									</span>
 								</Grid>
 								<Grid item xs={1} className={cx("image-product")}>
 									<img src={item.product.images[0]} alt="anh-san-pham" />

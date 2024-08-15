@@ -19,36 +19,36 @@ export function App() {
 			});
 		}
 		gapi.load("client:auth2", start);
-	});
+	}, []);
 
 	return (
 		<div>
-			<AppProvider>
-				<Router>
-					<ScrollToTop />
-					<Routes>
-						{routes.map((route, index) => {
-							let Page = route.page;
-							const Layout = route.layout;
-							const isCheckAuth = !route.isPrivate;
-							return (
-								<Route
-									key={index}
-									exact
-									path={isCheckAuth === true ? route.path : "*"}
-									element={
-										<GoogleOAuthProvider clientId={clientID}>
+			<GoogleOAuthProvider clientId={clientID}>
+				<AppProvider>
+					<Router>
+						<ScrollToTop />
+						<Routes>
+							{routes.map((route, index) => {
+								let Page = route.page;
+								const Layout = route.layout;
+								const isCheckAuth = !route.isPrivate;
+								return (
+									<Route
+										key={index}
+										exact
+										path={isCheckAuth === true ? route.path : "*"}
+										element={
 											<Layout>
 												{isCheckAuth === true ? <Page /> : <NotFoundPage />}
 											</Layout>
-										</GoogleOAuthProvider>
-									}
-								/>
-							);
-						})}
-					</Routes>
-				</Router>
-			</AppProvider>
+										}
+									/>
+								);
+							})}
+						</Routes>
+					</Router>
+				</AppProvider>
+			</GoogleOAuthProvider>
 		</div>
 	);
 }

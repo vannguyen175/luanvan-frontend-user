@@ -235,7 +235,6 @@ function OrderProduct() {
 								Email:
 								<input
 									onChange={handleOnchange}
-									//placeholder={details.buyer?.email || ""}
 									value={details.buyer?.email || ""}
 									name="email"
 								/>
@@ -244,7 +243,6 @@ function OrderProduct() {
 								Số điện thoại:
 								<input
 									onChange={handleOnchange}
-									//placeholder={formatPhoneNumber(details.buyer?.phone) || ""}
 									value={formatPhoneNumber(details?.buyer.phone) || ""}
 									name="phone"
 								/>

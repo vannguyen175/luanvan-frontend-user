@@ -33,7 +33,6 @@ function Products() {
 	}, []);
 
 	const getProductsBySubCate = async () => {
-		console.log(subCateChosen);
 		const res = await ProductService.getAllProducts({
 			data: { state: [], cate: [], subCate: [subCateChosen] },
 			page: `page=${pageState.page}`,
