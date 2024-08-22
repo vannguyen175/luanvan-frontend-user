@@ -77,6 +77,7 @@ function Login() {
 			localStorage.setItem("access_token", result?.access_token);
 			setToken(result?.access_token);
 			const decoded = jwtDecode(result?.access_token);
+			localStorage.setItem("id_user", decoded?.id);
 			setUser({
 				id: decoded?.id,
 				isAdmin: decoded?.isAdmin,

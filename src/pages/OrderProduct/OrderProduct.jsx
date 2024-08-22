@@ -22,7 +22,7 @@ const cx = classNames.bind(style);
 function OrderProduct() {
 	const navigate = useNavigate();
 	const { id } = useParams(); //id product
-	const { user } = useApp();
+	const { user, socket } = useApp();
 	const [modelConfirm, setModelConfirm] = useState(false);
 	const [modelChangeAddress, setModalChangeAddress] = useState(false);
 	const [paymentMethod, setPaymentMethod] = useState("cash");
@@ -130,6 +130,11 @@ function OrderProduct() {
 		};
 		const res = await OrderService.createOrder(dataOrder);
 		if (res?.status === "SUCCESS") {
+			socket?.emit("sendNotification", {
+				senderId: user.id,
+				reveiverId: id,
+				message: "Sản phẩm của bạn đã có người đặt mua. Nhấn vào đây để xử lý đơn hàng.",
+			});
 			toast.success("Đặt hàng thành công!");
 			setTimeout(() => {
 				navigate("/");

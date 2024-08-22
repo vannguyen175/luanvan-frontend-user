@@ -11,7 +11,7 @@
 	position: absolute;
 	background-color: var(--main-color);
 	color: var(--black-color);
-	padding: 50px 0 50px 70px; 
+	padding: 50px 0 50px 70px;
 	height: fit-content;
 	z-index: 50;
 	width: 100%;
@@ -126,4 +126,28 @@
 	justify-content: center;
 	align-items: center;
 	height: 70px;
+}
+
+.noNotification {
+	width: 200px;
+}
+
+.haveNotification {
+	min-width: 380px;
+	img {
+		width: 50px;
+		height: 50px;
+		margin-right: 10px;
+	}
+	div {
+		cursor: pointer;
+		padding: 3px 5px;
+		transition: 0.2s ease;
+	}
+	div:hover {
+		background-color: var(--light-color);
+	}
+	.unSeen {
+		background-color: #edecd4;
+	}
 }

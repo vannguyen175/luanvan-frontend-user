@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import * as UserService from "~/service/UserService";
 import * as ProductService from "~/service/ProductService";
 import CardProduct from "~/components/CardProduct";
+import { useApp } from "../../context/AppProvider";
 
 import classNames from "classnames/bind";
 import style from "./SellerHomePage.module.scss";
@@ -15,6 +16,7 @@ const cx = classNames.bind(style);
 
 function SellerPage() {
 	const { id } = useParams();
+	const { socket, user } = useApp();
 	const [isHeart, setIsHeart] = useState(false);
 	const [pageState, setPageState] = useState({
 		isLoading: false,
@@ -35,8 +37,6 @@ function SellerPage() {
 			page: `page=${pageState.page}`,
 			limit: `limit=${pageState.pageSize}`,
 		});
-		console.log("getProducts", res.data);
-
 		setDetail((prevData) => ({ ...prevData, product: res.data }));
 	};
 
@@ -60,13 +60,7 @@ function SellerPage() {
 				{detail?.seller?.totalSelled >= 2
 					? "Nhà bán hàng chuyên nghiệp"
 					: "Nhà bán hàng mới"}
-				<div>
-					{isHeart ? (
-						<FavoriteIcon onClick={() => setIsHeart(false)} />
-					) : (
-						<FavoriteBorderIcon onClick={() => setIsHeart(true)} />
-					)}
-				</div>
+				<div>{isHeart ? <FavoriteIcon /> : <FavoriteBorderIcon />}</div>
 			</div>
 			<div className={cx("inner-content", "product-list")}>
 				<div style={{ display: "flex", flexWrap: "wrap", paddingTop: 20 }}>

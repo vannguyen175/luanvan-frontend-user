@@ -3,6 +3,7 @@ import style from "./UserLayouts.module.scss";
 import DropdownMenu from "~/components/DropdownMenu";
 import Button from "@mui/material/Button";
 import * as productService from "~/service/ProductService";
+import * as notificationService from "~/service/NotificationService";
 import { StringTocamelCase } from "~/utils";
 import { useApp } from "~/context/AppProvider";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
@@ -16,6 +17,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import Box from "@mui/material/Box";
+import Popover from "@mui/material/Popover";
 
 const cx = classNames.bind(style);
 
@@ -61,7 +63,11 @@ const ActionUserLogin = [
 ];
 
 function Header() {
-	const { user, token, setToken } = useApp();
+	const { user, token, setToken, socket } = useApp();
+	const [notifications, setNotifications] = useState([]);
+	const [showNoti, setShowNoti] = useState(false);
+	const [anchorEl, setAnchorEl] = useState(null);
+
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [productList, setProductList] = useState();
@@ -80,6 +86,38 @@ function Header() {
 		}
 		// eslint-disable-next-line
 	}, [inputSearch]);
+
+	useEffect(() => {
+		const addNoti = async (product, image, type) => {
+			const res = await notificationService.addNotification({
+				user: localStorage.getItem("id_user"),
+				info: {
+					product: product,
+					image: image,
+					type: type,
+				},
+			});
+			console.log("addNoti", res);
+			setNotifications(res.data.info);
+		};
+
+		const getNoti = async () => {
+			const res = await notificationService.getNotification({
+				user: localStorage.getItem("id_user"),
+			});
+			console.log(res);
+
+			setNotifications(res.data.info);
+		};
+		getNoti();
+
+		socket?.on("getNotification", (data) => {
+			console.log("get socket", data);
+			if (data) {
+				addNoti(data.product, data.image, data.type);
+			}
+		});
+	}, [socket]);
 
 	const handleLogout = () => {
 		localStorage.clear();
@@ -115,9 +153,19 @@ function Header() {
 		setInputSearch("");
 	};
 
+	const handleShowNotification = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
+	const open = Boolean(anchorEl);
+	const id = open ? "simple-popover" : undefined;
+
 	const handleLogin = () => {
 		navigate("/login");
 	};
+
+	const handleClickNoti = () => {
+		
+	}
 
 	return (
 		<Grid
@@ -193,9 +241,54 @@ function Header() {
 						<ShoppingCartIcon onClick={handleShowCart} />
 					</div>
 
-					<Badge badgeContent={4} color="primary" className="icon-button">
-						<NotificationsIcon onClick={handleShowCart} />
-					</Badge>
+					<div className={cx("notification-icon")}>
+						<Badge
+							badgeContent={notifications.length}
+							color="primary"
+							className={cx("icon-button")}
+						>
+							<NotificationsIcon onClick={handleShowNotification} />
+						</Badge>
+						<Popover
+							id={id}
+							open={open}
+							anchorEl={anchorEl}
+							onClose={() => {
+								setAnchorEl(null);
+							}}
+							anchorOrigin={{
+								vertical: "bottom",
+								horizontal: "left",
+							}}
+							PaperProps={{
+								style: {
+									padding: "5px",
+									borderRadius: "8px",
+									boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.2)",
+								},
+							}}
+						>
+							<div>
+								<h4 style={{ margin: "5px 0 10px 10px" }}>Thông báo</h4>
+								{notifications.length === 0 ? (
+									<div className={cx("noNotification")}>Không có thông báo.</div>
+								) : (
+									<div className={cx("haveNotification")}>
+										{notifications.map((item, index) => (
+											<div
+												key={index}
+												className={cx(item.isSeen ? "" : "unSeen")}
+												onClick={handleClickNoti}
+											>
+												<img src={item.image} alt="anh" />
+												<span>{item.type}.</span>
+											</div>
+										))}
+									</div>
+								)}
+							</div>
+						</Popover>
+					</div>
 
 					<Box ml={3} mr={1} p={0} display="inline-block">
 						<DropdownMenu title={user?.name} listActions={ActionUserLogin} />
