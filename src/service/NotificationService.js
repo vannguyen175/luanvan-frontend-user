@@ -15,3 +15,11 @@ export const getNotification = async (data) => {
 	);
 	return res.data;
 };
+
+export const updateNotification = async (data) => {
+	const res = await Axios.post(
+		`${process.env.REACT_APP_API_URL_BACKEND}/notification/update`,
+		data
+	);
+	return res.data;
+};

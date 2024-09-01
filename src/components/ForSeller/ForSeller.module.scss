@@ -50,10 +50,10 @@
 
 	.info {
 		display: flex;
-		width: 95%;
+		width: 100%;
 
 		div {
-			margin-right: 15%;
+			margin-right: 13%;
 			font-size: 1.2rem;
 			font-weight: 500;
 			width: fit-content;
@@ -99,44 +99,86 @@
 	}
 }
 
-//Activities
-.order-status {
-	overflow: unset;
+//Product Manager
+.button-edit-product {
+	background-color: var(--main-color);
+	border: 1px solid var(--main-color);
+	color: white;
+	font-weight: 500;
+	border-radius: 6px;
+	padding: 5px 10px;
+	cursor: pointer;
 }
 
-.order-status-card {
-	background-color: white;
-	box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
-	border-radius: 5px;
-	overflow: hidden;
-	padding: 10px 20px;
-	margin: 10px 20px;
+//Order Manager
+.tab-order {
+	display: flex;
+	margin-top: 20px;
 
-	.shop {
-		border-bottom: 1px solid rgb(147, 147, 147);
-		padding-bottom: 5px;
-		margin-bottom: 10px;
+	button {
+		border: none;
+		padding: 5px;
+		background-color: white;
+		margin: 0px 10px;
+		transition: 0.2s ease;
 	}
 
-	.image-product {
-		img {
-			width: 70px;
-			height: 70px;
+	.active-tab {
+		border-bottom: 2px solid var(--main-color);
+		font-weight: 500;
+		color: var(--main-color);
+	}
+}
+
+.search-order {
+	display: flex;
+	justify-content: center;
+	margin-top: 20px;
+
+	input {
+		width: 70%;
+		padding: 5px 10px;
+		border-radius: 5px;
+		border: 1px solid gray;
+		margin-right: 30px;
+	}
+
+	button {
+		border: 1px solid gray;
+		background-color: white;
+		padding: 0px 10px;
+		margin: 0px 5px;
+		border-radius: 3px;
+		font-size: 0.9rem;
+		transition: 0.2s ease;
+	}
+
+	button:hover {
+		background-color: var(--light-color);
+	}
+}
+
+.table-order {
+	margin-top: 30px;
+	.button-show-order {
+		background-color: var(--main-color);
+		border: 1px solid var(--main-color);
+		color: white;
+		font-weight: 500;
+		border-radius: 6px;
+		padding: 5px 10px;
+		cursor: pointer;
+	}
+}
+
+.modal {
+	.info-section {
+		padding: 10px;
+		box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+		min-height: 200px;
+		.title-section {
+			margin-bottom: 20px;
+			font-weight: 500;
 		}
-	}
-
-	.detail-product {
-		.name {
-			margin-top: 5px;
-			font-size: 1.2rem;
-			font-weight: 700;
-		}
-	}
-
-	.action {
-		margin-top: 5px;
-		border-top: 1px solid rgb(147, 147, 147);
-		padding-top: 10px;
-		float: right;
 	}
 }

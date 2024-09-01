@@ -3,7 +3,7 @@
 	position: sticky;
 	top: 0px;
 	display: block;
-	width: 340px;
+	width: 280px;
 	transition: all 0.4s ease;
 	.menu-navigate-header {
 		float: right;
@@ -38,4 +38,39 @@
 	overflow: unset;
 	width: 100%;
 	transition: all 0.4s ease;
+}
+
+.menu {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	transition: all 0.4s ease;
+	cursor: pointer;
+}
+
+.menu-item {
+	position: relative;
+}
+
+.menu-item p {
+	text-decoration: none;
+	display: block;
+	padding: 7px;
+	color: #333;
+}
+
+.menu-item-active {
+	color: var(--main-color) !important;
+	font-weight: 500;
+}
+
+.submenu {
+	list-style: none;
+	margin: 0;
+	padding: 0 0 0 30px;
+	background: white;
+}
+
+.submenu li a {
+	padding: 10px;
 }

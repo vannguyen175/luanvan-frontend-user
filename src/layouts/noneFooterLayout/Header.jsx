@@ -3,20 +3,17 @@ import style from "./UserLayouts.module.scss";
 import DropdownMenu from "~/components/DropdownMenu";
 import Button from "@mui/material/Button";
 import * as productService from "~/service/ProductService";
-import { StringTocamelCase } from "../../utils";
+import { useApp } from "~/context/AppProvider";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import SearchIcon from "@mui/icons-material/Search";
 import LogoutIcon from "@mui/icons-material/Logout";
-import Badge from "@mui/material/Badge";
 import Grid from "@mui/material/Grid";
 
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useEffect,  useState } from "react";
 import Box from "@mui/material/Box";
-import { useApp } from "~/context/AppProvider";
-
+import Notification from "../../components/Notification";
+import Search from "../../components/Search";
 
 const cx = classNames.bind(style);
 
@@ -62,33 +59,19 @@ const ActionUserLogin = [
 ];
 
 function Header() {
-	const { user, token } = useApp();
-	const navigate = useNavigate();
-	const location = useLocation();
-	const [productList, setProductList] = useState();
-	const [inputSearch, setInputSearch] = useState("");
-	const [searchResult, setSearchResult] = useState([]);
-	const searchInputRef = useRef();
-	//lọc sản phẩm mỗi khi inputSearch thay đổi => tìm kiếm sp
-	useEffect(() => {
-		if (inputSearch === "") {
-			setSearchResult([]);
-		} else {
-			const filteredProducts = productList.data?.filter((product) => {
-				return StringTocamelCase(product.name).includes(StringTocamelCase(inputSearch));
-			});
-			setSearchResult(filteredProducts);
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [inputSearch]);
+	const { user, token, setToken } = useApp();
 
-	const handleLogout = async () => {
-		await localStorage.clear();
+	const navigate = useNavigate();
+	const [productList, setProductList] = useState();
+	const handleLogout = () => {
+		localStorage.clear();
+		setToken(null);
 		navigate("/");
 	};
 
 	const handleShowCart = () => {
-		navigate(`/gio-hang/${user.id}`);
+		let idUser = user?.id;
+		navigate(`/gio-hang/${idUser}`);
 	};
 
 	useEffect(() => {
@@ -102,16 +85,6 @@ function Header() {
 			limit: `limit=10000`,
 		});
 		setProductList(result);
-	};
-
-	const handleClickSearchResult = (id) => {
-		navigate(`../detail-product/${id}`, { replace: true });
-
-		if (location.pathname.includes("detail-product")) {
-			navigate(0); //reload page khi user search product ở detail-product
-		}
-		searchInputRef.current.value = "";
-		setInputSearch("");
 	};
 
 	const handleLogin = () => {
@@ -140,36 +113,7 @@ function Header() {
 
 			{/* Tìm kiếm sản phẩm */}
 			<Grid item xs={4} className={cx("col")}>
-				<div className={cx("search")}>
-					<input
-						type="text"
-						onChange={(e) => setInputSearch(e.target.value)}
-						name="search"
-						ref={searchInputRef}
-						autoComplete="off"
-						placeholder="Tìm kiếm sản phẩm..."
-					/>
-					<button className="button-icon">
-						<SearchIcon />
-					</button>
-				</div>
-				<ul className={cx("search-result")}>
-					{searchResult?.map((item, index) => (
-						<li key={index} onClick={() => handleClickSearchResult(item._id)}>
-							<div style={{ display: "flex" }}>
-								<div>
-									<img src={`${item.images[0]}`} alt="anh-san-pham" />
-								</div>
-								<div className={cx("detail")}>
-									<p style={{ fontWeight: 500 }}>{item.name}</p>
-									<p style={{ color: "red" }}>
-										{Intl.NumberFormat().format(item?.price)}đ
-									</p>
-								</div>
-							</div>
-						</li>
-					))}
-				</ul>
+				<Search />
 			</Grid>
 
 			{token === null ? (
@@ -192,15 +136,10 @@ function Header() {
 						<ShoppingCartIcon onClick={handleShowCart} />
 					</div>
 
-					<Badge badgeContent={4} color="primary" className="icon-button">
-						<NotificationsIcon onClick={handleShowCart} />
-					</Badge>
+					<Notification />
 
 					<Box ml={3} mr={1} p={0} display="inline-block">
-						<DropdownMenu
-							title={user.name}
-							listActions={localStorage.getItem("id_user") && ActionUserLogin}
-						/>
+						<DropdownMenu title={user?.name} listActions={ActionUserLogin} />
 					</Box>
 
 					<LogoutIcon className="icon-button" onClick={handleLogout} />

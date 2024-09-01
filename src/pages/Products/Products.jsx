@@ -34,10 +34,12 @@ function Products() {
 
 	const getProductsBySubCate = async () => {
 		const res = await ProductService.getAllProducts({
-			data: { state: [], cate: [], subCate: [subCateChosen] },
+			data: { state: [], cate: [], subCate: [subCateChosen] }, //vd: chó
 			page: `page=${pageState.page}`,
 			limit: `limit=${pageState.pageSize}`,
 		});
+		console.log("res", subCateChosen);
+
 		setProducts(res.data);
 	};
 

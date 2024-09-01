@@ -24,7 +24,10 @@ function CardProduct({ type, product }) {
 	return (
 		<div>
 			{type === "horizontal" ? ( //ngang
-				<div className={cx("container")} onClick={() => handleClick()}>
+				<div
+					className={cx("container", "animate__animated", "animate__fadeIn")}
+					onClick={() => handleClick()}
+				>
 					<Grid container>
 						<Grid item xs={3}>
 							<img
@@ -62,7 +65,10 @@ function CardProduct({ type, product }) {
 					</Grid>
 				</div>
 			) : (
-				<div className={cx("container-vertical")} onClick={() => handleClick()}>
+				<div
+					className={cx("container-vertical", "animate__animated", "animate__fadeIn")}
+					onClick={() => handleClick()}
+				>
 					<img
 						className={cx("image-product-vertical")}
 						src={`${product.images[0]}`}

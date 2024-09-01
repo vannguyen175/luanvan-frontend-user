@@ -2,7 +2,6 @@ import classNames from "classnames/bind";
 import style from "./OrderProduct.module.scss";
 import moment from "moment";
 import Button from "~/components/Button";
-import Select from "~/components/Select";
 import vi from "moment/locale/vi";
 import Grid from "@mui/material/Grid";
 import { useNavigate, useParams } from "react-router-dom";
@@ -16,6 +15,8 @@ import Description from "~/components/Description";
 import { useApp } from "~/context/AppProvider";
 import AddressForm from "~/components/AddressForm";
 import { formatPhoneNumber } from "../../utils";
+import LocalAtmIcon from "@mui/icons-material/LocalAtm";
+import PaymentIcon from "@mui/icons-material/Payment";
 
 const cx = classNames.bind(style);
 
@@ -24,7 +25,8 @@ function OrderProduct() {
 	const { id } = useParams(); //id product
 	const { user, socket } = useApp();
 	const [modelConfirm, setModelConfirm] = useState(false);
-	const [modelChangeAddress, setModalChangeAddress] = useState(false);
+	const [modalChangeAddress, setModalChangeAddress] = useState(false);
+	const [modalChangePaymentMethod, setModalChangePaymentMothod] = useState(false);
 	const [paymentMethod, setPaymentMethod] = useState("cash");
 	const [addressInfo, setAddressInfo] = useState({ address: {} });
 	const [details, setDetails] = useState({
@@ -76,11 +78,8 @@ function OrderProduct() {
 
 	//Cập nhật gtri select khi người dùng thay đổi PaymentMethod
 	const handleChangePaymentMethod = (e) => {
-		if (e === "Thanh toán qua ngân hàng") {
-			setPaymentMethod("autopay");
-		} else {
-			setPaymentMethod("cash");
-		}
+		//	console.log("e.target.value", e.target.value);
+		setPaymentMethod(e.target.value);
 	};
 
 	//Lưu lại gtri input khi người dùng thay đổi shippingAddress
@@ -268,7 +267,22 @@ function OrderProduct() {
 								/>
 							</p>
 						</div>
+
 						<hr />
+						<div className={cx("payment-method")}>
+							<Description
+								title="Hình thức thanh toán"
+								desc={
+									paymentMethod === "autopay"
+										? "Thanh toán VNPAY"
+										: "Thanh toán khi nhận hàng"
+								}
+							/>
+							<button onClick={() => setModalChangePaymentMothod(true)}>
+								Thay đổi
+							</button>
+						</div>
+
 						<div className={cx("price")}>
 							<p>
 								Giá sản phẩm:
@@ -285,13 +299,7 @@ function OrderProduct() {
 							</p>
 						</div>
 						<hr style={{ marginBlock: 30 }} />
-						<Select
-							borderColor="gray"
-							name="Hình thức thanh toán"
-							value="Thanh toán khi nhận hàng"
-							options={["Thanh toán khi nhận hàng", "Thanh toán qua ngân hàng"]}
-							onChange={handleChangePaymentMethod}
-						/>
+
 						<div className={cx("order-btn")}>
 							<Button primary onClick={handleCheckOrder}>
 								Đặt hàng ngay
@@ -349,7 +357,7 @@ function OrderProduct() {
 				}
 			</Modal>
 			<Modal
-				isOpen={modelChangeAddress}
+				isOpen={modalChangeAddress}
 				title="Thay đổi địa chỉ giao hàng"
 				setIsOpen={setModalChangeAddress}
 				width={500}
@@ -359,6 +367,42 @@ function OrderProduct() {
 					<Button onClick={() => setModalChangeAddress(false)}>Thoát</Button>
 
 					<Button type="submit" primary onClick={() => handleChangeAddress()}>
+						Cập nhập
+					</Button>
+				</div>
+			</Modal>
+			<Modal
+				isOpen={modalChangePaymentMethod}
+				title="Lựa chọn phương thức thanh toán"
+				setIsOpen={setModalChangePaymentMothod}
+				width={500}
+			>
+				<div className="control" onChange={handleChangePaymentMethod}>
+					<div className="radio">
+						<LocalAtmIcon />
+						<input
+							type="radio"
+							value="autopay"
+							name="payment"
+							style={{ marginRight: 10 }}
+						/>
+						Thanh toán qua ngân hàng
+					</div>
+					<div className="radio">
+						<PaymentIcon />
+						<input
+							type="radio"
+							value="cash"
+							name="payment"
+							style={{ marginRight: 10 }}
+						/>
+						Thanh toán khi nhận hàng
+					</div>
+				</div>
+				<div style={{ textAlign: "center" }}>
+					<Button onClick={() => setModalChangePaymentMothod(false)}>Thoát</Button>
+
+					<Button type="submit" primary>
 						Cập nhập
 					</Button>
 				</div>

@@ -19,7 +19,7 @@ export const AppProvider = ({ children }) => {
 		}
 		const decoded = jwtDecode(token);
 		try {
-			const res = await UserService.getDetailUser(decoded?.id, token);			
+			const res = await UserService.getDetailUser(decoded?.id, token);
 			setUser({
 				id: res?.user?._id,
 				name: res?.user?.name,
@@ -31,6 +31,7 @@ export const AppProvider = ({ children }) => {
 				district: res?.address?.district || "",
 				ward: res?.address?.ward || "",
 				address: res?.address?.address || "",
+				totalSelled: res?.user?.totalSelled,
 			});
 		} catch (error) {
 			if (error.response?.data?.message === "The authemtication") {
@@ -58,7 +59,6 @@ export const AppProvider = ({ children }) => {
 	useEffect(() => {
 		getUserInfo();
 	}, [token]);
-
 
 	return (
 		<AppContext.Provider value={{ user, setUser, token, setToken, socket, setSocket }}>

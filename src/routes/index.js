@@ -4,6 +4,7 @@ import DetailProduct from "~/pages/DetailProduct/DetailProduct";
 import NotFoundPage from "~/pages/NotFoundPage/NotFoundPage";
 import UserLayout from "~/layouts/userLayouts/userLayout";
 import NoneFooterLayout from "../layouts/noneFooterLayout/noneFooterLayout";
+import SellerLayout from "../layouts/sellerLayout";
 import OrderProduct from "../pages/OrderProduct/OrderProduct";
 import Cart from "../pages/Cart/Cart";
 
@@ -12,7 +13,7 @@ import Profile from "~/pages/Profile";
 import Login from "~/pages/Login/Login";
 import Register from "~/pages/Register/Register";
 import PostingProduct from "../pages/PostingProduct/PostingProduct";
-import ForSeller from "../pages/ForSeller";
+import ForSeller from "../pages/ForSellerMenu";
 import SellerHomePage from "../pages/SellerHomePage";
 
 export const routes = [
@@ -54,7 +55,7 @@ export const routes = [
 	{
 		path: "/nha-ban-hang",
 		page: ForSeller,
-		layout: UserLayout,
+		layout: SellerLayout,
 	},
 	{
 		path: "/login",
@@ -69,7 +70,7 @@ export const routes = [
 	{
 		path: "/dang-tin",
 		page: PostingProduct,
-		layout: UserLayout,
+		layout: SellerLayout,
 	},
 	{
 		path: "*",

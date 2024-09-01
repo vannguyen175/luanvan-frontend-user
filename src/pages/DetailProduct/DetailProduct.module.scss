@@ -65,24 +65,25 @@
 
 .detail-seller {
 	margin: 10px;
-	display: flex;
 	align-items: center;
 	hr {
 		margin-top: 35px;
 	}
-	.avatar {
-		img {
+	.main-info {
+		display: flex;
+		align-items: center;
+		margin-bottom: 20px;
+		.avatar {
 			width: 60px;
 			height: 60px;
-			border: 3px solid gray;
 			border-radius: 50%;
-			margin-right: 15px;
 		}
-	}
-	span {
+
 		.name {
+			margin-left: 20px;
+			font-weight: 500;
 			font-size: 1.2rem;
-			font-weight: 700;
+			cursor: pointer;
 			color: var(--main-color);
 		}
 	}
@@ -122,4 +123,3 @@
 	display: block;
 	box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 }
-

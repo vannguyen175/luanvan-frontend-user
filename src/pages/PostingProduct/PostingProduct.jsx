@@ -3,6 +3,7 @@ import Grid from "@mui/material/Unstable_Grid2";
 import Box from "@mui/material/Box";
 import { toast } from "react-toastify";
 import CircularProgress from "@mui/material/CircularProgress";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import ProductForm from "~/components/ProductForm";
 import AddressForm from "~/components/AddressForm";
@@ -10,6 +11,7 @@ import UploadImage from "~/components/UploadImage";
 import { useApp } from "~/context/AppProvider";
 import * as ProductService from "~/service/ProductService";
 import Button from "~/components/Button";
+import { Link } from "react-router-dom";
 
 function PostingProduct() {
 	const { user } = useApp();
@@ -47,6 +49,11 @@ function PostingProduct() {
 
 	return (
 		<div className="inner-content" style={{ margin: "10px auto", padding: "20px 30px" }}>
+			<div style={{ float: "left" }}>
+				<Link to={"/nha-ban-hang"}>
+					<ArrowBackIcon />
+				</Link>
+			</div>
 			<p className="title" style={{ textAlign: "center" }}>
 				Đăng tải sản phẩm
 			</p>

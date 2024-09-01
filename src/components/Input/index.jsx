@@ -1,6 +1,6 @@
 import Grid from "@mui/material/Grid";
 
-function InputComp({ label, placeholder, type, textarea, innerRef, name, onChange }) {
+function InputComp({ label, placeholder, type, textarea, innerRef, name, onChange, value }) {
 	let Comp = "input";
 	if (textarea) {
 		Comp = "textarea";
@@ -17,6 +17,7 @@ function InputComp({ label, placeholder, type, textarea, innerRef, name, onChang
 					ref={innerRef}
 					type={type}
 					placeholder={placeholder}
+					defaultValue={value}
 				/>
 			</Grid>
 		</>

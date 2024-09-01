@@ -1,149 +1,331 @@
 import classNames from "classnames/bind";
 import style from "./ForSeller.module.scss";
-import * as OrderService from "../../service/OrderService";
-import Description from "../Description";
-import { useApp } from "~/context/AppProvider";
-
-
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import { useEffect, useState } from "react";
-import Grid from "@mui/material/Grid";
+import * as OrderService from "../../service/OrderService";
+import { useApp } from "~/context/AppProvider";
+import moment, { max } from "moment";
+import CircularProgress from "@mui/material/CircularProgress";
+import Modal from "~/components/Modal";
+import Description from "~/components/Description";
+import Button from "../Button";
 import { toast } from "react-toastify";
-import * as React from "react";
+
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Grid from "@mui/material/Grid";
 
 const cx = classNames.bind(style);
 
 function OrderManager() {
-	const [alignment, setAlignment] = useState("0");
-	const { user } = useApp();
+	const { user, token } = useApp();
+
+	const [activeTab, setActiveTab] = useState(0);
+	const [isLoading, setIsLoading] = useState(false);
+	const [modalDetail, setModalDetail] = useState(false);
 	const [orders, setOrders] = useState([]);
+	const [orderSelected, setOrderSelected] = useState();
+
+	const tabs = [
+		{ label: "Đang xử lý" },
+		{ label: "Đang vận chuyển" },
+		{ label: "Đang giao hàng" },
+		{ label: "Đã giao hàng" },
+		{ label: "Bị hủy" },
+	];
 
 	const getOrders = async () => {
-		const res = await OrderService.getAllOrders({
-			data: { seller: user.id, status: alignment },
-		});
-		setOrders(res.data);
+		if (user.id) {
+			const res = await OrderService.getAllOrders({
+				data: { seller: user.id, status: activeTab, token: token },
+			});
+			setOrders(res.data);
+			setIsLoading(false);
+		}
 	};
 
 	useEffect(() => {
 		getOrders();
-		// eslint-disable-next-line
-	}, [alignment]);
+		setIsLoading(true);
+	}, [activeTab]);
 
-	const handleChange = (event, newAlignment) => {
-		setAlignment(newAlignment);
+	const handleShowDetail = (row) => {
+		console.log("row", row);
+		
+		setModalDetail(true);
+		setOrderSelected(row);
 	};
 
-	const handleUpdateOrder = async (id, data) => {
-		const res = await OrderService.updateOrder(id, data);
-		if (res.status === "SUCCESS") {
-			toast.success(res.message);
-			setTimeout(() => {
-				getOrders();
-			}, 2000);
-		} else {
-			toast.error(res.message);
+	const handleUpdateOrder = async (idOrder, data) => {
+		if (window.confirm("Bạn có chắc muốn vận chuyển đơn hàng?")) {
+			const res = await OrderService.updateOrder(idOrder, data);
+			if (res.status === "SUCCESS") {
+				toast.success(res.message);
+				setTimeout(() => {
+					getOrders();
+					setModalDetail(false);
+				}, 2000);
+			} else {
+				toast.error(res.message);
+			}
 		}
 	};
 
 	return (
-		<div style={{ overflow: "unset" }}>
+		<div>
 			<div className={cx("inner-content")}>
-				<p className="title">Trạng thái đơn hàng</p>
-				<div className={cx("sticky")}>
-					<ToggleButtonGroup
-						color="primary"
-						value={alignment}
-						exclusive
-						onChange={handleChange}
-						fullWidth
-						size="small"
-					>
-						<ToggleButton value="0">Đang xử lý</ToggleButton>
-						<ToggleButton value="1">Đang vận chuyển</ToggleButton>
-						<ToggleButton value="2">Giao hàng</ToggleButton>
-						<ToggleButton value="3">Đã giao</ToggleButton>
-						<ToggleButton value="4">Đã hủy</ToggleButton>
-					</ToggleButtonGroup>
+				<div className={cx("title")}>Quản lý đơn hàng</div>
+				<div className={cx("tab-order")}>
+					{tabs.map((item, index) => (
+						<button
+							key={index}
+							onClick={() => setActiveTab(index)}
+							className={cx(activeTab === index && "active-tab")}
+						>
+							{item.label}
+						</button>
+					))}
 				</div>
-			</div>
-			<div className="inner-content">
-				{`${orders.length} đơn hàng`}
-				{orders.length > 0 ? (
-					orders?.map((item, index) => (
-						<div className={cx("order-status-card")} key={index}>
-							<Grid container>
-								<Grid item xs={12} className={cx("shop")}>
-									Người mua: &nbsp;
-									{item.buyer.name}
-								</Grid>
-								<Grid item xs={1} className={cx("image-product")}>
-									<img src={item.product.images[0]} alt="anh-san-pham" />
-								</Grid>
-								<Grid item xs={6} className={cx("detail-product")}>
-									<Grid container direction="column">
-										<Grid item xs={12} className={cx("name")}>
-											{item.product.name}
-										</Grid>
-										<Grid item xs={12}>
-											<Description
-												title="Danh mục"
-												desc={item.product.subCategory.name}
-											/>
-										</Grid>
-									</Grid>
-								</Grid>
-								<Grid item xs={3} className={cx("price-product")}>
-									<Grid container direction="column">
-										<Description
-											title="Giá tiền"
-											desc={`${Intl.NumberFormat().format(
-												(item.shippingDetail?.shippingPrice || 0) +
-													(item.product?.price || 0)
-											)}đ`}
-										/>
-										<Description
-											title="Hình thức"
-											desc={
-												item.paymentMethod === "cash"
-													? "Tiền mặt"
-													: "Chuyển khoản"
-											}
-										/>
-									</Grid>
-								</Grid>
-								<Grid item xs={2} className={cx("note")}>
-									{alignment === "1" && <p>Đơn vị vận chuyển đang giao hàng</p>}
-								</Grid>
-								<Grid item container className={cx("action")}>
-									<Grid item xs={12}>
-										{alignment === "0" ? (
-											<button
-												onClick={() =>
-													handleUpdateOrder(item._id, { status: "1" })
-												}
-												className={cx("button-primary")}
-											>
-												Vận chuyển
-											</button>
-										) : alignment === "3" ? (
-											<button className={cx("button-primary")}>
-												Đánh giá
-											</button>
-										) : alignment === "1" ? (
-											<p>Nhắn tin cho người mua</p>
+				<div className={cx("search-order")}>
+					<input
+						type="text"
+						placeholder="Nhập ID đơn hàng, tên khách hàng, tên sản phẩm..."
+					/>
+					<button>Tìm kiếm</button>
+					<button>Xuất file excel</button>
+				</div>
+
+				<div className={cx("table-order")}>
+					<TableContainer>
+						<Table sx={{ minWidth: 650 }} aria-label="simple table">
+							<TableHead>
+								<TableRow>
+									<TableCell>ID Đơn hàng</TableCell>
+									<TableCell></TableCell>
+									<TableCell>Tên SP</TableCell>
+									<TableCell>Khách hàng</TableCell>
+									<TableCell>Giá tiền</TableCell>
+									<TableCell>Hình thức thanh toán</TableCell>
+									<TableCell>Ngày mua</TableCell>
+									<TableCell>Địa chỉ</TableCell>
+									<TableCell></TableCell>
+								</TableRow>
+							</TableHead>
+							<TableBody>
+								{isLoading ? (
+									<TableRow>
+										<TableCell colSpan={12} align="center">
+											<CircularProgress />
+										</TableCell>
+									</TableRow>
+								) : (
+									<>
+										{orders[0]?.product ? (
+											orders.map((row) => (
+												<TableRow
+													key={row._id}
+													sx={{
+														"&:last-child td, &:last-child th": {
+															border: 0,
+														},
+													}}
+													className="animate__animated animate__fadeIn"
+												>
+													<TableCell component="th" scope="row">
+														#002
+													</TableCell>
+													<TableCell>
+														<img
+															style={{ width: 50, height: 50 }}
+															src={row.product.images[0]}
+															alt="anh-SP"
+														/>
+													</TableCell>
+													<TableCell>{row.product.name}</TableCell>
+													<TableCell>{row.buyer.name}</TableCell>
+													<TableCell>
+														{Intl.NumberFormat().format(
+															row.product.price + 30000
+														)}
+														đ
+													</TableCell>
+													<TableCell>
+														{row.paymentMethod === "cash"
+															? "Tiền mặt"
+															: "Chuyển khoản"}
+													</TableCell>
+													<TableCell>
+														{moment(row.createdAt).format(
+															"DD-MM-YYYY HH:mm:ss"
+														)}
+													</TableCell>
+													<TableCell>
+														{row.shippingDetail.address}
+													</TableCell>
+
+													<TableCell>
+														<button
+															className={cx("button-show-order")}
+															onClick={() => handleShowDetail(row)}
+														>
+															Xem chi tiết
+														</button>
+													</TableCell>
+												</TableRow>
+											))
 										) : (
-											""
+											<TableRow>
+												<TableCell colSpan={12} align="center">
+													Không có đơn hàng.
+												</TableCell>
+											</TableRow>
 										)}
-									</Grid>
+									</>
+								)}
+							</TableBody>
+						</Table>
+					</TableContainer>
+				</div>
+
+				<Modal
+					isOpen={modalDetail}
+					title="Thông tin đơn hàng"
+					setIsOpen={setModalDetail}
+					width={1000}
+				>
+					{orderSelected?.product && (
+						<div className={cx("modal")}>
+							<div className="title" style={{ marginBottom: 30 }}>
+								Mã đơn hàng: #002 &nbsp;&nbsp;&nbsp; Trạng thái:{" "}
+								{orderSelected.status}
+							</div>
+							<Grid
+								container
+								spacing={2}
+								sx={{
+									justifyContent: "space-evenly",
+									alignItems: "center",
+									marginBottom: 6,
+								}}
+							>
+								<Grid item xs={5} className={cx("info-section")}>
+									<p className={cx("title-section")}>Khách hàng</p>
+									<Description title="Tên" desc={orderSelected.buyer?.name} />
+									<Description
+										title="Email"
+										desc={orderSelected.shippingDetail?.email}
+									/>
+									<Description
+										title="Số điện thoại"
+										desc={orderSelected.shippingDetail?.phone}
+									/>
+									<Description
+										title="Địa chỉ"
+										desc={orderSelected.shippingDetail?.address}
+									/>
+								</Grid>
+								<Grid item xs={5} className={cx("info-section")}>
+									<p className={cx("title-section")}>Thông tin chung</p>
+									<Description
+										title="Giá sản phẩm"
+										desc={`${Intl.NumberFormat().format(
+											orderSelected.product.price
+										)}đ`}
+									/>
+									<Description
+										title="Phí vận chuyển"
+										desc={`${Intl.NumberFormat().format(30000)}đ`}
+									/>
+									<Description
+										title="Hình thức thanh toán"
+										desc={
+											orderSelected.paymentMethod === "cash"
+												? "Thanh toán khi nhận hàng"
+												: "Thanh toán qua ngân hàng"
+										}
+									/>
+									<Description
+										title="Tổng tiền"
+										desc={`${Intl.NumberFormat().format(
+											orderSelected.product.price + 30000
+										)}đ`}
+										important
+									/>
 								</Grid>
 							</Grid>
+							<Grid
+								container
+								spacing={2}
+								sx={{
+									justifyContent: "space-evenly",
+									alignItems: "center",
+								}}
+							>
+								<Grid item xs={5} className={cx("info-section")}>
+									<p className={cx("title-section")}>Sản phẩm</p>
+									{orderSelected.product.images.map((image, index) => (
+										<img
+											key={index}
+											style={{ width: 70, height: 70, margin: 5 }}
+											src={image}
+											alt="anh-SP"
+										/>
+									))}
+
+									<Description
+										title="Tên SP"
+										desc={orderSelected.product?.name}
+									/>
+									<Description
+										title="Giá"
+										desc={`${Intl.NumberFormat().format(
+											orderSelected.product.price
+										)}đ`}
+									/>
+									<Description
+										title="Danh mục"
+										desc={orderSelected.product.subCategory?.name}
+									/>
+								</Grid>
+								<Grid item xs={5} className={cx("info-section")}>
+									{orderSelected?.cancelReason ? (
+										<Description
+											title="Lý do hủy đơn"
+											desc={orderSelected?.cancelReason}
+										/>
+									) : (
+										<div>
+											<Description
+												title="Ghi chú của khách hàng"
+												desc={orderSelected?.note || "Không có"}
+											/>
+											<Description
+												title="Đánh giá từ khách hàng"
+												desc={orderSelected?.rating || "Không có"}
+											/>
+										</div>
+									)}
+								</Grid>
+							</Grid>
+							<div style={{ textAlign: "center", paddingTop: 30 }}>
+								<Button onClick={() => setModalDetail(false)}>Thoát</Button>
+								{orderSelected.status === "Đang xử lý" && (
+									<Button
+										primary
+										onClick={() =>
+											handleUpdateOrder(orderSelected._id, { status: "1" })
+										}
+									>
+										Vận chuyển hàng
+									</Button>
+								)}
+							</div>
 						</div>
-					))
-				) : (
-					<p style={{ textAlign: "center", margin: 20 }}>Không có dữ liệu</p>
-				)}
+					)}
+				</Modal>
 			</div>
 		</div>
 	);

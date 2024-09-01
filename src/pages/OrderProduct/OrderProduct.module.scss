@@ -1,5 +1,5 @@
 .left {
-	margin: 10px 0 0 0;
+	margin: 10px 10px 0 0 !important;
 	padding: 20px;
 	.title {
 		font-size: 1.4rem;
@@ -56,7 +56,7 @@
 	}
 }
 .right {
-	margin: 10px 0 0 30px;
+	margin: 10px 0 0 10px !important;
 	padding: 20px;
 	.title {
 		font-size: 1.4rem;
@@ -83,7 +83,7 @@
 		.info {
 			margin: 30px 0 0 10px;
 			width: 100%;
-			
+
 			p {
 				position: relative;
 				margin: 20px 0;
@@ -120,7 +120,7 @@
 		}
 
 		hr {
-			margin: 50px 0;
+			margin: 40px 0;
 		}
 
 		.price {
@@ -131,6 +131,17 @@
 				position: absolute;
 				right: 10px;
 				font-weight: 500;
+			}
+		}
+
+		.payment-method {
+			margin-bottom: 50px;
+			display: flex;
+			button {
+				border: none;
+				margin-left: 20px;
+				color: var(--main-color);
+				background-color: white;
 			}
 		}
 	}
