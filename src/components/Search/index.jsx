@@ -12,7 +12,7 @@ const cx = classNames.bind(style);
 function Search() {
 	const [inputSearch, setInputSearch] = useState("");
 	const [searchResult, setSearchResult] = useState([]);
-	const searchInputRef = useRef();
+	const searchInputRef = useRef(null);
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [productList, setProductList] = useState();
 	const location = useLocation();
@@ -49,7 +49,9 @@ function Search() {
 
 	const handleChangeInput = (e) => {
 		setInputSearch(e.target.value);
-		setAnchorEl(e.currentTarget);
+		if (!anchorEl) {
+			setAnchorEl(e.currentTarget); // Chỉ cập nhật khi cần thiết
+		}
 	};
 
 	const handleClickSearchResult = (id) => {
@@ -99,9 +101,13 @@ function Search() {
 				}}
 			>
 				<div>
-					TEST SEARCH
-					{/* {searchResult?.map((item, index) => (
-						<li key={index} onClick={() => handleClickSearchResult(item._id)}>
+					{/* TEST SEARCH */}
+					{searchResult?.map((item, index) => (
+						<li
+							className={cx("result")}
+							key={index}
+							onClick={() => handleClickSearchResult(item._id)}
+						>
 							<div style={{ display: "flex" }}>
 								<div>
 									<img src={`${item.images[0]}`} alt="anh-san-pham" />
@@ -114,7 +120,7 @@ function Search() {
 								</div>
 							</div>
 						</li>
-					))} */}
+					))}
 				</div>
 			</Popover>
 		</div>

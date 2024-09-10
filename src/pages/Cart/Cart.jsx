@@ -29,7 +29,7 @@ function Cart() {
 	};
 
 	return (
-		<div className="inner-content" style={{ width: 1000, margin: "auto" }}>
+		<div className="inner-content" style={{ width: 1000, margin: "20px auto" }}>
 			<p className="title" style={{ textAlign: "center" }}>
 				Giỏ hàng của bạn
 			</p>
@@ -40,7 +40,7 @@ function Cart() {
 							<div style={{ display: "flex" }}>
 								<img
 									className="col-3"
-									src={`/assets/images-product/${cart?.images[0].name}`}
+									src={`${cart?.images[0]}`}
 									alt="anh-san-pham"
 								/>
 								<div className={cx("detail", "col-7")}>
@@ -48,7 +48,7 @@ function Cart() {
 									<p className={cx("price")}>
 										{Intl.NumberFormat().format(cart?.price)}đ
 									</p>
-									{cart?.selled !== "false" ? (
+									{cart?.statePost === "selled" ? (
 										<p style={{ color: "red" }}>Hết hàng</p>
 									) : (
 										""
@@ -56,7 +56,7 @@ function Cart() {
 									<p>Số lượng x 1</p>
 								</div>
 								<div className={cx("col-2", "action")}>
-									{cart?.selled !== "false" ? (
+									{cart?.statePost === "selled" ? (
 										<Button disabled>Thanh toán</Button>
 									) : (
 										<Button primary onClick={() => handlePurchase(cart._id)}>

@@ -7,13 +7,15 @@ import { useApp } from "~/context/AppProvider";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Grid from "@mui/material/Grid";
+import * as CartService from "~/service/CartService";
 
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useEffect,  useState } from "react";
+import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Notification from "../../components/Notification";
 import Search from "../../components/Search";
+import { Badge } from "@mui/material";
 
 const cx = classNames.bind(style);
 
@@ -56,6 +58,8 @@ const ActionUserLogin = [
 
 function Header() {
 	const { user, token, setToken } = useApp();
+	const idUser = localStorage.getItem("id_user");
+	const [cartLength, setCartLength] = useState(null);
 
 	const navigate = useNavigate();
 	const [productList, setProductList] = useState();
@@ -70,8 +74,16 @@ function Header() {
 		navigate(`/gio-hang/${idUser}`);
 	};
 
+	const getCarts = async () => {
+		if (idUser) {
+			const result = await CartService.getCart(idUser);
+			setCartLength(result.data.length);
+		}
+	};
+
 	useEffect(() => {
 		getProductList();
+		getCarts();
 	}, []);
 
 	const getProductList = async () => {
@@ -127,10 +139,15 @@ function Header() {
 					</Button>
 				</Grid>
 			) : (
-				<Grid item xs={4} className={cx("col")} style={{ paddingLeft: 30 }}>
-					<div className="icon-button">
+				<Grid item xs={4} className={cx("col")} style={{ paddingLeft: 10 }}>
+					<Badge
+						badgeContent={cartLength > 0 ? cartLength : 0}
+						invisible={cartLength === 0}
+						color="primary"
+						className={cx("icon-button")}
+					>
 						<ShoppingCartIcon onClick={handleShowCart} />
-					</div>
+					</Badge>
 
 					<Notification />
 

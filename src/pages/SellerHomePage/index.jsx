@@ -60,7 +60,7 @@ function SellerPage() {
 				{detail?.seller?.totalSelled >= 2
 					? "Nhà bán hàng chuyên nghiệp"
 					: "Nhà bán hàng mới"}
-				<div>{isHeart ? <FavoriteIcon /> : <FavoriteBorderIcon />}</div>
+				{/* <div>{isHeart ? <FavoriteIcon /> : <FavoriteBorderIcon />}</div> */}
 			</div>
 			<div className={cx("inner-content", "product-list")}>
 				<div style={{ display: "flex", flexWrap: "wrap", paddingTop: 20 }}>
