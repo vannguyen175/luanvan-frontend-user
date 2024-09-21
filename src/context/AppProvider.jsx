@@ -26,12 +26,16 @@ export const AppProvider = ({ children }) => {
 				email: res?.user?.email,
 				avatar: res?.user?.avatar || "assets/images/user-avatar.jpg",
 				isAdmin: res?.user?.isAdmin,
+
 				phone: res?.address?.phone || "",
 				province: res?.address?.province || "",
 				district: res?.address?.district || "",
 				ward: res?.address?.ward || "",
 				address: res?.address?.address || "",
-				totalSelled: res?.user?.totalSelled,
+
+				totalProduct: res?.seller?.totalProduct,
+				totalSold: res?.seller?.totalSold,
+				rating: res?.seller?.rating,
 			});
 		} catch (error) {
 			if (error.response?.data?.message === "The authemtication") {

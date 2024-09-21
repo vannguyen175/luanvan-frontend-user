@@ -6,6 +6,8 @@ import TimeAgo from "javascript-time-ago";
 import vi from "javascript-time-ago/locale/vi";
 
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 import { toast } from "react-toastify";
 
 //import Button from "~/components/Button";
@@ -29,6 +31,7 @@ function DetailProduct() {
 	const { user } = useApp();
 	const navigate = useNavigate();
 	const [buyerDetail, setBuyerDetail] = useState();
+	const [quantitySelected, setQuantitySelected] = useState(1);
 	const location = useLocation();
 	const [productBySubCate, setProductBySubCate] = useState();
 	const [details, setDetails] = useState({
@@ -77,7 +80,13 @@ function DetailProduct() {
 			...prevDetails,
 			seller: res.data,
 		}));
-		console.log(res);
+	};
+
+	const handleChoseQuantity = (type) => {
+		if (quantitySelected == 1 && type === "remove") return;
+		else if (quantitySelected == details.product?.quantity && type === "add") return;
+		else if (type === "remove") setQuantitySelected(quantitySelected - 1);
+		else if (type === "add") setQuantitySelected(quantitySelected + 1);
 	};
 
 	const handleOrderNow = () => {
@@ -93,11 +102,12 @@ function DetailProduct() {
 			const addCart = await CartService.createCart({
 				id: user.id,
 				idProduct: details.product._id,
+				quantity: quantitySelected,
 			});
 			if (addCart?.status === "SUCCESS") {
-				toast.success("Thêm vào giỏ hàng thành công!");
+				toast.success(addCart.message);
 			} else if (addCart?.status === "EXIST") {
-				toast.warning("Bạn đã thêm sản phẩm này rồi");
+				toast.warning("Sản phẩm đã tồn tại trong giỏ hàng");
 			}
 		} else {
 			navigate("/login", { state: location.pathname });
@@ -178,6 +188,10 @@ function DetailProduct() {
 											)}đ`}
 										/>
 										<Description
+											title="Số lượng"
+											desc={details.product?.quantity}
+										/>
+										<Description
 											title="Thời điểm đăng"
 											desc={
 												<ReactTimeAgo
@@ -194,6 +208,61 @@ function DetailProduct() {
 											title="Tin đã được kiểm duyệt"
 											desc={<CheckCircleOutlineIcon />}
 										/>
+										{details.product?.sellerName === buyerDetail?.name ? (
+											<p style={{ textAlign: "center", marginTop: 20 }}>
+												Đây là sản phẩm của bạn
+											</p>
+										) : (
+											<div className={cx("actions")}>
+												<div
+													style={{
+														display: "flex",
+														justifyContent: "center",
+													}}
+												>
+													<div className={cx("actions-price")}>
+														<p>Tổng tiền: &nbsp;</p>
+														<strong>
+															{Intl.NumberFormat().format(
+																details.product?.price *
+																	quantitySelected
+															)}
+															đ
+														</strong>
+													</div>
+													<div className={cx("actions-quantity")}>
+														<p>Số lượng</p>
+														<RemoveIcon
+															onClick={() =>
+																handleChoseQuantity("remove")
+															}
+														/>
+														<strong>{quantitySelected}</strong>
+														<AddIcon
+															onClick={() =>
+																handleChoseQuantity("add")
+															}
+														/>
+													</div>
+												</div>
+
+												<div className={cx("actions-button")}>
+													<Button
+														style={{ width: "70%" }}
+														onClick={handleAddCart}
+													>
+														Thêm vào giỏ hàng
+													</Button>
+													<Button
+														primary
+														style={{ width: "70%" }}
+														onClick={handleOrderNow}
+													>
+														Đặt hàng ngay
+													</Button>
+												</div>
+											</div>
+										)}
 										<hr />
 
 										<h5>Thông tin chi tiết sản phẩm</h5>
@@ -265,25 +334,6 @@ function DetailProduct() {
 												].join(", ") || ""
 											}
 										/>
-									</div>
-								)}
-
-								{details.product?.sellerName === buyerDetail?.name ? (
-									<p style={{ textAlign: "center", marginTop: 20 }}>
-										Đây là sản phẩm của bạn
-									</p>
-								) : (
-									<div style={{ textAlign: "center", marginBottom: 30 }}>
-										<Button style={{ width: "70%" }} onClick={handleAddCart}>
-											Thêm vào giỏ hàng
-										</Button>
-										<Button
-											primary
-											style={{ width: "70%" }}
-											onClick={handleOrderNow}
-										>
-											Đặt hàng ngay
-										</Button>
 									</div>
 								)}
 							</div>

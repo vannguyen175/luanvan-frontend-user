@@ -2,15 +2,23 @@ import { useNavigate, useParams } from "react-router-dom";
 import classNames from "classnames/bind";
 import style from "./Cart.module.scss";
 import * as CartService from "~/service/CartService";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "~/components/Button";
+
+import StoreMallDirectoryIcon from "@mui/icons-material/StoreMallDirectory";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 
 const cx = classNames.bind(style);
 
 function Cart() {
 	const { id } = useParams(); //idUser
+	const timeoutRef = useRef(null);
 	let navigate = useNavigate();
 	const [cartDetail, setCartDetail] = useState([]);
+	const [itemSelected, setItemSelected] = useState([]);
+	const [totalPrice, setTotalPrice] = useState(0);
+
 	const getCarts = async () => {
 		const result = await CartService.getCart(id);
 		setCartDetail(result.data);
@@ -24,58 +32,165 @@ function Cart() {
 		getCarts();
 	};
 
-	const handlePurchase = (idCart) => {
-		navigate(`/dat-hang/${idCart}`);
+	const handleUpdateCart = async (updatedCartDetail) => {
+		await CartService.updateCart({ idUser: id, product: updatedCartDetail });
+	};
+
+	const handleSetTotalPrice = (type, price, quantity) => {
+		if (type === "remove") {
+			setTotalPrice(totalPrice - price * quantity);
+		} else {
+			setTotalPrice(totalPrice + price * quantity);
+		}
+	};
+
+	const handleChangeQuantity = (type, index) => {
+		const updatedCartDetail = [...cartDetail];
+		if (cartDetail[index].quantity === 1 && type === "remove") return;
+		else if (cartDetail[index].quantity === cartDetail[index].totalQuantity && type === "add")
+			return;
+		else if (type === "remove") {
+			updatedCartDetail[index] = {
+				...updatedCartDetail[index],
+				quantity: updatedCartDetail[index].quantity - 1,
+			};
+			setCartDetail(updatedCartDetail);
+		} else if (type === "add") {
+			updatedCartDetail[index] = {
+				...updatedCartDetail[index],
+				quantity: updatedCartDetail[index].quantity + 1,
+			};
+			setCartDetail(updatedCartDetail);
+		}
+
+		if (itemSelected.includes(index)) {
+			handleSetTotalPrice(type, cartDetail[index].price, 1);
+		}
+
+		// Xóa bỏ timeout trước đó nếu có (người dùng thay đổi quá nhanh)
+		if (timeoutRef.current) {
+			clearTimeout(timeoutRef.current);
+		}
+
+		// Thiết lập timeout mới
+		timeoutRef.current = setTimeout(() => {
+			handleUpdateCart(updatedCartDetail);
+		}, 1000); // 1s
+	};
+
+	const handleSelectItem = (e, index) => {
+		if (e.target.checked) {
+			setItemSelected([...itemSelected, index]);
+			localStorage.setItem("cartSelected", [...itemSelected, index]);
+			handleSetTotalPrice("add", cartDetail[index].price, cartDetail[index].quantity);
+		} else {
+			const tempArray = itemSelected.filter((item) => item !== index);
+			setItemSelected(tempArray);
+			localStorage.setItem("cartSelected", tempArray);
+
+			handleSetTotalPrice("remove", cartDetail[index].price, cartDetail[index].quantity);
+		}
+	};
+
+	const handlePurchase = () => {
+		navigate(`/dat-hang`);
 	};
 
 	return (
-		<div className="inner-content" style={{ width: 1000, margin: "20px auto" }}>
-			<p className="title" style={{ textAlign: "center" }}>
-				Giỏ hàng của bạn
-			</p>
-			<div className={cx("container")}>
-				{cartDetail?.map((cart, index) => {
-					return (
-						<div className={cx("cart", "row")} key={index}>
-							<div style={{ display: "flex" }}>
-								<img
-									className="col-3"
-									src={`${cart?.images[0]}`}
-									alt="anh-san-pham"
-								/>
-								<div className={cx("detail", "col-7")}>
-									<p className={cx("name")}>{cart?.name}</p>
-									<p className={cx("price")}>
-										{Intl.NumberFormat().format(cart?.price)}đ
-									</p>
-									{cart?.statePost === "selled" ? (
-										<p style={{ color: "red" }}>Hết hàng</p>
-									) : (
-										""
-									)}
-									<p>Số lượng x 1</p>
-								</div>
-								<div className={cx("col-2", "action")}>
-									{cart?.statePost === "selled" ? (
-										<Button disabled>Thanh toán</Button>
-									) : (
-										<Button primary onClick={() => handlePurchase(cart._id)}>
-											Thanh toán
-										</Button>
-									)}
+		<div style={{ display: "flex" }}>
+			<div className="inner-content" style={{ width: "70%" }}>
+				<p className="title">Giỏ hàng của bạn</p>
+				<div>
+					{cartDetail?.map((cart, index) => {
+						return (
+							<div className={cx("cart", "row")} key={index}>
+								<div style={{ display: "flex" }}>
+									<div className="col-1">
+										<input
+											type="checkbox"
+											style={{ transform: "scale(1.5)" }}
+											onClick={(e) => handleSelectItem(e, index)}
+										/>
+									</div>
+									<img
+										className="col-2"
+										src={`${cart?.image}`}
+										alt="anh-san-pham"
+									/>
+									<div className={cx("detail", "col-5")}>
+										<StoreMallDirectoryIcon /> {cart?.sellerName}
+										<p className={cx("name")}>{cart?.name}</p>
+										<p className={cx("price")}>
+											{Intl.NumberFormat().format(cart?.price)}đ
+										</p>
+										{cart?.statePost === "selled" && (
+											<p style={{ color: "red" }}>Hết hàng</p>
+										)}
+									</div>
+									<div className={cx("quantity", "col-3")}>
+										<p>Số lượng: </p>
+										<div>
+											<RemoveIcon
+												onClick={() =>
+													handleChangeQuantity(
+														"remove",
+														index,
+														cart.price
+													)
+												}
+											/>
+											<p>{cart?.quantity}</p>
+											<AddIcon
+												onClick={() =>
+													handleChangeQuantity("add", index, cart.price)
+												}
+											/>
+										</div>
+										<p>Tổng tiền: </p>
+										<p className={cx("price")}>
+											{Intl.NumberFormat().format(
+												cart?.price * cart?.quantity
+											)}
+											đ
+										</p>
+									</div>
+									<div className={cx("col-1", "action")}>
+										{/* {cart?.statePost === "selled" ? (
+											<Button disabled>Thanh toán</Button>
+										) : (
+											<Button
+												primary
+												onClick={() => handlePurchase(cart._id)}
+											>
+												Thanh toán
+											</Button>
+										)} */}
 
-									<Button
-										danger
-										onClick={() => handleDeleteCart(cart._id)}
-										style={{ width: 109 }}
-									>
-										Xóa
-									</Button>
+										<Button
+											danger
+											onClick={() => handleDeleteCart(cart._id)}
+											style={{ width: 109 }}
+										>
+											Xóa
+										</Button>
+									</div>
 								</div>
 							</div>
-						</div>
-					);
-				})}
+						);
+					})}
+				</div>
+			</div>
+			<div className={cx("inner-content", "summary")} style={{ width: "30%" }}>
+				<p className="title">Tổng kết</p>
+				<p>Tổng sản phẩm đã chọn: {itemSelected.length}</p>
+				<p>Tổng tiền: {Intl.NumberFormat().format(totalPrice)}đ</p>
+				{itemSelected.length === 0 ? (
+					<Button disabled>Thanh toán</Button>
+				) : (
+					<Button primary onClick={handlePurchase}>
+						Thanh toán
+					</Button>
+				)}
 			</div>
 		</div>
 	);

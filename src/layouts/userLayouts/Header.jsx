@@ -75,9 +75,11 @@ function Header() {
 	};
 
 	const getCarts = async () => {
+		
 		if (idUser) {
-			const result = await CartService.getCart(idUser);
-			setCartLength(result.data.length);
+			//console.log("getCarts");
+			// const result = await CartService.getCart(idUser);
+			// setCartLength(result?.data?.length);
 		}
 	};
 

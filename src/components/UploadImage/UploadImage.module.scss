@@ -1,7 +1,7 @@
 .container {
 	//width: 200px;
 	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-	padding: 20px 5px;
+	padding: 10px 5px;
 }
 
 .title {
@@ -22,6 +22,11 @@
 	input {
 		display: none;
 	}
+
+	button {
+		border: none;
+		background-color: transparent;
+	}
 }
 
 .preview {
@@ -35,16 +40,16 @@
 	// background-color: black;
 	border: 1px solid var(--main-color);
 	border-radius: 10px;
-	width: 70px;
-	height: 70px;
-	overflow: hidden;
+	width: 100px;
+	height: 100px;
+	//overflow: hidden;
 	transition: 0.1 ease;
 	padding: 5px;
 	margin: 10px;
 
 	img {
-		width: 60px;
-		height: 60px;
+		width: 90px;
+		height: 90px;
 		z-index: 1;
 		border-radius: 5px;
 	}
@@ -52,11 +57,12 @@
 	.delete {
 		position: absolute;
 		z-index: 999;
-		top: -5px;
-		right: 5px;
-		font-size: 1.4rem;
+		top: -15px;
+		right: -10px;
+		font-size: 1.6rem;
 		cursor: pointer;
-		color: white;
+		color: rgb(128, 128, 128);
+
 	}
 
 	.delete:hover {

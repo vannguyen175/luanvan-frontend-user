@@ -61,6 +61,8 @@ function ProfileSeller() {
 		setDataSubmit({
 			...user,
 		});
+		console.log("user", user);
+
 		if (user.avatar) {
 			setPreviewAvatar(user.avatar);
 		}
@@ -101,6 +103,8 @@ function ProfileSeller() {
 			toast.error(res.message);
 		}
 	};
+
+	
 	return (
 		<div>
 			<div className="inner-content" style={{ padding: 20 }}>
@@ -125,7 +129,7 @@ function ProfileSeller() {
 							<div className={cx("info")}>
 								<div>
 									<p>Vai trò</p>
-									{dataSubmit.totalSelled < 2
+									{dataSubmit?.totalSold < 2
 										? "Nhà bán hàng mới"
 										: "Nhà bán hàng chuyên nghiệp"}
 								</div>

@@ -1,72 +1,97 @@
-.left {
-	margin: 10px 10px 0 0 !important;
-	padding: 20px;
-	.title {
-		font-size: 1.4rem;
-		font-weight: 700;
-		color: var(--main-color);
-		margin-bottom: 10px;
+// .style={{ textAlign: "center", marginTop: 20 }}
+.order-btn {
+	text-align: center;
+	margin-top: 20px;
+	button {
+		width: 90%;
+		padding: 8px 0;
+	}
+}
+
+.cart {
+	//border: 1px solid gray;
+	border-radius: 5px;
+	margin: 10px;
+	padding: 20px 10px;
+	box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+	background-color: white;
+
+	img {
+		width: 110px;
+		height: 110px;
+		border: 1px solid black;
+		border-radius: 5px;
 	}
 
-	.time-order {
-		span:not(first-of-type) {
-			margin-right: 10px;
-		}
-	}
-
-	.card-product {
-		margin-top: 20px;
-		img {
-			width: 200px;
-			height: 200px;
-			border-radius: 10px;
-		}
+	.detail {
+		margin-left: 40px;
 		.name {
-			font-size: 1.2rem;
-			color: var(--main-color);
+			margin-top: 10px;
+			font-weight: 500;
+			font-size: 1.1rem;
+			cursor: pointer;
+		}
+		.price {
 			font-weight: 500;
 		}
-
-		.price {
-			color: red;
-			margin-bottom: 20px;
-		}
 	}
 
-	.detail-seller {
-		margin-top: 50px;
-		.avatar {
-			img {
-				width: 50px;
-				height: 50px;
-				border-radius: 50%;
-				border: 3px solid gray;
+	.quantity {
+		p {
+			font-size: 0.8rem;
+			margin-bottom: 6px;
+		}
+		div {
+			display: flex;
+			margin-bottom: 10px;
+
+			p {
+				margin: 0 10px;
+				font-size: 1.2rem;
+				font-weight: 500;
 			}
 		}
-		.name {
-			margin-left: 10px;
+		.price {
 			font-size: 1.2rem;
+			color: var(--orange-color);
 			font-weight: 500;
-			color: var(--main-color);
+			margin-top: -7px;
+			margin-bottom: 40px;
 		}
+	}
 
-		.rating {
-			margin-left: 10px;
+	.action {
+		padding-top: 10px;
+	}
+	.note {
+		display: flex;
+		align-items: flex-start;
+
+		div {
+			margin-right: 20px;
+		}
+		div p:nth-of-type(2) {
+			color: red;
+			font-weight: 500;
+			cursor: pointer;
+			font-size: 0.8rem;
+			margin-top: 10px;
+		}
+		textarea {
+			width: 100%;
+			border-radius: 5px;
+			padding: 5px 10px;
 		}
 	}
 }
-.right {
-	margin: 10px 0 0 10px !important;
-	padding: 20px;
-	.title {
-		font-size: 1.4rem;
-		font-weight: 700;
-		color: var(--main-color);
-		margin-bottom: 10px;
-	}
+
+.buyer {
 	.detail-order {
+		padding: 10px 20px;
+		padding-bottom: 45px;
 		.name {
-			margin-left: 20px;
+			margin-top: 10px;
+			margin-left: 30px;
 			font-size: 1.2rem;
 			font-weight: 500;
 			color: var(--main-color);
@@ -74,6 +99,8 @@
 
 		.avatar {
 			img {
+				margin-top: 10px;
+				margin-left: 10px;
 				width: 50px;
 				height: 50px;
 				border-radius: 50%;
@@ -84,15 +111,10 @@
 			margin: 30px 0 0 10px;
 			width: 100%;
 
-			p {
+			div {
 				position: relative;
-				margin: 20px 0;
+				margin: 30px 0;
 				padding-top: 0px;
-			}
-			svg {
-				margin-right: 10px;
-				width: 15px;
-				padding-top: 4px;
 			}
 
 			input {
@@ -108,7 +130,6 @@
 
 			textarea {
 				position: absolute;
-				top: 0px;
 				margin-left: 10px;
 				border: 1px solid gray;
 				width: 70%;
@@ -116,6 +137,22 @@
 				right: 15px;
 				padding: 5px;
 				border-radius: 8px;
+			}
+
+			.payment {
+				display: flex;
+				align-items: center;
+				position: absolute;
+				margin-top: -20px;
+				span {
+					margin-right: 10px;
+				}
+
+				select {
+					border-radius: 5px;
+					border: 1px solid gray;
+					padding: 5px;
+				}
 			}
 		}
 
@@ -143,16 +180,6 @@
 				color: var(--main-color);
 				background-color: white;
 			}
-		}
-	}
-
-	// .style={{ textAlign: "center", marginTop: 20 }}
-	.order-btn {
-		text-align: center;
-		margin-top: 20px;
-		button {
-			width: 90%;
-			padding: 8px 0;
 		}
 	}
 }

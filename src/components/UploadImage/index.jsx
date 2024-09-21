@@ -1,14 +1,14 @@
 import classNames from "classnames/bind";
 import style from "./UploadImage.module.scss";
 import { useRef, useState } from "react";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
+import CancelIcon from "@mui/icons-material/Cancel";
 import { toast } from "react-toastify";
 import { getBase64 } from "../../utils";
 
 const cx = classNames.bind(style);
 
-function UploadImage({ setImageList }) {
-	const [images, setImages] = useState([]);
+function UploadImage({ imageList, setImageList }) {
+	const [images, setImages] = useState(imageList || []);
 	const fileInputRef = useRef();
 
 	const selectFiles = () => {
@@ -34,7 +34,14 @@ function UploadImage({ setImageList }) {
 				]);
 				getBase64(files[i])
 					.then((result) => {
-						setImageList((prevData) => [...prevData, result]);
+						setImageList((prevData) => [
+							...prevData,
+							{
+								name: files[i].name,
+								url: URL.createObjectURL(files[i]),
+								result: result,
+							},
+						]);
 					})
 					.catch((error) => {
 						console.error("Error:", error);
@@ -49,22 +56,18 @@ function UploadImage({ setImageList }) {
 
 	return (
 		<div className={cx("container")}>
-			<p className={cx("title")}>Đăng tải hình ảnh ở đây</p>
-			<p style={{ textAlign: "center", marginBottom: 20 }}>Tối đa 6 bức ảnh</p>
-			<div className={cx("drag-area")}>
-				<>
+			{images.length < 6 && (
+				<div className={cx("drag-area")}>
 					<input
 						name="file"
 						type="file"
-						multiple
+						//multiple
 						ref={fileInputRef}
 						onChange={onFileSelect}
 					/>
-					<button onClick={selectFiles}>
-						<FileUploadIcon />
-					</button>
-				</>
-			</div>
+					<button onClick={selectFiles}>Thêm hình ảnh {images.length}/6</button>
+				</div>
+			)}
 			<div className={cx("preview")}>
 				{images.map((image, index) => (
 					<div className={cx("image")} key={index}>
@@ -74,7 +77,7 @@ function UploadImage({ setImageList }) {
 								deleteImage(index);
 							}}
 						>
-							&times;
+							<CancelIcon />
 						</span>
 						<img src={image.url} alt={image.name} />
 					</div>

@@ -3,7 +3,7 @@ import style from "./ForSeller.module.scss";
 import { useEffect, useState } from "react";
 import * as OrderService from "../../service/OrderService";
 import { useApp } from "~/context/AppProvider";
-import moment, { max } from "moment";
+import moment from "moment";
 import CircularProgress from "@mui/material/CircularProgress";
 import Modal from "~/components/Modal";
 import Description from "~/components/Description";

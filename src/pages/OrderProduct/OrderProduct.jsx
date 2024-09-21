@@ -6,6 +6,8 @@ import vi from "moment/locale/vi";
 import Grid from "@mui/material/Grid";
 import { useNavigate, useParams } from "react-router-dom";
 import * as ProductService from "~/service/ProductService";
+import * as CartService from "~/service/CartService";
+
 import * as UserService from "~/service/UserService";
 import * as OrderService from "~/service/OrderService";
 import { useEffect, useState } from "react";
@@ -17,11 +19,14 @@ import AddressForm from "~/components/AddressForm";
 import { formatPhoneNumber } from "../../utils";
 import LocalAtmIcon from "@mui/icons-material/LocalAtm";
 import PaymentIcon from "@mui/icons-material/Payment";
+import StoreMallDirectoryIcon from "@mui/icons-material/StoreMallDirectory";
 
 const cx = classNames.bind(style);
 
 function OrderProduct() {
 	const navigate = useNavigate();
+	const cartSelected = localStorage.getItem("cartSelected");
+	const idUser = localStorage.getItem("id_user");
 	const { id } = useParams(); //id product
 	const { user, socket } = useApp();
 	const [modelConfirm, setModelConfirm] = useState(false);
@@ -29,43 +34,51 @@ function OrderProduct() {
 	const [modalChangePaymentMethod, setModalChangePaymentMothod] = useState(false);
 	const [paymentMethod, setPaymentMethod] = useState("cash");
 	const [addressInfo, setAddressInfo] = useState({ address: {} });
+	const [noteIndex, setNoteIndex] = useState();
 	const [details, setDetails] = useState({
 		product: {},
-		seller: {},
 		buyer: {},
 	});
-	const getDetailProduct = async () => {
-		const res = await ProductService.detailProduct(id);
+
+	const getProducts = async () => {
+		const result = await CartService.getCart(idUser);
+		const data = result.data.filter((_, index) => cartSelected.includes(index));
 		setDetails((prevDetails) => ({
 			...prevDetails,
-			product: res.data,
-		}));
-		getDetailSeller(res.data.idUser);
-	};
-
-	const getDetailBuyer = async () => {
-		if (user.id) {
-			const res = await UserService.getInfoUser(user.id);
-			setDetails((prevDetails) => ({
-				...prevDetails,
-				buyer: res.data,
-			}));
-		}
-	};
-
-	const getDetailSeller = async (id) => {
-		const res = await UserService.getInfoUser(id);
-		setDetails((prevDetails) => ({
-			...prevDetails,
-			seller: res.data,
+			product: data,
 		}));
 	};
+
+	// const getDetailProduct = async () => {
+	// 	const res = await ProductService.detailProduct(id);
+	// 	setDetails((prevDetails) => ({
+	// 		...prevDetails,
+	// 		product: res.data,
+	// 	}));
+	// 	getDetailSeller(res.data.idUser);
+	// };
+
+	// const getDetailBuyer = async () => {
+	// 	if (user.id) {
+	// 		const res = await UserService.getInfoUser(user.id);
+	// 		setDetails((prevDetails) => ({
+	// 			...prevDetails,
+	// 			buyer: res.data,
+	// 		}));
+	// 	}
+	// };
 
 	useEffect(() => {
-		getDetailProduct();
+		getProducts();
+
 		if (user.id) {
-			getDetailBuyer();
+			//getDetailBuyer();
+			setDetails((prevDetails) => ({
+				...prevDetails,
+				buyer: user,
+			}));
 			setAddressInfo({
+				email: user.email,
 				address: user.address,
 				district: user.district,
 				phone: user.phone,
@@ -156,257 +169,166 @@ function OrderProduct() {
 		setModalChangeAddress(false);
 	};
 
+	const handleShowNote = (index) => {
+		if (noteIndex !== index) {
+			setNoteIndex(index);
+		} else {
+			setNoteIndex();
+		}
+	};
+
 	return (
-		<div style={{ margin: "5px auto 30px auto" }}>
-			<Grid container item style={{ display: "flex", justifyContent: "center" }}>
-				<Grid item xs={6} className={cx("inner-content", "left")}>
-					<p className={cx("title")}>Thông tin sản phẩm</p>
-					<p className={cx("time-order")}>
-						<span>{moment().locale("vi", vi).format("DD-MM-YYYY")}</span>
-						<span>{moment().locale("vi", vi).format("hh:mm")}</span>
-					</p>
-
-					<div className={cx("card-product")}>
-						{details.product?.name && (
-							<Grid container>
-								<Grid item xs={4}>
-									<img src={`${details.product?.images[0]}`} alt="anh-san-pham" />
-								</Grid>
-								<Grid item xs={8}>
-									<p className={cx("name")}>{details.product?.name}</p>
-									<p className={cx("price")}>
-										{Intl.NumberFormat().format(details.product?.price)}đ
-									</p>
-									{Object.keys(details.product?.info).map((value, index) => (
-										<p className={cx("info")} key={index}>
-											<span>
-												{value} : {details.product?.info[value]}
-											</span>
-										</p>
-									))}
-								</Grid>
-							</Grid>
-						)}
-					</div>
-					<hr style={{ marginTop: 40, marginBottom: -20 }} />
-					<div className={cx("detail-seller")}>
-						<p className={cx("title")}>Thông tin người bán</p>
-						<Grid container style={{ display: "flex", alignItems: "center" }}>
-							<Grid item xs={1}>
-								<span className={cx("avatar")}>
-									{details.seller?.avatar === "" ? (
-										<img src="/assets/images/user-avatar.jpg" alt="avatar" />
-									) : (
-										<img src={details.seller?.avatar} alt="avatar" />
+		<div style={{ margin: "5px auto 30px auto", display: "flex" }}>
+			<div style={{ width: "60%" }}>
+				<div className={cx("inner-content", "product")}>
+					<p className="title">Sản phẩm</p>
+					{details.product.length > 0 &&
+						details.product?.map((item, index) => {
+							return (
+								<div className={cx("cart", "row")} key={index}>
+									<div style={{ display: "flex", marginBottom: 10 }}>
+										<img
+											className="col-2"
+											src={`${item?.image}`}
+											alt="anh-san-pham"
+										/>
+										<div className={cx("detail", "col-5")}>
+											<StoreMallDirectoryIcon /> {item?.sellerName}
+											<p className={cx("name")}>{item?.name}</p>
+											<p className={cx("price")}>
+												{Intl.NumberFormat().format(item?.price)}đ
+											</p>
+											<p>Số lượng: {item?.quantity}</p>
+											{item?.statePost === "selled" && (
+												<p style={{ color: "red" }}>Hết hàng</p>
+											)}
+										</div>
+										<div className={cx("quantity", "col-3")}>
+											<p>Tổng tiền: </p>
+											<p className={cx("price")}>
+												{Intl.NumberFormat().format(
+													item?.price * item?.quantity
+												)}
+												đ
+											</p>
+											<p
+												style={{
+													textDecoration: "underline",
+													cursor: "pointer",
+												}}
+												onClick={() => handleShowNote(index)}
+											>
+												Ghi chú cho nhà bán hàng
+											</p>
+										</div>
+									</div>
+									{noteIndex === index && (
+										<>
+											<hr />
+											<div className={cx("note")}>
+												<div>
+													<p>Note:</p>
+													<p onClick={() => handleShowNote(index)}>Hủy</p>
+												</div>
+												<textarea name="note" />
+											</div>
+										</>
 									)}
-								</span>
-							</Grid>
-							<Grid item>
-								<p className={cx("name")}>{details.seller?.name}</p>
-								<p className={cx("rating")}>
-									Đánh giá:
-									{details.seller?.rating === 0
-										? " Chưa có đánh giá"
-										: details.seller?.rating}
-								</p>
-							</Grid>
-						</Grid>
-						<Description
-							title="Số điện thoại"
-							desc={formatPhoneNumber(details.seller?.phone)}
-						/>
-					</div>
-				</Grid>
-				<Grid item xs={5} className={cx("inner-content", "right")}>
-					<p className={cx("title")}>Thông tin đơn đặt hàng</p>
-					<div className={cx("detail-order")}>
-						<Grid container style={{ display: "flex", alignItems: "center" }}>
-							<Grid item xs={1}>
-								<span className={cx("avatar")}>
-									{details.buyer?.avatar === "" ? (
-										<img src="/assets/images/user-avatar.jpg" alt="avatar" />
-									) : (
-										<img src={details.buyer?.avatar} alt="avatar" />
-									)}
-								</span>
-							</Grid>
-							<Grid item>
-								<p className={cx("name")}>{details.buyer?.name}</p>
-							</Grid>
-						</Grid>
-						<div className={cx("info")}>
-							<p>
-								Email:
-								<input
-									onChange={handleOnchange}
-									value={details.buyer?.email || ""}
-									name="email"
-								/>
-							</p>
-							<p>
-								Số điện thoại:
-								<input
-									onChange={handleOnchange}
-									value={formatPhoneNumber(details?.buyer.phone) || ""}
-									name="phone"
-								/>
-							</p>
-							<p>
-								Địa chỉ:{" "}
-								<textarea
-									onClick={() => setModalChangeAddress(true)}
-									value={
-										[
-											details.buyer?.address,
-											details.buyer?.ward,
-											details.buyer?.district,
-											details.buyer?.province,
-										].join(", ") || ""
-									}
-									name="address"
-								/>
-							</p>
-						</div>
+								</div>
+							);
+						})}
+				</div>
+			</div>
 
-						<hr />
-						<div className={cx("payment-method")}>
-							<Description
-								title="Hình thức thanh toán"
-								desc={
-									paymentMethod === "autopay"
-										? "Thanh toán VNPAY"
-										: "Thanh toán khi nhận hàng"
-								}
+			<div className={cx("buyer")} style={{ width: "40%" }}>
+				<div className={cx("inner-content", "detail-order")}>
+					<p className={cx("title")}>Thông tin đặt hàng</p>
+					<Grid container style={{ display: "flex", alignItems: "center" }}>
+						<Grid item xs={1}>
+							<span className={cx("avatar")}>
+								{details.buyer?.avatar === "" ? (
+									<img src="/assets/images/user-avatar.jpg" alt="avatar" />
+								) : (
+									<img src={details.buyer?.avatar} alt="avatar" />
+								)}
+							</span>
+						</Grid>
+						<Grid item>
+							<p className={cx("name")}>{details.buyer?.name}</p>
+						</Grid>
+					</Grid>
+					<div className={cx("info")}>
+						<div>
+							Email:
+							<input
+								onChange={handleOnchange}
+								value={details.buyer?.email || ""}
+								name="email"
 							/>
-							<button onClick={() => setModalChangePaymentMothod(true)}>
-								Thay đổi
-							</button>
+						</div>
+						<div>
+							Số điện thoại:
+							<input
+								onChange={handleOnchange}
+								value={formatPhoneNumber(details?.buyer.phone) || ""}
+								name="phone"
+							/>
 						</div>
 
-						<div className={cx("price")}>
-							<p>
-								Giá sản phẩm:
-								<span>{Intl.NumberFormat().format(details.product?.price)}đ</span>
-							</p>
-							<p>
-								Giá vận chuyển: <span>{Intl.NumberFormat().format(30000)}đ</span>
-							</p>
-							<p>
-								Tổng cộng:
-								<span style={{ color: "red" }}>
-									{Intl.NumberFormat().format(details.product?.price + 30000)}đ
-								</span>
-							</p>
+						<div>
+							Địa chỉ:
+							<textarea
+								onClick={() => setModalChangeAddress(true)}
+								defaultValue={
+									details.buyer?.address &&
+									[
+										details.buyer?.address,
+										details.buyer?.ward,
+										details.buyer?.district,
+										details.buyer?.province,
+									].join(", ")
+								}
+								name="address"
+							/>
 						</div>
-						<hr style={{ marginBlock: 30 }} />
-
-						<div className={cx("order-btn")}>
-							<Button primary onClick={handleCheckOrder}>
-								Đặt hàng ngay
-							</Button>
+						<hr />
+						<div>
+							<div className={cx("payment")}>
+								<span>Hình thức thanh toán:</span>
+								<select name="payment">
+									<option value="cash">Thanh toán khi nhận hàng</option>
+									<option value="vnpay" disabled>Thanh toán qua ngân hàng</option>
+								</select>
+							</div>
 						</div>
-					</div>
-				</Grid>
-			</Grid>
-			<Modal
-				isOpen={modelConfirm}
-				title="Xác nhận đặt hàng"
-				setIsOpen={setModelConfirm}
-				width={500}
-			>
-				{
-					<div>
-						<Description title="Tên sản phẩm" desc={details.product?.name} />
-						<Description
-							title="Tổng giá tiền"
-							desc={`${Intl.NumberFormat().format(details.product?.price + 30000)}đ`}
-						/>
-						<Description
-							title="Số điện thoại"
-							desc={formatPhoneNumber(details.buyer?.phone)}
-						/>
-						<Description
-							title="Địa chỉ giao hàng"
-							desc={
-								[
-									details.buyer?.address,
-									details.buyer?.ward,
-									details.buyer?.district,
-									details.buyer?.province,
-								].join(", ") || ""
-							}
-							oneLine
-						/>
-						<Description
-							title="Hình thức thanh toán"
-							desc={
-								paymentMethod === "cash"
-									? "Thanh toán khi nhận hàng"
-									: "Thanh toán qua ngân hàng"
-							}
-							oneLine
-						/>
-						<div style={{ textAlign: "center", marginTop: 20 }}>
-							<Button onClick={() => setModelConfirm(false)}>Thoát</Button>
-
-							<Button type="submit" primary onClick={handleOrder}>
-								Thanh toán
-							</Button>
-						</div>
-					</div>
-				}
-			</Modal>
-			<Modal
-				isOpen={modalChangeAddress}
-				title="Thay đổi địa chỉ giao hàng"
-				setIsOpen={setModalChangeAddress}
-				width={500}
-			>
-				<AddressForm setDataSubmit={setAddressInfo} />
-				<div style={{ textAlign: "center" }}>
-					<Button onClick={() => setModalChangeAddress(false)}>Thoát</Button>
-
-					<Button type="submit" primary onClick={() => handleChangeAddress()}>
-						Cập nhập
-					</Button>
-				</div>
-			</Modal>
-			<Modal
-				isOpen={modalChangePaymentMethod}
-				title="Lựa chọn phương thức thanh toán"
-				setIsOpen={setModalChangePaymentMothod}
-				width={500}
-			>
-				<div className="control" onChange={handleChangePaymentMethod}>
-					<div className="radio">
-						<LocalAtmIcon />
-						<input
-							type="radio"
-							value="autopay"
-							name="payment"
-							style={{ marginRight: 10 }}
-						/>
-						Thanh toán qua ngân hàng
-					</div>
-					<div className="radio">
-						<PaymentIcon />
-						<input
-							type="radio"
-							value="cash"
-							name="payment"
-							style={{ marginRight: 10 }}
-						/>
-						Thanh toán khi nhận hàng
 					</div>
 				</div>
-				<div style={{ textAlign: "center" }}>
-					<Button onClick={() => setModalChangePaymentMothod(false)}>Thoát</Button>
+				<div className={cx("inner-content", "summary")}>
+					<p className={cx("title")}>Thông tin chung</p>
+					<div className={cx("price")}>
+						<p>
+							Giá sản phẩm:
+							<span>{Intl.NumberFormat().format(details.product?.price)}đ</span>
+						</p>
+						<p>
+							Giá vận chuyển: <span>{Intl.NumberFormat().format(30000)}đ</span>
+						</p>
+						<p>
+							Tổng cộng:
+							<span style={{ color: "red" }}>
+								{Intl.NumberFormat().format(details.product?.price + 30000)}đ
+							</span>
+						</p>
+					</div>
+					<hr style={{ marginBlock: 30 }} />
 
-					<Button type="submit" primary>
-						Cập nhập
-					</Button>
+					<div className={cx("order-btn")}>
+						<Button primary onClick={handleCheckOrder}>
+							Đặt hàng ngay
+						</Button>
+					</div>
 				</div>
-			</Modal>
+			</div>
 		</div>
 	);
 }

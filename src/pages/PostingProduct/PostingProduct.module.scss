@@ -13,3 +13,34 @@
     margin: 30px auto;
 }
 
+.steps {
+	display: flex;
+	margin-top: 20px;
+
+	button {
+		border: none;
+		padding: 5px;
+		background-color: white;
+		margin: 0px 10px;
+		transition: 0.2s ease;
+	}
+
+	.active-step {
+		border-bottom: 2px solid var(--main-color);
+		font-weight: 500;
+		color: var(--main-color);
+	}
+}
+
+.guideline {
+	width: 30%;
+	min-height: 70vh;
+}
+
+.input-form {
+	border: 1px solid rgb(189, 189, 189);
+	padding:  10px;
+	border-radius: 3px;
+	width: 100%;
+}
+

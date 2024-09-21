@@ -26,31 +26,19 @@ function Notification() {
 	};
 
 	useEffect(() => {
-		const addNoti = async (product, image, navigate, message) => {
-			const res = await notificationService.addNotification({
-				user: localStorage.getItem("id_user"),
-				info: {
-					product: product,
-					image: image,
-					navigate: navigate,
-					message: message,
-				},
-			});
-			setNotifications(res.data.info);
-			setUnseenCount(res.unseenCount);
-		};
-
 		getNoti();
-		console.log("socket on");
 
-		socket?.on("getNotification", (data) => {
-			console.log("getNotification", data);
-
-			if (data.message) {
-				console.log("data =>", data);
-				addNoti(data.product, data.image, data.navigate, data.message);
-			}
-		});
+		if (socket) {
+			socket.on("connect", () => {
+				const handleNotification = (data) => {
+					setUnseenCount(data.unseenCount);
+				};
+				socket.on("getNotification", handleNotification);
+				return () => {
+					socket.off("getNotification", handleNotification);
+				};
+			});
+		}
 	}, [socket]);
 
 	const handleShowNotification = (event) => {

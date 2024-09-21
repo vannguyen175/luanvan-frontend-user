@@ -34,8 +34,6 @@ function Search() {
 
 	//lọc sản phẩm mỗi khi inputSearch thay đổi => tìm kiếm sp
 	useEffect(() => {
-		console.log(inputSearch.currentTarget);
-
 		if (inputSearch === "") {
 			setSearchResult([]);
 		} else {

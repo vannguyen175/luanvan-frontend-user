@@ -38,7 +38,7 @@ export const routes = [
 		layout: UserLayout,
 	},
 	{
-		path: "/dat-hang/:id",
+		path: "/dat-hang",
 		page: OrderProduct,
 		layout: NoneFooterLayout,
 	},

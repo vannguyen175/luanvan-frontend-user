@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { routes } from "./routes";
 import NotFoundPage from "~/pages/NotFoundPage/NotFoundPage";
@@ -29,10 +29,16 @@ export function App() {
 		setSocket(io("http://localhost:5000"));
 	}, []);
 
-	useEffect(() => {			
+	useEffect(() => {
 		if (token) {
 			const decoded = jwtDecode(token);
 			socket?.emit("newUser", decoded?.id);
+		}
+		if (socket) {
+			socket.on("connect", () => {
+				//console.log("Socket.IO successfully connected!", socket);
+				setSocket(socket);
+			});
 		}
 	}, [socket, token, user]);
 
