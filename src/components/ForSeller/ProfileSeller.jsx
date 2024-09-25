@@ -61,8 +61,6 @@ function ProfileSeller() {
 		setDataSubmit({
 			...user,
 		});
-		console.log("user", user);
-
 		if (user.avatar) {
 			setPreviewAvatar(user.avatar);
 		}
@@ -104,7 +102,6 @@ function ProfileSeller() {
 		}
 	};
 
-	
 	return (
 		<div>
 			<div className="inner-content" style={{ padding: 20 }}>

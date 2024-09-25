@@ -1,33 +1,37 @@
 import { useEffect, useState } from "react";
 import { Autocomplete, TextField } from "@mui/material";
 import subVn from "sub-vn";
+import { formatPhoneNumber } from "../../utils";
 
 import { useApp } from "~/context/AppProvider";
 
-function AddressForm({ setDataSubmit }) {
+function AddressForm({ setDataSubmit, data }) {
 	const [provinceCode, setProvinceCode] = useState(""); //Lấy code tỉnh/thành phố
 	const [districtCode, setDistrictCode] = useState(""); //Lấy code huyện/quận
 	const { user } = useApp(); //useContext
 
 	useEffect(() => {
-		if (user.district !== "") {
-			setDataSubmit((prevData) => ({
-				...prevData,
-				address: {
-					//...prevData.address,
-					phone: user.phone,
-					province: user.province,
-					district: user.district,
-					ward: user.ward,
-					address: user.address,
-				},
-			}));
-			hanldeChangeProvince(user.province);
-			hanldeChangeDistrict(user.district);
-			hanldeChangeWard(user.ward);
+		if (data.district !== "") {
+			// setDataSubmit((prevData) => ({
+			// 	...prevData,
+			// 	address: {
+			// 		//...prevData.address,
+			// 		email: data.email,
+			// 		phone: data.phone,
+			// 		province: user.province,
+			// 		district: user.district,
+			// 		ward: user.ward,
+			// 		address: user.address,
+			// 	},
+			// }));
+			hanldeChangeProvince(data.province);
+			hanldeChangeDistrict(data.district);
+			hanldeChangeWard(data.ward);
+			console.log("TEST");
+			
 		}
 		// eslint-disable-next-line
-	}, [user]);
+	}, []);
 
 	const hanldeChangeProvince = async (value) => {
 		const listProvince = await subVn.getProvinces();
@@ -87,67 +91,84 @@ function AddressForm({ setDataSubmit }) {
 			}}
 		>
 			{user.id && (
-				<>
-					<TextField
-						defaultValue={user.name}
-						label="Tên tài khoản"
-						variant="outlined"
-						className="text-field"
-						InputProps={{ readOnly: true }}
-					/>
-					<TextField
-						name="phone"
-						defaultValue={user.phone}
-						onChange={handleChange}
-						label="Số điện thoại"
-						variant="outlined"
-						type="number"
-						className="text-field"
-						style={{ margin: "15px 0" }}
-					/>
-
-					<Autocomplete
-						defaultValue={user.province}
-						options={subVn.getProvinces().map((item) => item.name)}
-						onChange={(e) => hanldeChangeProvince(e.target.innerText)}
-						renderInput={(params) => <TextField {...params} label="Tỉnh/thành phố" />}
-					/>
-					{(provinceCode || user.district) && (
-						<Autocomplete
-							defaultValue={user.district}
-							options={subVn
-								.getDistrictsByProvinceCode(provinceCode)
-								.map((item) => item.name)}
-							onChange={(e) => hanldeChangeDistrict(e.target.innerText)}
-							renderInput={(params) => <TextField {...params} label="Huyện/quận" />}
+				<div style={{ display: "flex" }}>
+					<div style={{ width: "50%" }}>
+						<TextField
+							defaultValue={user.name}
+							label="Tên tài khoản"
+							variant="outlined"
+							className="text-field"
+							InputProps={{ readOnly: true }}
+						/>
+						<TextField
+							name="email"
+							defaultValue={data.email}
+							onChange={handleChange}
+							label="Email"
+							variant="outlined"
+							className="text-field"
 							style={{ margin: "15px 0" }}
 						/>
-					)}
+						<TextField
+							name="phone"
+							defaultValue={formatPhoneNumber(data.phone)}
+							onChange={handleChange}
+							label="Số điện thoại"
+							variant="outlined"
+							type="number"
+							className="text-field"
+							style={{ margin: "15px 0" }}
+						/>
+					</div>
 
-					{(districtCode || user.district) && (
-						<>
+					<div style={{ marginLeft: 20, width: "50%" }}>
+						<Autocomplete
+							defaultValue={data.province}
+							options={subVn.getProvinces().map((item) => item.name)}
+							onChange={(e) => hanldeChangeProvince(e.target.innerText)}
+							renderInput={(params) => (
+								<TextField {...params} label="Tỉnh/thành phố" />
+							)}
+						/>
+						{(provinceCode || data.district) && (
 							<Autocomplete
-								defaultValue={user.ward}
+								defaultValue={data.district}
 								options={subVn
-									.getWardsByDistrictCode(districtCode)
+									.getDistrictsByProvinceCode(provinceCode)
 									.map((item) => item.name)}
-								onChange={(e) => hanldeChangeWard(e.target.innerText)}
+								onChange={(e) => hanldeChangeDistrict(e.target.innerText)}
 								renderInput={(params) => (
-									<TextField {...params} label="Phường/xã" />
+									<TextField {...params} label="Huyện/quận" />
 								)}
-							/>
-							<TextField
-								name="address"
-								defaultValue={user.address}
-								onChange={handleChange}
-								label="Địa chỉ chi tiết"
-								variant="outlined"
-								className="text-field"
 								style={{ margin: "15px 0" }}
 							/>
-						</>
-					)}
-				</>
+						)}
+
+						{(districtCode || data.district) && (
+							<>
+								<Autocomplete
+									defaultValue={data.ward}
+									options={subVn
+										.getWardsByDistrictCode(districtCode)
+										.map((item) => item.name)}
+									onChange={(e) => hanldeChangeWard(e.target.innerText)}
+									renderInput={(params) => (
+										<TextField {...params} label="Phường/xã" />
+									)}
+								/>
+								<TextField
+									name="address"
+									defaultValue={data.address}
+									onChange={handleChange}
+									label="Địa chỉ chi tiết"
+									variant="outlined"
+									className="text-field"
+									style={{ margin: "15px 0" }}
+								/>
+							</>
+						)}
+					</div>
+				</div>
 			)}
 		</div>
 	);

@@ -4,7 +4,7 @@ import moment from "moment";
 import Button from "~/components/Button";
 import vi from "moment/locale/vi";
 import Grid from "@mui/material/Grid";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import * as ProductService from "~/service/ProductService";
 import * as CartService from "~/service/CartService";
 
@@ -20,6 +20,11 @@ import { formatPhoneNumber } from "../../utils";
 import LocalAtmIcon from "@mui/icons-material/LocalAtm";
 import PaymentIcon from "@mui/icons-material/Payment";
 import StoreMallDirectoryIcon from "@mui/icons-material/StoreMallDirectory";
+import EditNoteIcon from "@mui/icons-material/EditNote";
+import EditIcon from "@mui/icons-material/Edit";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 const cx = classNames.bind(style);
 
@@ -33,40 +38,32 @@ function OrderProduct() {
 	const [modalChangeAddress, setModalChangeAddress] = useState(false);
 	const [modalChangePaymentMethod, setModalChangePaymentMothod] = useState(false);
 	const [paymentMethod, setPaymentMethod] = useState("cash");
-	const [addressInfo, setAddressInfo] = useState({ address: {} });
+	const [isLoading, setIsLoading] = useState(false);
+	const [showBackdrop, setShowBackdrop] = useState(false);
+	const [modalSuccess, setModalSuccess] = useState(false);
+	//const [addressInfo, setAddressInfo] = useState({ address: {} });
 	const [noteIndex, setNoteIndex] = useState();
+	const [totalPrice, setTotalPrice] = useState(0);
 	const [details, setDetails] = useState({
 		product: {},
 		buyer: {},
+		address: {},
 	});
 
 	const getProducts = async () => {
 		const result = await CartService.getCart(idUser);
-		const data = result.data.filter((_, index) => cartSelected.includes(index));
+		const data = result.data.filter((_, index) => cartSelected.includes(index)); //lấy sp được user chọn ở cart page
 		setDetails((prevDetails) => ({
 			...prevDetails,
-			product: data,
+			product: data.map((item) => ({
+				...item,
+				shippingPrice: 15000, // Thêm trường shippingPrice với giá trị mong muốn
+			})),
 		}));
+
+		const total = data.reduce((sum, item) => sum + item.price * item.quantity, 0);
+		setTotalPrice(total);
 	};
-
-	// const getDetailProduct = async () => {
-	// 	const res = await ProductService.detailProduct(id);
-	// 	setDetails((prevDetails) => ({
-	// 		...prevDetails,
-	// 		product: res.data,
-	// 	}));
-	// 	getDetailSeller(res.data.idUser);
-	// };
-
-	// const getDetailBuyer = async () => {
-	// 	if (user.id) {
-	// 		const res = await UserService.getInfoUser(user.id);
-	// 		setDetails((prevDetails) => ({
-	// 			...prevDetails,
-	// 			buyer: res.data,
-	// 		}));
-	// 	}
-	// };
 
 	useEffect(() => {
 		getProducts();
@@ -75,16 +72,23 @@ function OrderProduct() {
 			//getDetailBuyer();
 			setDetails((prevDetails) => ({
 				...prevDetails,
-				buyer: user,
+				buyer: {
+					id: user.id,
+					avatar: user.avatar,
+					name: user.name,
+				},
+				address: {
+					email: user.email,
+					phone: user.phone,
+					province: user.province,
+					district: user.district,
+					ward: user.ward,
+					address: user.address,
+				}, //address's buyer
+				paymentMethod: {
+					method: "cash",
+				},
 			}));
-			setAddressInfo({
-				email: user.email,
-				address: user.address,
-				district: user.district,
-				phone: user.phone,
-				province: user.province,
-				ward: user.ward,
-			});
 		}
 		// eslint-disable-next-line
 	}, [user]); //detail-seller
@@ -95,78 +99,53 @@ function OrderProduct() {
 		setPaymentMethod(e.target.value);
 	};
 
-	//Lưu lại gtri input khi người dùng thay đổi shippingAddress
-	const handleOnchange = (e) => {
-		setDetails({
-			...details,
-			buyer: {
-				...details.buyer,
-				[e.target.name]: e.target.value,
-			},
-		});
-	};
-
 	//Người dùng click button "Dat hang ngay" => hiện model confirm đơn hàng
 	const handleCheckOrder = async () => {
 		if (
-			details.buyer.email === "" ||
-			details.buyer.address === "" ||
-			details.buyer.phone === ""
+			details.address.email === null ||
+			details.address.address === null ||
+			details.address.phone === null
 		) {
 			toast.error("Vui lòng điển đầy đủ thông tin đặt hàng");
 		} else {
-			setModelConfirm(true);
+			if (window.confirm("Bạn có chắc muốn đặt hàng?")) {
+				handleOrder();
+			}
 		}
 	};
 
 	//tiến hành lưu thông tin order
 	const handleOrder = async () => {
 		const dataOrder = {
-			product: details.product._id,
-			paymentMethod: paymentMethod,
+			products: details.product, //array
+			paymentMethod: details.paymentMethod.method,
 			shippingDetail: {
-				email: details.buyer.email,
+				email: details.address.email,
+				phone: details.address.phone,
 				address:
-					details.buyer.address +
-						", " +
-						details.buyer.ward +
-						", " +
-						details.buyer.district +
-						", " +
-						details.buyer.province || "chưa có",
-				phone: details.buyer.phone,
-				shippingPrice: 30000,
+					details.address.address +
+					", " +
+					details.address.ward +
+					", " +
+					details.address.district +
+					", " +
+					details.address.province,
+				shippingPrice: details.product?.length * 15000,
 			},
-			buyer: details.buyer._id,
-			seller: details.seller._id,
+			idBuyer: details.buyer.id,
+			totalPaid: totalPrice + details.product?.length * 15000,
 		};
+		setIsLoading(true);
+		console.log("setIsLoading1", isLoading);
+
 		const res = await OrderService.createOrder(dataOrder);
-		if (res?.status === "SUCCESS") {
-			socket?.emit("sendNotification", {
-				senderId: user.id,
-				reveiverId: id,
-				message: "Sản phẩm của bạn đã có người đặt mua. Nhấn vào đây để xử lý đơn hàng.",
-			});
-			toast.success("Đặt hàng thành công!");
-			setTimeout(() => {
-				navigate("/");
-			}, 2000);
-		} else if (res?.status === "ERROR") {
-			toast.error(res?.message);
-			setTimeout(() => {
-				setModelConfirm(false);
-			}, 1000);
+		//console.log("res", res);
+		console.log("setIsLoading2", isLoading);
+
+		if (res.status === "SUCCESS") {
+			setIsLoading(false);
+			setModalSuccess(true);
 		}
-	};
-	const handleChangeAddress = () => {
-		setDetails((prevDetails) => ({
-			...prevDetails,
-			buyer: {
-				...prevDetails.buyer,
-				...addressInfo.address,
-			},
-		}));
-		setModalChangeAddress(false);
 	};
 
 	const handleShowNote = (index) => {
@@ -186,7 +165,7 @@ function OrderProduct() {
 						details.product?.map((item, index) => {
 							return (
 								<div className={cx("cart", "row")} key={index}>
-									<div style={{ display: "flex", marginBottom: 10 }}>
+									<div style={{ display: "flex" }}>
 										<img
 											className="col-2"
 											src={`${item?.image}`}
@@ -199,27 +178,33 @@ function OrderProduct() {
 												{Intl.NumberFormat().format(item?.price)}đ
 											</p>
 											<p>Số lượng: {item?.quantity}</p>
-											{item?.statePost === "selled" && (
-												<p style={{ color: "red" }}>Hết hàng</p>
-											)}
 										</div>
 										<div className={cx("quantity", "col-3")}>
+											<p>Phí vận chuyển: </p>
+											<p
+												style={{
+													fontWeight: 500,
+													marginBottom: 10,
+													fontSize: "1.2rem",
+												}}
+											>
+												{Intl.NumberFormat().format(15000)}đ
+											</p>
 											<p>Tổng tiền: </p>
 											<p className={cx("price")}>
 												{Intl.NumberFormat().format(
-													item?.price * item?.quantity
+													item?.price * item?.quantity + 15000
 												)}
 												đ
 											</p>
-											<p
-												style={{
-													textDecoration: "underline",
-													cursor: "pointer",
-												}}
+										</div>
+										<div className={cx("col-1")}>
+											<EditNoteIcon
+												fontSize="large"
+												color="primary"
+												style={{ cursor: "pointer" }}
 												onClick={() => handleShowNote(index)}
-											>
-												Ghi chú cho nhà bán hàng
-											</p>
+											/>
 										</div>
 									</div>
 									{noteIndex === index && (
@@ -253,70 +238,91 @@ function OrderProduct() {
 								)}
 							</span>
 						</Grid>
-						<Grid item>
+						<Grid item xs={7}>
 							<p className={cx("name")}>{details.buyer?.name}</p>
+						</Grid>
+						<Grid item xs={4}>
+							<button
+								onClick={() => setModalChangeAddress(true)}
+								className={cx("update-button")}
+							>
+								Cập nhật thông tin
+							</button>
 						</Grid>
 					</Grid>
 					<div className={cx("info")}>
 						<div>
-							Email:
-							<input
-								onChange={handleOnchange}
-								value={details.buyer?.email || ""}
-								name="email"
-							/>
+							<span>Email:</span>
+							{details.address?.email || "Chưa có"}
 						</div>
 						<div>
-							Số điện thoại:
-							<input
-								onChange={handleOnchange}
-								value={formatPhoneNumber(details?.buyer.phone) || ""}
-								name="phone"
-							/>
+							<span>Số điện thoại: </span>
+							{formatPhoneNumber(details?.address.phone) || "Chưa có"}
 						</div>
 
 						<div>
-							Địa chỉ:
-							<textarea
-								onClick={() => setModalChangeAddress(true)}
-								defaultValue={
-									details.buyer?.address &&
-									[
-										details.buyer?.address,
-										details.buyer?.ward,
-										details.buyer?.district,
-										details.buyer?.province,
-									].join(", ")
-								}
-								name="address"
-							/>
+							<span>Địa chỉ:</span>
+
+							{(details.address?.address &&
+								[
+									details.address?.address,
+									details.address?.ward,
+									details.address?.district,
+									details.address?.province,
+								].join(", ")) ||
+								"Chưa có"}
 						</div>
 						<hr />
 						<div>
 							<div className={cx("payment")}>
-								<span>Hình thức thanh toán:</span>
+								<p style={{ marginRight: 20 }}>Hình thức thanh toán:</p>
 								<select name="payment">
 									<option value="cash">Thanh toán khi nhận hàng</option>
-									<option value="vnpay" disabled>Thanh toán qua ngân hàng</option>
+									<option value="vnpay" disabled>
+										Thanh toán qua ngân hàng
+									</option>
 								</select>
 							</div>
 						</div>
 					</div>
 				</div>
+				<Modal
+					title="Cập nhật thông tin giao hàng"
+					isOpen={modalChangeAddress}
+					setIsOpen={setModalChangeAddress}
+					width={800}
+				>
+					<div style={{ textAlign: "center" }}>
+						<AddressForm setDataSubmit={setDetails} data={details.address} />
+						<Button
+							onClick={() => {
+								setModalChangeAddress(false);
+							}}
+						>
+							Cập nhật
+						</Button>
+					</div>
+				</Modal>
 				<div className={cx("inner-content", "summary")}>
 					<p className={cx("title")}>Thông tin chung</p>
 					<div className={cx("price")}>
 						<p>
 							Giá sản phẩm:
-							<span>{Intl.NumberFormat().format(details.product?.price)}đ</span>
+							<span>{Intl.NumberFormat().format(totalPrice)}đ</span>
 						</p>
 						<p>
-							Giá vận chuyển: <span>{Intl.NumberFormat().format(30000)}đ</span>
+							Giá vận chuyển:{" "}
+							<span>
+								{Intl.NumberFormat().format(details.product?.length * 15000)}đ
+							</span>
 						</p>
 						<p>
 							Tổng cộng:
 							<span style={{ color: "red" }}>
-								{Intl.NumberFormat().format(details.product?.price + 30000)}đ
+								{Intl.NumberFormat().format(
+									totalPrice + details.product?.length * 15000
+								)}
+								đ
 							</span>
 						</p>
 					</div>
@@ -329,6 +335,28 @@ function OrderProduct() {
 					</div>
 				</div>
 			</div>
+			<Backdrop
+				sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+				open={isLoading}
+			>
+				<CircularProgress color="inherit" />
+			</Backdrop>
+			<Modal
+				isOpen={modalSuccess}
+				setIsOpen={setModalSuccess}
+				width={600}
+			>
+				<div className={cx("confirm-success")}>
+					<CheckCircleIcon color="success" fontSize="large"/>
+					<h5>Đặt hàng thành công!</h5>
+					<p>Vui lòng chờ nhà bán hàng chuẩn bị và vận chuyển đơn hàng.</p>
+					<Link
+						to={"/"}
+					>
+						Quay về trang chủ
+					</Link>
+				</div>
+			</Modal>
 		</div>
 	);
 }

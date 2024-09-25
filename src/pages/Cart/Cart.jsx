@@ -28,8 +28,10 @@ function Cart() {
 		// eslint-disable-next-line
 	}, [id]);
 	const handleDeleteCart = async (idProduct) => {
-		await CartService.deleteCart({ idUser: id, idProduct: idProduct });
-		getCarts();
+		const res = await CartService.deleteCart({ idUser: id, idProduct: idProduct });
+		if (res.status === "SUCCESS") {
+			getCarts();
+		}
 	};
 
 	const handleUpdateCart = async (updatedCartDetail) => {
@@ -155,20 +157,9 @@ function Cart() {
 										</p>
 									</div>
 									<div className={cx("col-1", "action")}>
-										{/* {cart?.statePost === "selled" ? (
-											<Button disabled>Thanh toán</Button>
-										) : (
-											<Button
-												primary
-												onClick={() => handlePurchase(cart._id)}
-											>
-												Thanh toán
-											</Button>
-										)} */}
-
 										<Button
 											danger
-											onClick={() => handleDeleteCart(cart._id)}
+											onClick={() => handleDeleteCart(cart.idProduct)}
 											style={{ width: 109 }}
 										>
 											Xóa

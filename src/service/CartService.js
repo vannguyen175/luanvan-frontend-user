@@ -15,6 +15,8 @@ export const getCart = async (id) => {
 };
 
 export const deleteCart = async (data) => {
-	const res = await Axios.post(`${process.env.REACT_APP_API_URL_BACKEND}/cart/delete`, data);
+	console.log("data", data);
+
+	const res = await Axios.put(`${process.env.REACT_APP_API_URL_BACKEND}/cart/delete`, data);
 	return res.data;
 };

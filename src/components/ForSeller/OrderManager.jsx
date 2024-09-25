@@ -54,7 +54,7 @@ function OrderManager() {
 
 	const handleShowDetail = (row) => {
 		console.log("row", row);
-		
+
 		setModalDetail(true);
 		setOrderSelected(row);
 	};
@@ -62,6 +62,8 @@ function OrderManager() {
 	const handleUpdateOrder = async (idOrder, data) => {
 		if (window.confirm("Bạn có chắc muốn vận chuyển đơn hàng?")) {
 			const res = await OrderService.updateOrder(idOrder, data);
+			console.log("res", res);
+
 			if (res.status === "SUCCESS") {
 				toast.success(res.message);
 				setTimeout(() => {
@@ -103,11 +105,11 @@ function OrderManager() {
 						<Table sx={{ minWidth: 650 }} aria-label="simple table">
 							<TableHead>
 								<TableRow>
-									<TableCell>ID Đơn hàng</TableCell>
 									<TableCell></TableCell>
 									<TableCell>Tên SP</TableCell>
 									<TableCell>Khách hàng</TableCell>
 									<TableCell>Giá tiền</TableCell>
+									<TableCell>Số lượng</TableCell>
 									<TableCell>Hình thức thanh toán</TableCell>
 									<TableCell>Ngày mua</TableCell>
 									<TableCell>Địa chỉ</TableCell>
@@ -123,7 +125,7 @@ function OrderManager() {
 									</TableRow>
 								) : (
 									<>
-										{orders[0]?.product ? (
+										{orders[0]?.idOrder ? (
 											orders.map((row) => (
 												<TableRow
 													key={row._id}
@@ -134,26 +136,32 @@ function OrderManager() {
 													}}
 													className="animate__animated animate__fadeIn"
 												>
-													<TableCell component="th" scope="row">
-														#002
-													</TableCell>
 													<TableCell>
 														<img
 															style={{ width: 50, height: 50 }}
-															src={row.product.images[0]}
+															src={row.idProduct.images[0]}
 															alt="anh-SP"
 														/>
 													</TableCell>
-													<TableCell>{row.product.name}</TableCell>
-													<TableCell>{row.buyer.name}</TableCell>
 													<TableCell>
-														{Intl.NumberFormat().format(
-															row.product.price + 30000
-														)}
-														đ
+														<p style={{ fontWeight: 500 }}>
+															{row.idProduct.name}
+														</p>
 													</TableCell>
 													<TableCell>
-														{row.paymentMethod === "cash"
+														{row.idOrder.idBuyer.name}
+													</TableCell>
+													<TableCell>
+														<p style={{ color: "var(--orange-color)" }}>
+															{Intl.NumberFormat().format(
+																row.productPrice + row.shippingPrice
+															)}
+															đ
+														</p>
+													</TableCell>
+													<TableCell>{row.quantity}</TableCell>
+													<TableCell>
+														{row.idOrder.paymentMethod === "cash"
 															? "Tiền mặt"
 															: "Chuyển khoản"}
 													</TableCell>
@@ -163,7 +171,7 @@ function OrderManager() {
 														)}
 													</TableCell>
 													<TableCell>
-														{row.shippingDetail.address}
+														{row.idOrder.shippingDetail.address}
 													</TableCell>
 
 													<TableCell>
@@ -196,10 +204,10 @@ function OrderManager() {
 					setIsOpen={setModalDetail}
 					width={1000}
 				>
-					{orderSelected?.product && (
+					{orderSelected?.idProduct && (
 						<div className={cx("modal")}>
 							<div className="title" style={{ marginBottom: 30 }}>
-								Mã đơn hàng: #002 &nbsp;&nbsp;&nbsp; Trạng thái:{" "}
+								Trạng thái đơn hàng:
 								{orderSelected.status}
 							</div>
 							<Grid
@@ -213,18 +221,21 @@ function OrderManager() {
 							>
 								<Grid item xs={5} className={cx("info-section")}>
 									<p className={cx("title-section")}>Khách hàng</p>
-									<Description title="Tên" desc={orderSelected.buyer?.name} />
+									<Description
+										title="Tên"
+										desc={orderSelected.idOrder.idBuyer?.name}
+									/>
 									<Description
 										title="Email"
-										desc={orderSelected.shippingDetail?.email}
+										desc={orderSelected.idOrder.shippingDetail?.email}
 									/>
 									<Description
 										title="Số điện thoại"
-										desc={orderSelected.shippingDetail?.phone}
+										desc={orderSelected.idOrder.shippingDetail?.phone}
 									/>
 									<Description
 										title="Địa chỉ"
-										desc={orderSelected.shippingDetail?.address}
+										desc={orderSelected.idOrder.shippingDetail?.address}
 									/>
 								</Grid>
 								<Grid item xs={5} className={cx("info-section")}>
@@ -232,12 +243,14 @@ function OrderManager() {
 									<Description
 										title="Giá sản phẩm"
 										desc={`${Intl.NumberFormat().format(
-											orderSelected.product.price
+											orderSelected.productPrice
 										)}đ`}
 									/>
 									<Description
 										title="Phí vận chuyển"
-										desc={`${Intl.NumberFormat().format(30000)}đ`}
+										desc={`${Intl.NumberFormat().format(
+											orderSelected.shippingPrice
+										)}đ`}
 									/>
 									<Description
 										title="Hình thức thanh toán"
@@ -250,7 +263,7 @@ function OrderManager() {
 									<Description
 										title="Tổng tiền"
 										desc={`${Intl.NumberFormat().format(
-											orderSelected.product.price + 30000
+											orderSelected.shippingPrice + orderSelected.productPrice
 										)}đ`}
 										important
 									/>
@@ -266,7 +279,7 @@ function OrderManager() {
 							>
 								<Grid item xs={5} className={cx("info-section")}>
 									<p className={cx("title-section")}>Sản phẩm</p>
-									{orderSelected.product.images.map((image, index) => (
+									{orderSelected.idProduct.images.map((image, index) => (
 										<img
 											key={index}
 											style={{ width: 70, height: 70, margin: 5 }}
@@ -277,17 +290,21 @@ function OrderManager() {
 
 									<Description
 										title="Tên SP"
-										desc={orderSelected.product?.name}
+										desc={orderSelected.idProduct?.name}
 									/>
 									<Description
 										title="Giá"
 										desc={`${Intl.NumberFormat().format(
-											orderSelected.product.price
+											orderSelected.productPrice
 										)}đ`}
 									/>
 									<Description
+										title="Số lượng"
+										desc={orderSelected.quantity}
+									/>
+									<Description
 										title="Danh mục"
-										desc={orderSelected.product.subCategory?.name}
+										desc={orderSelected.idProduct.subCategory?.name}
 									/>
 								</Grid>
 								<Grid item xs={5} className={cx("info-section")}>

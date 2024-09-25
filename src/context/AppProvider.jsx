@@ -27,11 +27,11 @@ export const AppProvider = ({ children }) => {
 				avatar: res?.user?.avatar || "assets/images/user-avatar.jpg",
 				isAdmin: res?.user?.isAdmin,
 
-				phone: res?.address?.phone || "",
-				province: res?.address?.province || "",
-				district: res?.address?.district || "",
-				ward: res?.address?.ward || "",
-				address: res?.address?.address || "",
+				phone: res?.address?.phone || null,
+				province: res?.address?.province || null,
+				district: res?.address?.district || null,
+				ward: res?.address?.ward || null,
+				address: res?.address?.address || null,
 
 				totalProduct: res?.seller?.totalProduct,
 				totalSold: res?.seller?.totalSold,
@@ -40,7 +40,8 @@ export const AppProvider = ({ children }) => {
 		} catch (error) {
 			if (error.response?.data?.message === "The authemtication") {
 				//refresh_token hết hạn
-				console.log("refresh_token hết hạn...");
+				localStorage.clear()
+				window.location.href="/login";
 			}
 		}
 	};

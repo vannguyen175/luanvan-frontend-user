@@ -44,20 +44,21 @@ function Register() {
 				<h2 className={cx("title")}>Đăng ký tài khoản</h2>
 				<form action="" method="POST">
 					{message !== "" && <span style={{ color: "red" }}>{message}</span>}
-					<TextField
-						name="email"
-						onChange={handleChange}
-						label="Email"
-						variant="outlined"
-						style={{ margin: "15px 0" }}
-						fullWidth
-					/>
+
 					<TextField
 						name="name"
 						onChange={handleChange}
 						label="Tên tài khoản"
 						variant="outlined"
-						style={{ margin: "15px 0" }}
+						style={{ margin: "15px 0", width: "90%" }}
+						fullWidth
+					/>
+					<TextField
+						name="email"
+						onChange={handleChange}
+						label="Email"
+						variant="outlined"
+						style={{ margin: "15px 0", width: "90%" }}
 						fullWidth
 					/>
 					<TextField
@@ -65,7 +66,7 @@ function Register() {
 						onChange={handleChange}
 						label="Số điện thoại"
 						variant="outlined"
-						style={{ margin: "15px 0" }}
+						style={{ margin: "15px 0", width: "90%" }}
 						fullWidth
 					/>
 					<TextField
@@ -73,7 +74,7 @@ function Register() {
 						onChange={handleChange}
 						label="Mật khẩu"
 						variant="outlined"
-						style={{ margin: "15px 0" }}
+						style={{ margin: "15px 0", width: "90%" }}
 						fullWidth
 						type="password"
 					/>
@@ -82,7 +83,7 @@ function Register() {
 						onChange={handleChange}
 						label="Nhập lại mật khẩu"
 						variant="outlined"
-						style={{ margin: "15px 0" }}
+						style={{ margin: "15px 0", width: "90%" }}
 						fullWidth
 						type="password"
 					/>

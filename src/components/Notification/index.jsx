@@ -7,6 +7,7 @@ import Popover from "@mui/material/Popover";
 import { useEffect, useState } from "react";
 import { useApp } from "~/context/AppProvider";
 import { useNavigate } from "react-router-dom";
+import Grid from "@mui/material/Grid";
 
 const cx = classNames.bind(style);
 
@@ -56,7 +57,12 @@ function Notification() {
 			});
 			getNoti(); //cập nhật lại list thông báo
 		}
-		navigate(`/detail-product/${info.product}`);
+		if (info.navigate === "product") {
+			navigate(`/detail-product/${info.product}`);
+		} else if (info.navigate === "order") {
+			localStorage.setItem("menu_profile", "3");
+			navigate(`/tai-khoan`);
+		}
 		setAnchorEl(null);
 	};
 
@@ -101,8 +107,20 @@ function Notification() {
 									className={cx(item.isSeen ? "" : "unSeen")}
 									onClick={() => handleClickNoti(item)}
 								>
-									<img src={item.image} alt="anh" />
-									<span>{item.message}</span>
+									<Grid
+										container
+										sx={{
+											alignItems: "center",
+										}}
+									>
+										<Grid item xs={2}>
+											<img src={item.image} alt="anh" />
+										</Grid>
+
+										<Grid item xs={10}>
+											<span>{item.message}</span>
+										</Grid>
+									</Grid>
 								</div>
 							))}
 						</div>

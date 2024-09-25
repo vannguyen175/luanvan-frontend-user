@@ -8,6 +8,7 @@ import { useState } from "react";
 import AccountInfo from "../../components/Profile/AccountInfo";
 import Activities from "../../components/Profile/OrderStatus";
 import OrderStatus from "../../components/Profile/OrderStatus";
+import Analytics from "../../components/Profile/Analytics";
 
 const cx = classNames.bind(style);
 
@@ -65,7 +66,7 @@ function Profile() {
 				{menuState === "1" && <AccountInfo />}
 				{menuState === "2" && <Activities />}
 				{menuState === "3" && <OrderStatus />}
-				{menuState === "4" && <Activities />}
+				{menuState === "4" && <Analytics />}
 			</div>
 		</div>
 	);

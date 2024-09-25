@@ -35,6 +35,8 @@ function OrderStatus() {
 			const res = await OrderService.getAllOrders({
 				data: { buyer: user.id, status: alignment, token: token },
 			});
+			console.log("res", res);
+
 			setOrders(res.data);
 		}
 	};
@@ -101,21 +103,21 @@ function OrderStatus() {
 								<Grid item xs={12} className={cx("shop")}>
 									<StorefrontIcon style={{ marginRight: 10 }} />
 									<span onClick={() => navigate(`/seller/${item.seller}`)}>
-										{item.product.sellerName}
+										{item.idProduct.sellerName}
 									</span>
 								</Grid>
 								<Grid item xs={1} className={cx("image-product")}>
-									<img src={item.product.images[0]} alt="anh-san-pham" />
+									<img src={item.idProduct.images[0]} alt="anh-san-pham" />
 								</Grid>
 								<Grid item xs={7} className={cx("detail-product")}>
 									<Grid container direction="column">
 										<Grid item xs={12} className={cx("name")}>
-											{item.product.name}
+											{item.idProduct.name}
 										</Grid>
 										<Grid item xs={12}>
 											<Description
 												title="Danh mục"
-												desc={item.product.subCategory.name}
+												desc={item.idProduct.subCategory.name}
 											/>
 										</Grid>
 									</Grid>
@@ -125,16 +127,15 @@ function OrderStatus() {
 										<Description
 											title="Giá tiền"
 											desc={`${Intl.NumberFormat().format(
-												(item.shippingDetail?.shippingPrice || 0) +
-													(item.product?.price || 0)
+												(item.productPrice || 0) + (item.shippingPrice || 0)
 											)}đ`}
 										/>
 										<Description
 											title="Hình thức"
 											desc={
-												item.paymentMethod === "cash"
-													? "Thanh toán bằng tiền mặt"
-													: "Chuyển khoản"
+												item.isPaid
+													? "Chuyển khoản"
+													: "Thanh toán bằng tiền mặt"
 											}
 										/>
 									</Grid>

@@ -6,7 +6,10 @@ export const createOrder = async (data) => {
 };
 
 export const getAllOrders = async (data) => {
-	const res = await Axios.post(`${process.env.REACT_APP_API_URL_BACKEND}/order/getAll`, data);
+	const res = await Axios.post(
+		`${process.env.REACT_APP_API_URL_BACKEND}/order-detail/getAll`,
+		data
+	);
 	return res.data;
 };
 export const cancelOrder = async (data) => {
@@ -21,7 +24,7 @@ export const getAnalyticsOrder = async (data) => {
 
 export const updateOrder = async (id, data) => {
 	const res = await Axios.put(
-		`${process.env.REACT_APP_API_URL_BACKEND}/order/update/${id}`,
+		`${process.env.REACT_APP_API_URL_BACKEND}/order-detail/update/${id}`,
 		data
 	);
 	return res.data;
