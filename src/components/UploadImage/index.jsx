@@ -52,6 +52,7 @@ function UploadImage({ imageList, setImageList }) {
 
 	const deleteImage = (index) => {
 		setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+		setImageList((prevImages) => prevImages.filter((_, i) => i !== index));
 	};
 
 	return (
