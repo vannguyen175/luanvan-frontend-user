@@ -1,27 +1,20 @@
 import classNames from "classnames/bind";
 import style from "./OrderProduct.module.scss";
-import moment from "moment";
 import Button from "~/components/Button";
-import vi from "moment/locale/vi";
 import Grid from "@mui/material/Grid";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import * as ProductService from "~/service/ProductService";
 import * as CartService from "~/service/CartService";
 
-import * as UserService from "~/service/UserService";
 import * as OrderService from "~/service/OrderService";
+import * as PaymentService from "~/service/PaymentService";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Modal from "~/components/Modal";
-import Description from "~/components/Description";
 import { useApp } from "~/context/AppProvider";
 import AddressForm from "~/components/AddressForm";
 import { formatPhoneNumber } from "../../utils";
-import LocalAtmIcon from "@mui/icons-material/LocalAtm";
-import PaymentIcon from "@mui/icons-material/Payment";
 import StoreMallDirectoryIcon from "@mui/icons-material/StoreMallDirectory";
 import EditNoteIcon from "@mui/icons-material/EditNote";
-import EditIcon from "@mui/icons-material/Edit";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -29,14 +22,10 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 const cx = classNames.bind(style);
 
 function OrderProduct() {
-	const navigate = useNavigate();
 	const cartSelected = localStorage.getItem("cartSelected");
 	const idUser = localStorage.getItem("id_user");
-	const { id } = useParams(); //id product
-	const { user, socket } = useApp();
-	const [modelConfirm, setModelConfirm] = useState(false);
+	const { user } = useApp();
 	const [modalChangeAddress, setModalChangeAddress] = useState(false);
-	const [modalChangePaymentMethod, setModalChangePaymentMothod] = useState(false);
 	const [paymentMethod, setPaymentMethod] = useState("cash");
 	const [isLoading, setIsLoading] = useState(false);
 	const [showBackdrop, setShowBackdrop] = useState(false);
@@ -85,19 +74,10 @@ function OrderProduct() {
 					ward: user.ward,
 					address: user.address,
 				}, //address's buyer
-				paymentMethod: {
-					method: "cash",
-				},
 			}));
 		}
 		// eslint-disable-next-line
 	}, [user]); //detail-seller
-
-	//Cập nhật gtri select khi người dùng thay đổi PaymentMethod
-	const handleChangePaymentMethod = (e) => {
-		//	console.log("e.target.value", e.target.value);
-		setPaymentMethod(e.target.value);
-	};
 
 	//Người dùng click button "Dat hang ngay" => hiện model confirm đơn hàng
 	const handleCheckOrder = async () => {
@@ -114,11 +94,17 @@ function OrderProduct() {
 		}
 	};
 
+	//Cập nhật gtri select khi người dùng thay đổi PaymentMethod
+	const handleChangePaymentMethod = (e) => {
+		//console.log("e.target.value", e.target.value);
+		setPaymentMethod(e.target.value);
+	};
+
 	//tiến hành lưu thông tin order
 	const handleOrder = async () => {
 		const dataOrder = {
 			products: details.product, //array
-			paymentMethod: details.paymentMethod.method,
+			paymentMethod: paymentMethod,
 			shippingDetail: {
 				email: details.address.email,
 				phone: details.address.phone,
@@ -136,15 +122,25 @@ function OrderProduct() {
 			totalPaid: totalPrice + details.product?.length * 15000,
 		};
 		setIsLoading(true);
-		console.log("setIsLoading1", isLoading);
+		console.log("dataOrder", dataOrder);
 
-		const res = await OrderService.createOrder(dataOrder);
-		//console.log("res", res);
-		console.log("setIsLoading2", isLoading);
+		if (dataOrder.paymentMethod === "vnpay") {
+			localStorage.setItem("dataOrder", JSON.stringify(dataOrder));
+			const res = await PaymentService.createPayment({
+				amount: dataOrder.totalPaid,
+				bankCode: "",
+				language: "vn",
+			});
+			console.log(res);
 
-		if (res.status === "SUCCESS") {
-			setIsLoading(false);
-			setModalSuccess(true);
+			window.location.href = res.redirect;
+		} else {
+			const res = await OrderService.createOrder(dataOrder);
+			console.log("res", res);
+			if (res.status === "success") {
+				setIsLoading(false);
+				setModalSuccess(true);
+			}
 		}
 	};
 
@@ -276,12 +272,29 @@ function OrderProduct() {
 						<div>
 							<div className={cx("payment")}>
 								<p style={{ marginRight: 20 }}>Hình thức thanh toán:</p>
-								<select name="payment">
+								{/* <select name="payment">
 									<option value="cash">Thanh toán khi nhận hàng</option>
-									<option value="vnpay" disabled>
-										Thanh toán qua ngân hàng
-									</option>
-								</select>
+									<option value="vnpay">Thanh toán qua ngân hàng</option>
+								</select> */}
+								<div>
+									<input
+										type="radio"
+										onChange={handleChangePaymentMethod}
+										name="payment"
+										value="cash"
+										checked="checked"
+									/>
+									<label htmlFor="html">Thanh toán khi nhận hàng</label>
+									<br />
+									<input
+										type="radio"
+										onChange={handleChangePaymentMethod}
+										name="payment"
+										value="vnpay"
+									/>
+									<label htmlFor="html">Thanh toán qua VNPay</label>
+									<br />
+								</div>
 							</div>
 						</div>
 					</div>
@@ -332,6 +345,7 @@ function OrderProduct() {
 						<Button primary onClick={handleCheckOrder}>
 							Đặt hàng ngay
 						</Button>
+						{/* <Link to="/payment-vnpay">Đặt hàng ngay</Link> */}
 					</div>
 				</div>
 			</div>
@@ -341,20 +355,12 @@ function OrderProduct() {
 			>
 				<CircularProgress color="inherit" />
 			</Backdrop>
-			<Modal
-				isOpen={modalSuccess}
-				setIsOpen={setModalSuccess}
-				width={600}
-			>
+			<Modal isOpen={modalSuccess} setIsOpen={setModalSuccess} width={600}>
 				<div className={cx("confirm-success")}>
-					<CheckCircleIcon color="success" fontSize="large"/>
+					<CheckCircleIcon color="success" fontSize="large" />
 					<h5>Đặt hàng thành công!</h5>
 					<p>Vui lòng chờ nhà bán hàng chuẩn bị và vận chuyển đơn hàng.</p>
-					<Link
-						to={"/"}
-					>
-						Quay về trang chủ
-					</Link>
+					<Link to={"/"}>Quay về trang chủ</Link>
 				</div>
 			</Modal>
 		</div>

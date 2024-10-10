@@ -15,6 +15,8 @@ import Register from "~/pages/Register/Register";
 import PostingProduct from "../pages/PostingProduct/PostingProduct";
 import ForSeller from "../pages/ForSellerMenu";
 import SellerHomePage from "../pages/SellerHomePage";
+import Payment from "../pages/OrderProduct/Payment";
+import PaymentResult from "../pages/OrderProduct/PaymentResult";
 
 export const routes = [
 	{
@@ -41,6 +43,16 @@ export const routes = [
 		path: "/dat-hang",
 		page: OrderProduct,
 		layout: NoneFooterLayout,
+	},
+	{
+		path: "/payment-vnpay",
+		page: Payment,
+		layout: NoneFooterLayout,
+	},
+	{
+		path: "/payment-vnpay/result",
+		page: PaymentResult,
+		layout: Fragment,
 	},
 	{
 		path: "/gio-hang/:id",
