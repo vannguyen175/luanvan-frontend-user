@@ -4,6 +4,7 @@ import Button from "~/components/Button";
 import Grid from "@mui/material/Grid";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import * as CartService from "~/service/CartService";
+import * as ProductService from "~/service/ProductService";
 
 import * as OrderService from "~/service/OrderService";
 import * as PaymentService from "~/service/PaymentService";
@@ -22,6 +23,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 const cx = classNames.bind(style);
 
 function OrderProduct() {
+	const { id, quantity } = useParams();
 	const cartSelected = localStorage.getItem("cartSelected");
 	const idUser = localStorage.getItem("id_user");
 	const { user } = useApp();
@@ -40,8 +42,33 @@ function OrderProduct() {
 	});
 
 	const getProducts = async () => {
-		const result = await CartService.getCart(idUser);
-		const data = result.data.filter((_, index) => cartSelected.includes(index)); //lấy sp được user chọn ở cart page
+		let data = [];
+		if (id && quantity) {
+			const result = await ProductService.detailProduct(id);
+			console.log(result);
+			if (result) {
+				data = [
+					{
+						idProduct: result.data._id,
+						idSeller: result.data.idUser,
+						image: result.data.images[0],
+						name: result.data.name,
+						price: result.data.price,
+						quantity: +quantity, // Ép kiểu từ string sang số nguyên
+						sellerName: result.data.sellerName,
+						statePost: result.data.statePost,
+						totalQuantity: result.data.quantity,
+					},
+				];
+			}
+
+			console.log("id && quantity", data);
+		} else {
+			const result = await CartService.getCart(idUser);
+			data = result.data.filter((_, index) => cartSelected.includes(index)); //lấy sp được user chọn ở cart page
+		}
+		console.log("TEST");
+
 		setDetails((prevDetails) => ({
 			...prevDetails,
 			product: data.map((item) => ({
@@ -122,7 +149,6 @@ function OrderProduct() {
 			totalPaid: totalPrice + details.product?.length * 15000,
 		};
 		setIsLoading(true);
-		console.log("dataOrder", dataOrder);
 
 		if (dataOrder.paymentMethod === "vnpay") {
 			localStorage.setItem("dataOrder", JSON.stringify(dataOrder));
@@ -131,8 +157,6 @@ function OrderProduct() {
 				bankCode: "",
 				language: "vn",
 			});
-			console.log(res);
-
 			window.location.href = res.redirect;
 		} else {
 			const res = await OrderService.createOrder(dataOrder);

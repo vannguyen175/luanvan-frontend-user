@@ -51,14 +51,14 @@ function UserHome() {
 				className={cx("section-1")}
 			>
 				<div className={cx("content", "box-shadow")}>
-					<p>Chào mừng đến với website Thanh lý đồ cũ</p>
-					<Button primary href="#categories">
+					<p>Website Thanh lý đồ cũ</p>
+					<Button primary href="#products">
 						Bắt đầu mua sắm
 					</Button>
 				</div>
 			</section>
 
-			<section className={cx("inner-content")} id="categories">
+			<section className={cx("inner-content")}>
 				<p className={cx("title")}>Khám phá danh mục</p>
 				<div className={cx("animate__animated", "animate__fadeIn")}>
 					{categories ? (
@@ -81,9 +81,9 @@ function UserHome() {
 				</div>
 			</section>
 
-			<section className={cx("inner-content")}>
+			<section className={cx("inner-content")} id="products">
 				<p className={cx("title")}>Tin đăng mới</p>
-				<div style={{ display: "flex", flexWrap: "wrap" }} >
+				<div style={{ display: "flex", flexWrap: "wrap" }}>
 					{products ? (
 						products?.map((product, key) => <CardProduct key={key} product={product} />)
 					) : (

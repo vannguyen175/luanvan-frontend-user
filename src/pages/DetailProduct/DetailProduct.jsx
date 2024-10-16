@@ -9,6 +9,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { toast } from "react-toastify";
+import Rating from "@mui/material/Rating";
 
 //import Button from "~/components/Button";
 import classNames from "classnames/bind";
@@ -76,6 +77,8 @@ function DetailProduct() {
 
 	const getDetailSeller = async (idUser) => {
 		const res = await UserService.getInfoUser(idUser);
+		console.log(res);
+
 		setDetails((prevDetails) => ({
 			...prevDetails,
 			seller: res.data,
@@ -91,7 +94,7 @@ function DetailProduct() {
 
 	const handleOrderNow = () => {
 		if (user.id) {
-			navigate(`/dat-hang/${id}`);
+			navigate(`/dat-hang/${id}/${quantitySelected}`);
 		} else {
 			navigate("/login", { state: location.pathname });
 		}
@@ -117,6 +120,8 @@ function DetailProduct() {
 	const handleShowDetail = (value) => {
 		setDetails((prev) => ({ ...prev, stateShow: value }));
 	};
+
+	console.log("details.seller?.rating", details.seller?.avgRating);
 
 	return (
 		<div className={cx("animate__animated", "animate__fadeIn")}>
@@ -286,14 +291,7 @@ function DetailProduct() {
 										className={cx("detail-seller")}
 									>
 										<h5>Thông tin nhà bán hàng</h5>
-										{/* <Description
-											style={{ fontWeight: 500, cursor: "pointer" }}
-											onClick={() =>
-												navigate(`/seller/${details.seller?._id}`)
-											}
-											title="Tên nhà bán hàng"
-											desc={details.seller?.name}
-										/> */}
+
 										<div className={cx("main-info")}>
 											<img
 												src={
@@ -306,7 +304,7 @@ function DetailProduct() {
 
 											<p
 												onClick={() =>
-													navigate(`/seller/${details.seller?._id}`)
+													navigate(`/seller/${details.seller?.user}`)
 												}
 												className={cx("name")}
 											>
@@ -316,9 +314,24 @@ function DetailProduct() {
 
 										<Description
 											title="Đánh giá"
-											desc={details.seller?.rating}
+											desc={
+												<>
+													<Rating
+														name="read-only"
+														value={
+															details.seller?.avgRating[0]
+																?.averageRating || 0
+														} // Check undefined/null
+														readOnly
+													/>
+													{/* Hiển thị giá trị rating sau Rating component */}
+													<span style={{ marginLeft: 10 }}>{details.seller?.avgRating[0]?.averageRating}/5</span>
+													
+												</>
+											}
 											className={cx("rating")}
 										/>
+
 										<Description
 											title="Số điện thoại"
 											desc={formatPhoneNumber(details.seller?.phone)}

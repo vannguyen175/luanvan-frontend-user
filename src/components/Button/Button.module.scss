@@ -57,6 +57,12 @@ a[href].chosenBtn {
 	}
 }
 
+.chosen-btn {
+	background-color: var(--main-color);
+	color: white;
+	pointer-events: none;
+}
+
 .disabled {
 	background-color: rgb(198, 198, 198);
 	color: white;

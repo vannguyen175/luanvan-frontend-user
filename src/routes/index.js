@@ -45,6 +45,11 @@ export const routes = [
 		layout: NoneFooterLayout,
 	},
 	{
+		path: "/dat-hang/:id/:quantity",
+		page: OrderProduct,
+		layout: NoneFooterLayout,
+	},
+	{
 		path: "/payment-vnpay",
 		page: Payment,
 		layout: NoneFooterLayout,

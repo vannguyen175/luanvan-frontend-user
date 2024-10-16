@@ -1,13 +1,14 @@
 import classNames from "classnames/bind";
 import style from "./Profile.module.scss";
 import * as OrderService from "../../service/OrderService";
+import * as RatingService from "../../service/RatingService";
 import Description from "../Description";
 import Modal from "../Modal";
 import { useApp } from "~/context/AppProvider";
 
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import Grid from "@mui/material/Grid";
 import Radio from "@mui/material/Radio";
@@ -16,14 +17,23 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import Rating from "@mui/material/Rating";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const cx = classNames.bind(style);
 
 function OrderStatus() {
-	const { user, token } = useApp();
+	const reviewRef = useRef();
 	const navigate = useNavigate();
+	const { user, token } = useApp();
+	const [isLoading, setIsLoading] = useState(false);
 	const [alignment, setAlignment] = useState("0");
+	const [showReviewModal, setShowReviewModal] = useState(false);
 	const [cancelOpen, setCancelOpen] = useState(false);
+	const [ratingInfo, setRatingInfo] = useState({
+		info: {},
+		score: 0,
+	});
 	const [reasonCancel, setReasonCancel] = useState({
 		idOrder: "",
 		reason: "",
@@ -31,14 +41,16 @@ function OrderStatus() {
 	const [orders, setOrders] = useState([]);
 
 	const getOrders = async () => {
+		setIsLoading(true);
 		if (user.id) {
 			const res = await OrderService.getAllOrders({
 				data: { buyer: user.id, status: alignment, token: token },
 			});
-			console.log("res", res);
+			console.log(res.data);
 
 			setOrders(res.data);
 		}
+		setIsLoading(false);
 	};
 
 	useEffect(() => {
@@ -72,7 +84,52 @@ function OrderStatus() {
 		}
 	};
 
-	const handleReview = () => {};
+	const handleShowRatingModal = (item) => {
+		setShowReviewModal(true);
+		if (item?.ratingInfo?.score) {
+			setRatingInfo({
+				info: item,
+				score: item.ratingInfo?.score,
+				review: item.ratingInfo?.review,
+				idRating: item.ratingInfo?._id,
+			});
+		} else {
+			setRatingInfo({ info: item, score: 0 });
+		}
+	};
+
+	const handleSendReview = async () => {
+		let dataSubmit = {};
+		let res;
+		if (ratingInfo?.idRating) {
+			dataSubmit = {
+				idRating: ratingInfo.idRating,
+				review: reviewRef.current.value,
+				score: ratingInfo.score,
+			};
+			res = await RatingService.updateRating(dataSubmit);
+		} else {
+			dataSubmit = {
+				idProduct: ratingInfo.info.idProduct._id,
+				idOrder: ratingInfo.info._id,
+				idBuyer: user.id,
+				idSeller: ratingInfo.info.idSeller,
+				review: reviewRef.current.value,
+				score: ratingInfo.score,
+			};
+			res = await RatingService.createRating(dataSubmit);
+		}
+
+		if (res.status === "SUCCESS") {
+			toast.success(res.message);
+			setTimeout(() => {
+				getOrders();
+				setShowReviewModal(false);
+			}, 2000);
+		} else {
+			toast.error(res.message);
+		}
+	};
 
 	return (
 		<div style={{ overflow: "unset" }}>
@@ -96,13 +153,17 @@ function OrderStatus() {
 				</div>
 			</div>
 			<div>
-				{orders.length > 0 ? (
+				{isLoading ? (
+					<div style={{ textAlign: "center" }}>
+						<CircularProgress />
+					</div>
+				) : orders.length > 0 ? (
 					orders.map((item, index) => (
 						<div className={cx("order-status-card")} key={index}>
 							<Grid container>
 								<Grid item xs={12} className={cx("shop")}>
 									<StorefrontIcon style={{ marginRight: 10 }} />
-									<span onClick={() => navigate(`/seller/${item.seller}`)}>
+									<span onClick={() => navigate(`/seller/${item.idSeller}`)}>
 										{item.idProduct.sellerName}
 									</span>
 								</Grid>
@@ -152,10 +213,12 @@ function OrderStatus() {
 											</button>
 										) : alignment === "3" ? (
 											<button
-												onClick={handleReview}
+												onClick={() => handleShowRatingModal(item)}
 												className={cx("button-primary")}
 											>
-												Đánh giá
+												{item?.ratingInfo?.score
+													? "Đã đánh giá"
+													: "Đánh giá"}
 											</button>
 										) : (
 											""
@@ -168,6 +231,7 @@ function OrderStatus() {
 				) : (
 					<p style={{ textAlign: "center", margin: 20 }}>Không có dữ liệu</p>
 				)}
+
 				<Modal
 					title="Lý do hủy đơn hàng"
 					isOpen={cancelOpen}
@@ -212,6 +276,72 @@ function OrderStatus() {
 							Xác nhận hủy
 						</button>
 					</div>
+				</Modal>
+				<Modal
+					title="Đánh giá sản phẩm, nhà bán hàng"
+					isOpen={showReviewModal}
+					setIsOpen={setShowReviewModal}
+					width={600}
+				>
+					{" "}
+					{ratingInfo.info?.idProduct && (
+						<div className={cx("rating")}>
+							<div className={cx("info")}>
+								<img src={ratingInfo.info.idProduct.images[0]} alt="anh-san-pham" />
+								<div>
+									<h5 style={{ marginTop: 5 }}>
+										{ratingInfo.info.idProduct.name}
+									</h5>
+									<div
+										style={{
+											display: "flex",
+											alignItems: "center",
+										}}
+									>
+										<StorefrontIcon style={{ marginRight: 5 }} />
+										<span
+											onClick={() =>
+												navigate(`/seller/${ratingInfo.info.seller}`)
+											}
+										>
+											{ratingInfo.info.idProduct.sellerName}
+										</span>
+									</div>
+								</div>
+							</div>
+							<div className={cx("score")}>
+								<p>Điểm đánh giá: </p>
+								<Rating
+									name="simple-controlled"
+									value={ratingInfo.score}
+									precision={0.5}
+									size="large"
+									onChange={(event, newValue) => {
+										setRatingInfo((prevData) => ({
+											...prevData,
+											score: newValue,
+										}));
+									}}
+								/>
+								<span style={{ marginLeft: 30, marginTop: "-5px" }}>
+									({ratingInfo?.score || 0}/5)
+								</span>
+							</div>
+							<textarea
+								className={cx("review")}
+								cols={5}
+								name="review"
+								ref={reviewRef}
+								defaultValue={ratingInfo?.review}
+								placeholder="Nhận xét về sản phẩm, nhà bán hàng,..."
+							></textarea>
+							<div style={{ textAlign: "center" }}>
+								<button className={cx("button-primary")} onClick={handleSendReview}>
+									{ratingInfo?.idRating ? "Cập nhật đánh giá" : "Gửi đánh giá"}
+								</button>
+							</div>
+						</div>
+					)}
 				</Modal>
 			</div>
 		</div>

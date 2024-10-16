@@ -46,25 +46,14 @@ function ForSeller() {
 					</li>
 					<li className={cx("menu-item")}>
 						<p
-							className={cx(activeIndex === 1 && "menu-item-active")}
-							onClick={() => handleClick(1)}
+							className={cx(activeIndex === 1.1 && "menu-item-active")}
+							onClick={() => {
+								handleClick(1.1);
+								setActiveSubMenu(1.1);
+							}}
 						>
 							Tài Khoản Của Tôi
 						</p>
-						{activeIndex === 1 && (
-							<ul className={cx("submenu")}>
-								<li onClick={() => setActiveSubMenu(1.1)}>
-									<p className={cx(activeSubMenu === 1.1 && "menu-item-active")}>
-										Hồ sơ
-									</p>
-								</li>
-								<li onClick={() => setActiveSubMenu(1.2)}>
-									<p className={cx(activeSubMenu === 1.2 && "menu-item-active")}>
-										Ngân hàng
-									</p>
-								</li>
-							</ul>
-						)}
 					</li>
 					<li className={cx("menu-item")}>
 						<p
@@ -74,7 +63,7 @@ function ForSeller() {
 								setActiveSubMenu(2);
 							}}
 						>
-							Sản Phẩm Của Tôi
+							Sản Phẩm Đang Bán
 						</p>
 					</li>
 					<li className={cx("menu-item")}>

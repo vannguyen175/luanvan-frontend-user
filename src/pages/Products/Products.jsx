@@ -5,12 +5,14 @@ import CardProduct from "~/components/CardProduct";
 import * as ProductService from "~/service/ProductService";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const cx = classNames.bind(style);
 
 function Products() {
 	const { slug_category } = useParams();
 	const [subCateChosen, setSubCateChosen] = useState();
+	const [isLoading, setIsLoading] = useState(false);
 	const [subCategory, setSubCategory] = useState();
 	const [products, setProducts] = useState();
 	const [pageState, setPageState] = useState({
@@ -33,14 +35,14 @@ function Products() {
 	}, []);
 
 	const getProductsBySubCate = async () => {
+		setIsLoading(true);
 		const res = await ProductService.getAllProducts({
 			data: { state: [], cate: [], subCate: [subCateChosen] }, //vd: chó
 			page: `page=${pageState.page}`,
 			limit: `limit=${pageState.pageSize}`,
 		});
-		console.log("res", subCateChosen);
-
 		setProducts(res.data);
+		setIsLoading(false);
 	};
 
 	//thay đổi subCateChosen mỗi khi user nhấn chọn danh mục phụ
@@ -73,10 +75,17 @@ function Products() {
 			<div className={cx("shop-new", "inner-content")}>
 				<p className={cx("title")}>Tin đăng mới</p>
 				<div style={{ display: "flex", flexWrap: "wrap" }}>
-					{products &&
+					{isLoading ? (
+						<div style={{ margin: "0 auto" }}>
+							<CircularProgress />
+						</div>
+					) : products?.length > 0 ? (
 						products?.map((product, key) => (
 							<CardProduct key={key} product={product} type="horizontal" />
-						))}
+						))
+					) : (
+						<p style={{ margin: "0 auto" }}>Danh mục này hiện không có sản phẩm nào.</p>
+					)}
 				</div>
 			</div>
 		</div>

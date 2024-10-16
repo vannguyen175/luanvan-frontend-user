@@ -73,6 +73,7 @@ function Analytic() {
 			typeDate: dataType,
 			startDay: startDay,
 		});
+console.log('getAnalyticOrder', res);
 
 		setResultOrder({
 			revenue: res.totalRevenue[0].totalRevenue,
@@ -149,6 +150,9 @@ function Analytic() {
 		getAnalyticProduct("week", firstDayOfWeek);
 		getAnalyticOrder("week", firstDayOfWeek);
 	}, []);
+
+	console.log("resultOrder?.totalRevenueChart", resultOrder?.totalRevenueChart);
+	
 
 	return (
 		<div>

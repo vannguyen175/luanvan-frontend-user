@@ -62,6 +62,9 @@ function Notification() {
 		} else if (info.navigate === "order") {
 			localStorage.setItem("menu_profile", "3");
 			navigate(`/tai-khoan`);
+		} else if (info.navigate === "seller-profile") {
+			const idUser = localStorage.getItem("id_user");
+			navigate(`/seller/${idUser}`);
 		}
 		setAnchorEl(null);
 	};

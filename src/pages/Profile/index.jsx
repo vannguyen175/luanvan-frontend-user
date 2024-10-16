@@ -36,17 +36,12 @@ function Profile() {
 					>
 						Thông tin tài khoản
 					</div>
-					<div
-						className={cx({ "menu-active": menuState === "2" })}
-						onClick={() => handleState("2")}
-					>
-						Hoạt động
-					</div>
+
 					<div
 						className={cx({ "menu-active": menuState === "3" })}
 						onClick={() => handleState("3")}
 					>
-						Trạng thái đơn hàng
+						Đơn hàng đã mua
 					</div>
 					<div
 						className={cx({ "menu-active": menuState === "4" })}

@@ -1,23 +1,23 @@
 //Trang hiển thị các sản phẩm đang bán + thông tin chung của nhà bán hàng
 
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import * as UserService from "~/service/UserService";
 import * as ProductService from "~/service/ProductService";
-import CardProduct from "~/components/CardProduct";
-import { useApp } from "../../context/AppProvider";
+import Rating from "@mui/material/Rating";
+import Description from "../../components/Description";
+import ReactTimeAgo from "react-time-ago";
+import Tooltip from "@mui/material/Tooltip";
 
 import classNames from "classnames/bind";
 import style from "./SellerHomePage.module.scss";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 
 const cx = classNames.bind(style);
 
 function SellerPage() {
 	const { id } = useParams();
-	const { socket, user } = useApp();
-	const [isHeart, setIsHeart] = useState(false);
+	const navigate = useNavigate();
+	const [navActive, setNavActive] = useState("product");
 	const [pageState, setPageState] = useState({
 		isLoading: false,
 		data: [],
@@ -43,32 +43,139 @@ function SellerPage() {
 	useEffect(() => {
 		const getDetailBuyer = async () => {
 			const res = await UserService.getInfoUser(id);
+			console.log(res.data);
+
 			setDetail((prevData) => ({ ...prevData, seller: res.data }));
 		};
 		getDetailBuyer();
 		getProducts();
 	}, [id]);
 
+	const handleClickCardProduct = (id) => {
+		navigate(`/detail-product/${id}`);
+	};
+
 	return (
-		<div style={{ position: "relative" }}>
-			<div className={cx("inner-content", "header")}>
-				<img
-					src={detail?.seller?.avatar || "/assets/images/user-avatar.jpg"}
-					alt="avatar"
-				/>
-				<h2>{detail?.seller?.name}</h2>
-				{detail?.seller?.totalSelled >= 2
-					? "Nhà bán hàng chuyên nghiệp"
-					: "Nhà bán hàng mới"}
-				{/* <div>{isHeart ? <FavoriteIcon /> : <FavoriteBorderIcon />}</div> */}
+		<div style={{ width: "100%", display: "flex" }}>
+			<div className={cx("profile")}>
+				{detail.seller?.name && (
+					<div>
+						<div className="inner-content">
+							<div style={{ display: "flex", alignItems: "center" }}>
+								<img
+									className={cx("avatar")}
+									src={detail?.seller?.avatar || "/assets/images/user-avatar.jpg"}
+									alt="avatar"
+								/>
+								<div>
+									<h2 className={cx("name")}>{detail?.seller?.name}</h2>
+									<strong>
+										{detail?.seller?.totalSold >= 2
+											? "Nhà bán hàng chuyên nghiệp"
+											: "Nhà bán hàng mới"}
+									</strong>
+								</div>
+							</div>
+							<div className={cx("rating")}>
+								<Rating
+									name="read-only"
+									value={detail?.seller?.avgRating[0].averageRating}
+									readOnly
+								/>
+								<strong>{detail?.seller?.avgRating[0].averageRating}/5</strong>
+								<p>{detail?.seller?.avgRating[0].totalReviews} lượt đánh giá</p>
+							</div>
+						</div>
+						<div className={cx("contact", "inner-content")}>
+							<Description title="Email:" desc={detail?.seller.email} />
+							<Description title="Số điện thoại:" desc={detail?.seller.phone} />
+							<Description
+								title="Số điện thoại:"
+								desc={`${detail?.seller.address}, ${detail?.seller.ward}, ${detail?.seller.district}, ${detail?.seller.province}`}
+							/>
+						</div>
+					</div>
+				)}
 			</div>
-			<div className={cx("inner-content", "product-list")}>
-				<div style={{ display: "flex", flexWrap: "wrap", paddingTop: 20 }}>
-					{detail?.product &&
-						detail?.product?.map((item, key) => (
-							<CardProduct key={key} product={item} type="horizontal" />
-						))}
+			<div className={cx("inner-content")} style={{ width: "70%" }}>
+				<div className={cx("nav-bar")}>
+					<p
+						className={cx(navActive === "product" && "active")}
+						onClick={() => setNavActive("product")}
+					>
+						Sản phẩm
+					</p>
+					<p
+						className={cx(navActive === "rating" && "active")}
+						onClick={() => setNavActive("rating")}
+					>
+						Đánh giá
+					</p>
 				</div>
+				{navActive === "product" ? (
+					<div className={cx("product", "animate__animated", "animate__fadeIn")}>
+						{detail?.product &&
+							detail?.product?.map((item, key) => (
+								<div className={cx("product-card")} key={key}>
+									<img src={item.images[0]} alt="anh-SP" />
+									<Tooltip title={item.name} placement="top-start">
+										<p className={cx("name")}>{item.name}</p>
+									</Tooltip>
+
+									<p className={cx("price")}>
+										{Intl.NumberFormat().format(item.price)}đ
+									</p>
+									<p>
+										Đã đăng:{" "}
+										<ReactTimeAgo
+											date={Date.parse(item.updatedAt)}
+											locale="vi-VN"
+										/>
+									</p>
+									<button onClick={() => handleClickCardProduct(item._id)}>
+										Xem chi tiết
+									</button>
+								</div>
+							))}
+					</div>
+				) : (
+					<div className={cx("rating", "animate__animated", "animate__fadeIn")}>
+						{detail?.seller?.rating.length > 0 ? (
+							detail.seller.rating.map((item, index) => {
+								return (
+									<div
+										className={cx("rating-card")}
+										key={index}
+										style={{ display: "flex" }}
+									>
+										<div className={cx("img-product")}>
+											<img src={item.idProduct.images[0]} alt="anhSP" />
+										</div>
+										<div className={cx("details")}>
+											<p className={cx("name")}>{item.idBuyer.name}</p>
+											<p className={cx("rating")}>
+												<Rating
+													name="read-only"
+													size="large"
+													value={
+														detail?.seller?.avgRating[0].averageRating
+													}
+													readOnly
+												/>
+												<span>
+													{detail?.seller?.avgRating[0].averageRating}/5
+												</span>
+											</p>
+											<p className={cx("review")}>{item.review}</p>
+										</div>
+									</div>
+								);
+							})
+						) : (
+							<p>Nhà bán hàng chưa có đánh giá nào.</p>
+						)}
+					</div>
+				)}
 			</div>
 		</div>
 	);
