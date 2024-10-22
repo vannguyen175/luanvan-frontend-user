@@ -6,6 +6,7 @@ import * as ProductService from "~/service/ProductService";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
+import Search from "../../components/Search";
 
 const cx = classNames.bind(style);
 
@@ -87,6 +88,9 @@ function Products() {
 						<p style={{ margin: "0 auto" }}>Danh mục này hiện không có sản phẩm nào.</p>
 					)}
 				</div>
+			{/* <div>
+				<Search />
+			</div> */}
 			</div>
 		</div>
 	);

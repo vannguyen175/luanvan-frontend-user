@@ -40,8 +40,8 @@ export const AppProvider = ({ children }) => {
 		} catch (error) {
 			if (error.response?.data?.message === "The authemtication") {
 				//refresh_token hết hạn
-				localStorage.clear()
-				window.location.href="/login";
+				localStorage.clear();
+				window.location.href = "/login";
 			}
 		}
 	};
@@ -64,6 +64,7 @@ export const AppProvider = ({ children }) => {
 	useEffect(() => {
 		getUserInfo();
 	}, [token]);
+
 
 	return (
 		<AppContext.Provider value={{ user, setUser, token, setToken, socket, setSocket }}>

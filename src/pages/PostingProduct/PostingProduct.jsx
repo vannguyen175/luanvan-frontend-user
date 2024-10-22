@@ -72,9 +72,8 @@ function PostingProduct() {
 		const data = {
 			...dataSubmit,
 			images: newImagesList,
+			totalSold: user.totalSold, //sp đã bán trên 2 thì auto được duyệt
 		};
-		console.log('dataSubmit', data);
-		
 		const res = await ProductService.createProduct(data);
 		if (res.status === "SUCCESS") {
 			setLoading(false);
@@ -98,7 +97,11 @@ function PostingProduct() {
 					<Result
 						type="success"
 						message="Đăng tải sản phẩm thành công!"
-						subMessage="Bài đăng của bạn sẽ được quản trị viên kiểm duyệt trước khi đăng bán."
+						subMessage={
+							user.totalSold >= 2
+								? "Bài đăng của bạn đã được đăng bán ở trang chủ."
+								: "Bài đăng của bạn sẽ được quản trị viên kiểm duyệt trước khi đăng bán."
+						}
 						backBtn="/nha-ban-hang"
 						stayBtn="."
 					/>

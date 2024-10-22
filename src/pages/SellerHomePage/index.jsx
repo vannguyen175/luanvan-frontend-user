@@ -77,13 +77,24 @@ function SellerPage() {
 								</div>
 							</div>
 							<div className={cx("rating")}>
-								<Rating
-									name="read-only"
-									value={detail?.seller?.avgRating[0].averageRating}
-									readOnly
-								/>
-								<strong>{detail?.seller?.avgRating[0].averageRating}/5</strong>
-								<p>{detail?.seller?.avgRating[0].totalReviews} lượt đánh giá</p>
+								{detail?.seller?.avgRating[0]?.averageRating ? (
+									<>
+										<Rating
+											name="read-only"
+											value={detail?.seller?.avgRating[0]?.averageRating}
+											readOnly
+										/>
+										<strong>
+											{detail?.seller?.avgRating[0]?.averageRating}/5
+										</strong>
+										<p>
+											{detail?.seller?.avgRating[0]?.totalReviews} lượt đánh
+											giá
+										</p>
+									</>
+								) : (
+									"Nhà bán hàng chưa có đánh giá nào"
+								)}
 							</div>
 						</div>
 						<div className={cx("contact", "inner-content")}>
@@ -158,12 +169,12 @@ function SellerPage() {
 													name="read-only"
 													size="large"
 													value={
-														detail?.seller?.avgRating[0].averageRating
+														detail?.seller?.avgRating[0]?.averageRating
 													}
 													readOnly
 												/>
 												<span>
-													{detail?.seller?.avgRating[0].averageRating}/5
+													{detail?.seller?.avgRating[0]?.averageRating}/5
 												</span>
 											</p>
 											<p className={cx("review")}>{item.review}</p>

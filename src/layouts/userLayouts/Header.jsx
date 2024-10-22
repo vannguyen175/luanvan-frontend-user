@@ -58,6 +58,8 @@ const ActionUserLogin = [
 
 function Header() {
 	const { user, token, setToken } = useApp();
+	console.log('USER', user);
+	
 	const idUser = localStorage.getItem("id_user");
 	const [cartLength, setCartLength] = useState(null);
 

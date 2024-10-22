@@ -66,6 +66,9 @@ function Notification() {
 			const idUser = localStorage.getItem("id_user");
 			navigate(`/seller/${idUser}`);
 		}
+		 else if (info.navigate === "seller-order") {
+			navigate(`/nha-ban-hang`);
+		}
 		setAnchorEl(null);
 	};
 

@@ -12,8 +12,18 @@ export const getAllOrders = async (data) => {
 	);
 	return res.data;
 };
+export const searchOrders = async (data) => {
+	const res = await Axios.post(
+		`${process.env.REACT_APP_API_URL_BACKEND}/order-detail/search`,
+		data
+	);
+	return res.data;
+};
 export const cancelOrder = async (data) => {
-	const res = await Axios.post(`${process.env.REACT_APP_API_URL_BACKEND}/order/cancel`, data);
+	const res = await Axios.post(
+		`${process.env.REACT_APP_API_URL_BACKEND}/order-detail/cancel`,
+		data
+	);
 	return res.data;
 };
 

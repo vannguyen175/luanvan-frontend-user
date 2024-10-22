@@ -53,9 +53,11 @@ function DetailProduct() {
 			product: res.data,
 		}));
 		if (res.data) {
+			console.log(res.data);
+
 			getProductsBySubCate(res.data.subCategory.name);
 		}
-		getDetailSeller(res.data.idUser);
+		getDetailSeller(res.data.idUser._id);
 	};
 
 	const getProductsBySubCate = async (subCate) => {
@@ -77,8 +79,6 @@ function DetailProduct() {
 
 	const getDetailSeller = async (idUser) => {
 		const res = await UserService.getInfoUser(idUser);
-		console.log(res);
-
 		setDetails((prevDetails) => ({
 			...prevDetails,
 			seller: res.data,
@@ -120,8 +120,6 @@ function DetailProduct() {
 	const handleShowDetail = (value) => {
 		setDetails((prev) => ({ ...prev, stateShow: value }));
 	};
-
-	console.log("details.seller?.rating", details.seller?.avgRating);
 
 	return (
 		<div className={cx("animate__animated", "animate__fadeIn")}>
@@ -316,17 +314,27 @@ function DetailProduct() {
 											title="Đánh giá"
 											desc={
 												<>
-													<Rating
-														name="read-only"
-														value={
-															details.seller?.avgRating[0]
-																?.averageRating || 0
-														} // Check undefined/null
-														readOnly
-													/>
-													{/* Hiển thị giá trị rating sau Rating component */}
-													<span style={{ marginLeft: 10 }}>{details.seller?.avgRating[0]?.averageRating}/5</span>
-													
+													{details.seller?.avgRating[0]?.averageRating ? (
+														<>
+															<Rating
+																name="read-only"
+																value={
+																	details.seller?.avgRating[0]
+																		?.averageRating
+																}
+																readOnly
+															/>
+															<span style={{ marginLeft: 10 }}>
+																{
+																	details.seller?.avgRating[0]
+																		?.averageRating
+																}
+																/5
+															</span>
+														</>
+													) : (
+														"Chưa có đánh giá nào"
+													)}
 												</>
 											}
 											className={cx("rating")}

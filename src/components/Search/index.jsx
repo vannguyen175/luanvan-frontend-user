@@ -5,7 +5,6 @@ import style from "./Search.module.scss";
 import { StringTocamelCase } from "~/utils";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as productService from "~/service/ProductService";
-import Popover from "@mui/material/Popover";
 
 const cx = classNames.bind(style);
 
@@ -13,7 +12,6 @@ function Search() {
 	const [inputSearch, setInputSearch] = useState("");
 	const [searchResult, setSearchResult] = useState([]);
 	const searchInputRef = useRef(null);
-	const [anchorEl, setAnchorEl] = useState(null);
 	const [productList, setProductList] = useState();
 	const location = useLocation();
 
@@ -34,6 +32,7 @@ function Search() {
 
 	//lọc sản phẩm mỗi khi inputSearch thay đổi => tìm kiếm sp
 	useEffect(() => {
+		console.log("inputSearch", inputSearch);
 		if (inputSearch === "") {
 			setSearchResult([]);
 		} else {
@@ -45,13 +44,6 @@ function Search() {
 		// eslint-disable-next-line
 	}, [inputSearch]);
 
-	const handleChangeInput = (e) => {
-		setInputSearch(e.target.value);
-		if (!anchorEl) {
-			setAnchorEl(e.currentTarget); // Chỉ cập nhật khi cần thiết
-		}
-	};
-
 	const handleClickSearchResult = (id) => {
 		navigate(`../detail-product/${id}`, { replace: true });
 
@@ -61,15 +53,13 @@ function Search() {
 		searchInputRef.current.value = "";
 		setInputSearch("");
 	};
-	const open = Boolean(anchorEl);
-	const id = open ? "simple-popover" : undefined;
+
 	return (
-		<div>
+		<div className={cx("container")}>
 			<div className={cx("search")}>
 				<input
 					type="text"
-					onChange={handleChangeInput}
-					//onChange={(e) => setInputSearch(e.target.value)}
+					onChange={(e) => setInputSearch(e.target.value)}
 					name="search"
 					ref={searchInputRef}
 					autoComplete="off"
@@ -79,48 +69,22 @@ function Search() {
 					<SearchIcon />
 				</button>
 			</div>
-			<Popover
-				id={id}
-				open={open}
-				anchorEl={anchorEl}
-				onClose={() => {
-					setAnchorEl(null);
-				}}
-				anchorOrigin={{
-					vertical: "bottom",
-					horizontal: "left",
-				}}
-				PaperProps={{
-					style: {
-						padding: "5px",
-						borderRadius: "8px",
-						boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.2)",
-					},
-				}}
-			>
-				<div>
-					{/* TEST SEARCH */}
-					{searchResult?.map((item, index) => (
-						<li
-							className={cx("result")}
-							key={index}
-							onClick={() => handleClickSearchResult(item._id)}
-						>
-							<div style={{ display: "flex" }}>
+			<div className={cx("result")}>
+				{searchResult &&
+					searchResult.map((item, index) => (
+						<ul>
+							<li key={index} onClick={() => handleClickSearchResult(item._id)}>
+								<img src={item.images[0]} alt="anhSP" />
 								<div>
-									<img src={`${item.images[0]}`} alt="anh-san-pham" />
-								</div>
-								<div className={cx("detail")}>
-									<p style={{ fontWeight: 500 }}>{item.name}</p>
-									<p style={{ color: "red" }}>
-										{Intl.NumberFormat().format(item?.price)}đ
+									<p className={cx("name")}>{item.name}</p>
+									<p className={cx("price")}>
+										{Intl.NumberFormat().format(item.price)}đ
 									</p>
 								</div>
-							</div>
-						</li>
+							</li>
+						</ul>
 					))}
-				</div>
-			</Popover>
+			</div>
 		</div>
 	);
 }

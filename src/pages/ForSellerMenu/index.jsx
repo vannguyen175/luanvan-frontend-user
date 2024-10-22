@@ -11,7 +11,6 @@ import OrderManager from "../../components/ForSeller/OrderManager";
 import ProductManager from "../../components/ForSeller/ProductManager";
 import ProfileSeller from "../../components/ForSeller/ProfileSeller";
 import Analytic from "../../components/ForSeller/Analytic";
-import Bank from "../../components/ForSeller/Bank";
 
 const cx = classNames.bind(style);
 
@@ -92,7 +91,6 @@ function ForSeller() {
 			</div>
 			<div className={cx("body")}>
 				{activeSubMenu === 1.1 && <ProfileSeller />}
-				{activeSubMenu === 1.2 && <Bank />}
 				{activeSubMenu === 2 && <ProductManager />}
 				{activeSubMenu === 3 && <OrderManager />}
 				{activeSubMenu === 4 && <Analytic />}

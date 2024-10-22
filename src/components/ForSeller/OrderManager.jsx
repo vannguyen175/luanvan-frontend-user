@@ -1,6 +1,6 @@
 import classNames from "classnames/bind";
 import style from "./ForSeller.module.scss";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as OrderService from "../../service/OrderService";
 import { useApp } from "~/context/AppProvider";
 import moment from "moment";
@@ -17,11 +17,13 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Grid from "@mui/material/Grid";
+import { exportExcel } from "../../utils";
 
 const cx = classNames.bind(style);
 
 function OrderManager() {
 	const { user, token } = useApp();
+	const searchRef = useRef();
 
 	const [activeTab, setActiveTab] = useState(0);
 	const [isLoading, setIsLoading] = useState(false);
@@ -47,14 +49,27 @@ function OrderManager() {
 		}
 	};
 
+	const searchOrder = async () => {
+		if (user.id) {
+			const res = await OrderService.searchOrders({
+				data: {
+					idSeller: user.id,
+					productName: searchRef.current.value,
+					buyerName: searchRef.current.value,
+					status: activeTab,
+				},
+			});
+			setOrders(res.data);
+			setIsLoading(false);
+		}
+	};
+
 	useEffect(() => {
 		getOrders();
 		setIsLoading(true);
 	}, [activeTab]);
 
 	const handleShowDetail = (row) => {
-		console.log("row", row);
-
 		setModalDetail(true);
 		setOrderSelected(row);
 	};
@@ -62,7 +77,6 @@ function OrderManager() {
 	const handleUpdateOrder = async (idOrder, data) => {
 		if (window.confirm("Bạn có chắc muốn vận chuyển đơn hàng?")) {
 			const res = await OrderService.updateOrder(idOrder, data);
-			console.log("res", res);
 
 			if (res.status === "SUCCESS") {
 				toast.success(res.message);
@@ -73,6 +87,26 @@ function OrderManager() {
 			} else {
 				toast.error(res.message);
 			}
+		}
+	};
+
+	const handleClickExport = () => {
+		if (orders) {
+			const dataExport = orders.map((item) => ({
+				nameProduct: item.idProduct?.name,
+				productPrice: item.productPrice || 0,
+				shippingPrice: item.idOrder?.shippingDetail?.shippingPrice || 0,
+				quantity: item.quantity || 1,
+				paymentMethod: item.idOrder.paymentMethod || "Unknown",
+				buyerName: item.idOrder.idBuyer?.name || "Unknown Buyer",
+				email: item.idOrder?.shippingDetail?.email || "No Email",
+				phone: item.idOrder?.shippingDetail?.phone || "No Phone",
+				address: item.idOrder?.shippingDetail?.address || "No Address",
+				isPaid: item.isPaid ?? false,
+				status: item.status || "Unknown",
+			}));
+
+			exportExcel(dataExport, "Danh sách đơn hàng", "OrdersList");
 		}
 	};
 
@@ -95,9 +129,10 @@ function OrderManager() {
 					<input
 						type="text"
 						placeholder="Nhập ID đơn hàng, tên khách hàng, tên sản phẩm..."
+						ref={searchRef}
 					/>
-					<button>Tìm kiếm</button>
-					<button>Xuất file excel</button>
+					<button onClick={searchOrder}>Tìm kiếm</button>
+					<button onClick={handleClickExport}>Xuất file excel</button>
 				</div>
 
 				<div className={cx("table-order")}>
@@ -145,11 +180,11 @@ function OrderManager() {
 													</TableCell>
 													<TableCell>
 														<p style={{ fontWeight: 500 }}>
-															{row.idProduct.name}
+															{row.idProduct?.name}
 														</p>
 													</TableCell>
 													<TableCell>
-														{row.idOrder.idBuyer.name}
+														{row.idOrder.idBuyer?.name}
 													</TableCell>
 													<TableCell>
 														<p style={{ color: "var(--orange-color)" }}>
@@ -298,10 +333,7 @@ function OrderManager() {
 											orderSelected.productPrice
 										)}đ`}
 									/>
-									<Description
-										title="Số lượng"
-										desc={orderSelected.quantity}
-									/>
+									<Description title="Số lượng" desc={orderSelected.quantity} />
 									<Description
 										title="Danh mục"
 										desc={orderSelected.idProduct.subCategory?.name}

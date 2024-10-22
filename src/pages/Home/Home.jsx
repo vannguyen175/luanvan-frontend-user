@@ -6,6 +6,8 @@ import Button from "~/components/Button";
 import * as ProductService from "~/service/ProductService";
 import { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
+import Search from "../../components/Search";
+import { Link } from "react-router-dom";
 
 const cx = classNames.bind(style);
 
@@ -60,17 +62,19 @@ function UserHome() {
 
 			<section className={cx("inner-content")}>
 				<p className={cx("title")}>Khám phá danh mục</p>
-				<div className={cx("animate__animated", "animate__fadeIn")}>
+				<div
+					className={cx("animate__animated", "animate__fadeIn")}
+					style={{ margin: "20px 0px" }}
+				>
 					{categories ? (
 						categories?.map((category, index) => {
 							return (
-								<CategoryButton
-									key={index}
+								<Link
+									className={cx("category-btn")}
 									to={`san-pham/${category.slug}`}
-									src={`assets/images/danh-muc-${category.slug}.jpg`}
-									alt={category.slug}
-									type={category.name}
-								/>
+								>
+									{category.name}
+								</Link>
 							);
 						})
 					) : (

@@ -72,7 +72,7 @@
 	border: 1px solid var(--main-color);
 	display: flex;
 	flex-direction: column;
-	width: 48%;
+	width: 55%;
 	width: 220px;
 	height: 300px;
 	padding: 5px;
@@ -99,8 +99,8 @@
 		margin: 0;
 		display: -webkit-box; /* Sử dụng box layout của webkit */
 		-webkit-box-orient: vertical; /* Đặt hướng box thành vertical (dọc) */
-		-webkit-line-clamp: 2; 
-		line-clamp: 2;/* Giới hạn số dòng là 2 */
+		-webkit-line-clamp: 2;
+		line-clamp: 2; /* Giới hạn số dòng là 2 */
 		overflow: hidden; /* Ẩn phần vượt quá khung chứa */
 		text-overflow: ellipsis; /* Thêm dấu ba chấm ở cuối văn bản bị cắt */
 		max-width: 100%; /* Đảm bảo phần tử không vượt quá khung chứa */

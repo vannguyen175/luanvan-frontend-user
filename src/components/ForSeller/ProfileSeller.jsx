@@ -115,7 +115,7 @@ function ProfileSeller() {
 					<p className="title">Thông tin tài khoản</p>
 					<button className={cx("button-primary")}>Xem chi tiết</button>
 				</div>
-				{dataSubmit?.name && (
+				{dataSubmit && (
 					<div className={cx("account-info")}>
 						<img
 							src={dataSubmit?.avatar || "assets/images/user-avatar.jpg"}
@@ -148,7 +148,7 @@ function ProfileSeller() {
 				<form method="post" className={cx("detail-form")}>
 					<Box sx={{ flexGrow: 1 }}>
 						<Grid container spacing={1}>
-							{dataSubmit?.name && (
+							{dataSubmit && (
 								<>
 									<Input
 										name="name"

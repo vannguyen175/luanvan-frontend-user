@@ -46,8 +46,6 @@ function OrderStatus() {
 			const res = await OrderService.getAllOrders({
 				data: { buyer: user.id, status: alignment, token: token },
 			});
-			console.log(res.data);
-
 			setOrders(res.data);
 		}
 		setIsLoading(false);
@@ -163,8 +161,9 @@ function OrderStatus() {
 							<Grid container>
 								<Grid item xs={12} className={cx("shop")}>
 									<StorefrontIcon style={{ marginRight: 10 }} />
-									<span onClick={() => navigate(`/seller/${item.idSeller}`)}>
-										{item.idProduct.sellerName}
+
+									<span onClick={() => navigate(`/seller/${item.idSeller._id}`)}>
+										{item.idSeller.name}
 									</span>
 								</Grid>
 								<Grid item xs={1} className={cx("image-product")}>
@@ -301,10 +300,10 @@ function OrderStatus() {
 										<StorefrontIcon style={{ marginRight: 5 }} />
 										<span
 											onClick={() =>
-												navigate(`/seller/${ratingInfo.info.seller}`)
+												navigate(`/seller/${ratingInfo.info.idSeller._id}`)
 											}
 										>
-											{ratingInfo.info.idProduct.sellerName}
+											{ratingInfo.info.idSeller.name}
 										</span>
 									</div>
 								</div>
