@@ -3,11 +3,11 @@ import style from "./UserLayouts.module.scss";
 import DropdownMenu from "~/components/DropdownMenu";
 import Button from "@mui/material/Button";
 import * as productService from "~/service/ProductService";
+import * as userService from "~/service/UserService";
 import { useApp } from "~/context/AppProvider";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Grid from "@mui/material/Grid";
-import * as CartService from "~/service/CartService";
 
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -58,8 +58,7 @@ const ActionUserLogin = [
 
 function Header() {
 	const { user, token, setToken } = useApp();
-	console.log('USER', user);
-	
+
 	const idUser = localStorage.getItem("id_user");
 	const [cartLength, setCartLength] = useState(null);
 
@@ -76,18 +75,16 @@ function Header() {
 		navigate(`/gio-hang/${idUser}`);
 	};
 
-	const getCarts = async () => {
-		
-		if (idUser) {
-			//console.log("getCarts");
-			// const result = await CartService.getCart(idUser);
-			// setCartLength(result?.data?.length);
+	const checkUserBanned = async () => {
+		const res = await userService.checkUserBanned(idUser);
+		if (res.status === "BLOCKED") {
+			navigate("/block-account");
 		}
 	};
 
 	useEffect(() => {
+		checkUserBanned();
 		getProductList();
-		getCarts();
 	}, []);
 
 	const getProductList = async () => {

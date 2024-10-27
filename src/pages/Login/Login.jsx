@@ -50,7 +50,6 @@ function Login() {
 	});
 
 	const responseFacebook = async (response) => {
-		console.log("responseFacebook", response);
 		if (response?.email) {
 			const res = await UserService.loginWithFacebook({
 				email: response?.email,

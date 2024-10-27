@@ -32,6 +32,10 @@ export const logoutUser = async () => {
 	return res.data;
 };
 
+export const checkUserBanned = async (id) => {
+	const res = await Axios.get(`${process.env.REACT_APP_API_URL_BACKEND}/user/check-banned/${id}`);
+	return res.data;
+};
 export const getDetailUser = async (id, access_token) => {
 	const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL_BACKEND}/user/details/${id}`, {
 		headers: { token: `Bearer ${access_token}` },

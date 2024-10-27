@@ -3,11 +3,31 @@ import { Link } from "react-router-dom";
 
 import style from "./SellerLayout.module.scss";
 import classNames from "classnames/bind";
-
+import { useApp } from "~/context/AppProvider";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import * as userService from "~/service/UserService";
 
 const cx = classNames.bind(style);
 
 function SellerLayout() {
+	const { user } = useApp();
+	const navigate = useNavigate();
+
+	const idUser = localStorage.getItem("id_user");
+
+	const checkUserBanned = async () => {
+		const res = await userService.checkUserBanned(idUser);
+		console.log("res seler", res);
+		
+		if (res.status === "BLOCKED") {
+			navigate("/block-account");
+		}
+	};
+
+	useEffect(() => {
+		checkUserBanned();
+	}, []);
 	return (
 		<Grid
 			container

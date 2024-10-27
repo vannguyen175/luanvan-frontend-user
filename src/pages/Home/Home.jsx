@@ -72,6 +72,7 @@ function UserHome() {
 								<Link
 									className={cx("category-btn")}
 									to={`san-pham/${category.slug}`}
+									key={index}
 								>
 									{category.name}
 								</Link>

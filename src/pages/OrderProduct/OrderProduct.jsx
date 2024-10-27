@@ -65,7 +65,7 @@ function OrderProduct() {
 			console.log("id && quantity", data);
 		} else {
 			const result = await CartService.getCart(idUser);
-			data = result.data.filter((_, index) => cartSelected.includes(index)); //lấy sp được user chọn ở cart page
+			data = result?.data?.filter((_, index) => cartSelected.includes(index)); //lấy sp được user chọn ở cart page
 		}
 		console.log("TEST");
 
@@ -77,7 +77,7 @@ function OrderProduct() {
 			})),
 		}));
 
-		const total = data.reduce((sum, item) => sum + item.price * item.quantity, 0);
+		const total = data?.reduce((sum, item) => sum + item.price * item.quantity, 0);
 		setTotalPrice(total);
 	};
 

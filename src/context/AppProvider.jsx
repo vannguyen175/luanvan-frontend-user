@@ -20,23 +20,31 @@ export const AppProvider = ({ children }) => {
 		const decoded = jwtDecode(token);
 		try {
 			const res = await UserService.getDetailUser(decoded?.id, token);
-			setUser({
-				id: res?.user?._id,
-				name: res?.user?.name,
-				email: res?.user?.email,
-				avatar: res?.user?.avatar || "assets/images/user-avatar.jpg",
-				isAdmin: res?.user?.isAdmin,
+			if (res.user.blockExpireDate) {
+				setUser({
+					isBlocked: true,
+					blockExpireDate: res.user.blockExpireDate,
+					blockReason: res.user.blockReason,
+				});
+			} else {
+				setUser({
+					id: res?.user?._id,
+					name: res?.user?.name,
+					email: res?.user?.email,
+					avatar: res?.user?.avatar || "assets/images/user-avatar.jpg",
+					isAdmin: res?.user?.isAdmin,
 
-				phone: res?.address?.phone || null,
-				province: res?.address?.province || null,
-				district: res?.address?.district || null,
-				ward: res?.address?.ward || null,
-				address: res?.address?.address || null,
+					phone: res?.address?.phone || null,
+					province: res?.address?.province || null,
+					district: res?.address?.district || null,
+					ward: res?.address?.ward || null,
+					address: res?.address?.address || null,
 
-				totalProduct: res?.seller?.totalProduct,
-				totalSold: res?.seller?.totalSold,
-				rating: res?.seller?.rating,
-			});
+					totalProduct: res?.seller?.totalProduct,
+					totalSold: res?.seller?.totalSold,
+					rating: res?.seller?.rating,
+				});
+			}
 		} catch (error) {
 			if (error.response?.data?.message === "The authemtication") {
 				//refresh_token hết hạn
@@ -64,7 +72,6 @@ export const AppProvider = ({ children }) => {
 	useEffect(() => {
 		getUserInfo();
 	}, [token]);
-
 
 	return (
 		<AppContext.Provider value={{ user, setUser, token, setToken, socket, setSocket }}>

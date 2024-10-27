@@ -3,6 +3,7 @@ import style from "./UserLayouts.module.scss";
 import DropdownMenu from "~/components/DropdownMenu";
 import Button from "@mui/material/Button";
 import * as productService from "~/service/ProductService";
+import * as userService from "~/service/UserService";
 import { useApp } from "~/context/AppProvider";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -10,7 +11,7 @@ import Grid from "@mui/material/Grid";
 
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useEffect,  useState } from "react";
+import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Notification from "../../components/Notification";
 import Search from "../../components/Search";
@@ -60,6 +61,7 @@ const ActionUserLogin = [
 
 function Header() {
 	const { user, token, setToken } = useApp();
+	const idUser = localStorage.getItem("id_user");
 
 	const navigate = useNavigate();
 	const [productList, setProductList] = useState();
@@ -69,12 +71,20 @@ function Header() {
 		navigate("/");
 	};
 
+	const checkUserBanned = async () => {
+		const res = await userService.checkUserBanned(idUser);
+		if (res.status === "BLOCKED") {
+			navigate("/block-account");
+		}
+	};
+
 	const handleShowCart = () => {
 		let idUser = user?.id;
 		navigate(`/gio-hang/${idUser}`);
 	};
 
 	useEffect(() => {
+		checkUserBanned();
 		getProductList();
 	}, []);
 

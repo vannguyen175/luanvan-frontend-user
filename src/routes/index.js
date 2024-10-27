@@ -17,6 +17,7 @@ import ForSeller from "../pages/ForSellerMenu";
 import SellerHomePage from "../pages/SellerHomePage";
 import Payment from "../pages/OrderProduct/Payment";
 import PaymentResult from "../pages/OrderProduct/PaymentResult";
+import BlockAccount from "../pages/BlockAccount";
 
 export const routes = [
 	{
@@ -88,6 +89,11 @@ export const routes = [
 		path: "/dang-tin",
 		page: PostingProduct,
 		layout: SellerLayout,
+	},
+	{
+		path: "/block-account",
+		page: BlockAccount,
+		layout: Fragment,
 	},
 	{
 		path: "*",

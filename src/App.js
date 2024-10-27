@@ -13,7 +13,6 @@ const clientID = "105139517728-qa77n1q8768ek3tpmi2thvd94p2lqqdh.apps.googleuserc
 
 export function App() {
 	const { token, user, socket, setSocket } = useApp();
-
 	//login with google
 	useEffect(() => {
 		function start() {
