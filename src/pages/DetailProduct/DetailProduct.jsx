@@ -150,12 +150,15 @@ function DetailProduct() {
 								<h2 style={{ color: "var(--main-color)", marginTop: 10 }}>
 									{details.product?.name}
 								</h2>
-								{details.product?.sellerName === buyerDetail?.name && (
-									<div style={{ display: "flex" }}>
-										<p style={{ marginRight: 10 }}>Đây là sản phẩm của bạn</p>
-										<a href="/#">Chỉnh sửa</a>
-									</div>
-								)}
+								{details.product?.sellerName &&
+									details.product?.sellerName === buyerDetail?.name && (
+										<div style={{ display: "flex" }}>
+											<p style={{ marginRight: 10 }}>
+												Đây là sản phẩm của bạn
+											</p>
+											<a href="/#">Chỉnh sửa</a>
+										</div>
+									)}
 							</div>
 
 							<div className={cx("inner-content")} style={{ paddingLeft: 10 }}>
@@ -211,7 +214,8 @@ function DetailProduct() {
 											title="Tin đã được kiểm duyệt"
 											desc={<CheckCircleOutlineIcon />}
 										/>
-										{details.product?.sellerName === buyerDetail?.name ? (
+										{details.product?.sellerName &&
+										details.product?.sellerName === buyerDetail?.name ? (
 											<p style={{ textAlign: "center", marginTop: 20 }}>
 												Đây là sản phẩm của bạn
 											</p>

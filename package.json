@@ -3,6 +3,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"dependencies": {
+		"@emailjs/browser": "^4.4.1",
 		"@emotion/react": "^11.11.4",
 		"@emotion/styled": "^11.11.5",
 		"@faker-js/faker": "^9.0.3",
@@ -74,5 +75,5 @@
 		"babel-plugin-module-resolver": "^5.0.0",
 		"sass": "^1.69.5"
 	},
-	"proxy": "http://localhost:3001"
+	"proxy": "http://localhost:3001/"
 }

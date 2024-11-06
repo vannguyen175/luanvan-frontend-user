@@ -6,8 +6,11 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
+import emailjs from "@emailjs/browser";
+import { useApp } from "~/context/AppProvider";
 
 function PaymentResult() {
+	const { user } = useApp();
 	const navigate = useNavigate();
 	const dataOrder = JSON.parse(localStorage.getItem("dataOrder") || "{}");
 	const [isLoading, setIsLoading] = useState(true);
@@ -15,11 +18,29 @@ function PaymentResult() {
 	const [amountPaid, setAmountPaid] = useState(localStorage.getItem("amount-paid") || "");
 
 	const createOrder = async () => {
+		const allProducts = Object.values(dataOrder.products)
+			.map((seller) => seller.products) // Lấy mảng sản phẩm của mỗi người bán
+			.flat(); // Kết hợp tất cả các mảng sản phẩm thành một mảng duy nhất
+		console.log("allProducts", allProducts);
+
+		console.log("result", result === "");
+
 		if (result === "") {
-			const res = await OrderService.createOrder(dataOrder);
+			const res = await OrderService.createOrder({ ...dataOrder, products: allProducts });
+			console.log("res", res);
 			localStorage.removeItem("dataOrder");
 			if (res.status === "SUCCESS") {
 				setIsLoading(false);
+				//gửi email thông báo đơn hàng mới đến sellers
+				const emailSeller = Object.keys(dataOrder.products);
+				for (let index = 0; index < emailSeller.length; index++) {
+					if (
+						emailSeller[index] === "vanngnran@gmail.com" ||
+						emailSeller[index] === "ntthuyvan1705@gmail.com"
+					) {
+						sendEmail(dataOrder.products[emailSeller[index]]);
+					}
+				}
 			}
 			setResult(res);
 			localStorage.setItem("result-payment", JSON.stringify(res));
@@ -30,12 +51,63 @@ function PaymentResult() {
 		}
 		setIsLoading(false);
 	};
+
+	const sendEmail = (value) => {
+		console.log(user);
+
+		const templateParams = {
+			to_name: value.products[0].sellerName,
+			to_email: value.products[0].email,
+			item: {
+				...value.products[0],
+				price: new Intl.NumberFormat("vi-VN").format(value.products[0].price),
+				shippingPrice: new Intl.NumberFormat("vi-VN").format(
+					value.products[0].shippingPrice
+				),
+			},
+			totalAmount: new Intl.NumberFormat("vi-VN").format(
+				value.totalAmount + dataOrder.products?.length * 15000
+			),
+			buyerName: user?.name,
+			address: {
+				province: user.province,
+				district: user.district,
+				ward: user.ward,
+				address: user.address,
+			},
+			paymentMethod: "Thanh toán qua VNPay",
+		};
+
+		emailjs
+			.send(
+				"service_dnzblz9",
+				"template_yvydi8f",
+
+				templateParams,
+
+				{
+					publicKey: "Uxe-oHKEjYqhsFh_P",
+				}
+			)
+			.then(
+				(result) => {
+					console.log("SUCCESS!", result.text);
+				},
+				(error) => {
+					console.log("FAILED...", error.text);
+				}
+			);
+	};
+
 	useEffect(() => {
-		createOrder();
-	}, []);
+		if (user.id) {
+			createOrder();
+		}
+	}, [user]);
 
 	const handleBack = () => {
-		localStorage.removeItem("result-payment", "amount-paid");
+		localStorage.removeItem("result-payment");
+		localStorage.removeItem("amount-paid");
 		navigate("/");
 	};
 
@@ -69,7 +141,7 @@ function PaymentResult() {
 					)}
 					<h3 style={{ marginTop: 40 }}>{result.message}</h3>
 
-					{result?.status === "success" && (
+					{result?.status === "SUCCESS" && (
 						<>
 							<p>Nhà bán hàng sẽ chuẩn bị hàng và sớm giao đến cho bạn.</p>
 							<div

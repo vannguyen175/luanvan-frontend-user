@@ -80,7 +80,7 @@ function CardProduct({ type, product }) {
 						<p className={cx("price")}>{Intl.NumberFormat().format(product.price)}đ</p>
 						<div className={cx("info-seller")}>
 							<div className={cx("time-post")}>
-								<ReactTimeAgo date={Date.parse(product.updatedAt)} locale="vi-VN" />
+								<ReactTimeAgo date={Date.parse(product.createdAt)} locale="vi-VN" />
 							</div>
 							<div className={cx("place")}>{product.address.province}</div>
 						</div>

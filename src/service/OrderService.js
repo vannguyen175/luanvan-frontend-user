@@ -1,6 +1,8 @@
 import Axios from "axios";
 
 export const createOrder = async (data) => {
+	console.log("OrderService", data);
+
 	const res = await Axios.post(`${process.env.REACT_APP_API_URL_BACKEND}/order/create`, data);
 	return res.data;
 };

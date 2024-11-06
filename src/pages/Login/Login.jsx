@@ -14,6 +14,8 @@ import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import { useApp } from "../../context/AppProvider";
 import axios from "axios";
 import FacebookLogin from "react-facebook-login";
+import ModalForm from "../../components/Modal";
+import emailjs from "@emailjs/browser";
 
 const cx = classNames.bind(style);
 const clientID = "105139517728-qa77n1q8768ek3tpmi2thvd94p2lqqdh.apps.googleusercontent.com";
@@ -24,8 +26,19 @@ function Login() {
 	const location = useLocation();
 	const [data, setData] = useState();
 
+	const [isForgotPasswordModal, setIsForgotPasswordModal] = useState(false);
+	const [forgotPass, setForgotPass] = useState({
+		step: 0,
+		email: null,
+		PIN: null,
+		message: null, //color: green
+		erorr_message: null, //color: red
+	});
+
 	const emailRef = useRef(null);
 	const passwordRef = useRef(null);
+	const emailForgotPasswordRef = useRef(null);
+	const PINRef = useRef();
 
 	const loginGoogle = useGoogleLogin({
 		onSuccess: async (response) => {
@@ -93,6 +106,91 @@ function Login() {
 		}
 	};
 
+	const handleForgotPassword = async () => {
+		if (forgotPass.step === 0) {
+			//giao diện nhập email
+			const res = await UserService.checkEmailExist({
+				email: emailForgotPasswordRef.current.value,
+			});
+			if (res.status === "SUCCESS") {
+				setForgotPass((prev) => ({
+					...prev,
+					step: 1,
+					erorr_message: null,
+					email: emailForgotPasswordRef.current.value,
+				})); //chuyển sang giao diện nhập mã PIN
+				const randomSixDigitNumber = Math.floor(100000 + Math.random() * 900000);
+				setForgotPass((prev) => ({ ...prev, PIN: randomSixDigitNumber }));
+				sendEmail(res.data, randomSixDigitNumber);
+			} else {
+				setForgotPass((prev) => ({
+					...prev,
+					erorr_message: res.message,
+				}));
+			}
+		} else if (forgotPass.step === 1) {
+			//giao diện nhập mã PIN
+			if (forgotPass.PIN === Number(PINRef.current.value)) {
+				//thành công!
+				const dataAccount = await UserService.checkEmailExist({
+					email: forgotPass.email,
+				});
+				if (dataAccount.data?.loginMethod === "Google") {
+					const res = await UserService.loginWithGoogle({
+						email: dataAccount.data.email,
+						name: dataAccount.data.name,
+						picture: dataAccount.data.avatar,
+					});
+					checkLoginResult(res);
+				} else if (dataAccount.data?.loginMethod === "Facebook") {
+					const res = await UserService.loginWithFacebook({
+						email: dataAccount.data.email,
+						name: dataAccount.data.name,
+						picture: dataAccount.data.avatar,
+					});
+					checkLoginResult(res);
+				} else {
+					const res = await UserService.loginUser({
+						email: dataAccount.data.email,
+						password: dataAccount.data.password,
+						isForgotPass: true,
+					});
+					setData(res);
+					checkLoginResult(res);
+				}
+			} else {
+				setForgotPass((prev) => ({
+					...prev,
+					erorr_message: "Mã xác minh không hợp lệ. Vui lòng kiểm tra và nhập lại.",
+				}));
+			}
+		}
+	};
+
+	const sendEmail = (value, PIN) => {
+		emailjs
+			.send(
+				"service_dnzblz9",
+				"template_vqthbri",
+				{
+					to_name: value.name,
+					to_email: value.email,
+					message: PIN,
+				},
+				{
+					publicKey: "Uxe-oHKEjYqhsFh_P",
+				}
+			)
+			.then(
+				(result) => {
+					console.log("SUCCESS!", result.text);
+				},
+				(error) => {
+					console.log("FAILED...", error.text);
+				}
+			);
+	};
+
 	return (
 		<GoogleOAuthProvider clientId={clientID}>
 			<div className={cx("backgroundImage", "animate__animated", "animate__fadeIn")}>
@@ -123,9 +221,15 @@ function Login() {
 							inputRef={passwordRef}
 							autoComplete="on"
 						/>
-						<a className={cx("forgot-password")} href="/">
+						<span
+							className={cx("forgot-password")}
+							onClick={() => {
+								setIsForgotPasswordModal(true);
+								setForgotPass({ step: 0 });
+							}}
+						>
 							Quên mật khẩu?
-						</a>
+						</span>
 						<Button primary className={cx("login-btn")} onClick={onsubmit}>
 							Đăng nhập
 						</Button>
@@ -148,6 +252,51 @@ function Login() {
 							Chưa có tài khoản? <Link to="/register">Đăng ký tài khoản mới</Link>
 						</p>
 					</form>
+					<ModalForm
+						title="Tìm tài khoản của bạn"
+						isOpen={isForgotPasswordModal}
+						setIsOpen={setIsForgotPasswordModal}
+						width={650}
+					>
+						<div className={cx("forget-password-modal")}>
+							{forgotPass.step === 0 && (
+								<>
+									<p>
+										Vui lòng nhập địa chỉ email đã đăng ký để nhận mã xác minh
+										khôi phục mật khẩu. ntthuyvan1705@gmail.com
+									</p>
+									{forgotPass.erorr_message && (
+										<p style={{ color: "red" }}>{forgotPass.erorr_message}</p>
+									)}
+
+									<input
+										ref={emailForgotPasswordRef}
+										type="text"
+										placeholder="Nhập email..."
+									/>
+									<button onClick={handleForgotPassword}>Gửi mã xác minh</button>
+								</>
+							)}
+
+							{forgotPass.step === 1 && (
+								<>
+									<p>Nhập mã xác minh bạn đã nhận qua email.</p>
+									{forgotPass.erorr_message && (
+										<p style={{ color: "red" }}>{forgotPass.erorr_message}</p>
+									)}
+									<input
+										ref={PINRef}
+										type="number"
+										placeholder="Nhập mã xác minh..."
+									/>
+									<span>
+										Không nhận được email? <strong>Gửi lại.</strong>
+									</span>
+									<button onClick={handleForgotPassword}>Xác nhận</button>
+								</>
+							)}
+						</div>
+					</ModalForm>
 				</div>
 			</div>
 		</GoogleOAuthProvider>

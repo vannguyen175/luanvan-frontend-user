@@ -72,9 +72,11 @@ function Header() {
 	};
 
 	const checkUserBanned = async () => {
-		const res = await userService.checkUserBanned(idUser);
-		if (res.status === "BLOCKED") {
-			navigate("/block-account");
+		if (idUser) {
+			const res = await userService.checkUserBanned(idUser);
+			if (res.status === "BLOCKED") {
+				navigate("/block-account");
+			}
 		}
 	};
 

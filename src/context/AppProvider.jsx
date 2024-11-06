@@ -69,6 +69,7 @@ export const AppProvider = ({ children }) => {
 		}
 	);
 
+	
 	useEffect(() => {
 		getUserInfo();
 	}, [token]);

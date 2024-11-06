@@ -36,6 +36,10 @@ export const checkUserBanned = async (id) => {
 	const res = await Axios.get(`${process.env.REACT_APP_API_URL_BACKEND}/user/check-banned/${id}`);
 	return res.data;
 };
+export const checkEmailExist = async (data) => {
+	const res = await Axios.post(`${process.env.REACT_APP_API_URL_BACKEND}/user/check-email`, data);
+	return res.data;
+};
 export const getDetailUser = async (id, access_token) => {
 	const res = await axiosJWT.get(`${process.env.REACT_APP_API_URL_BACKEND}/user/details/${id}`, {
 		headers: { token: `Bearer ${access_token}` },
@@ -49,7 +53,7 @@ export const getInfoUser = async (id) => {
 };
 
 export const updateUser = async (id, access_token, data) => {
-	const res = await Axios.put(
+	const res = await axiosJWT.put(
 		`${process.env.REACT_APP_API_URL_BACKEND}/user/update/${id}`,
 		data,
 		{ headers: { token: `Bearer ${access_token}` } }

@@ -8,13 +8,30 @@
 	}
 }
 
+.product {
+	margin: 10px 0px;
+}
+
 .cart {
 	//border: 1px solid gray;
 	border-radius: 5px;
 	margin: 10px;
-	padding: 20px 10px;
+	padding: 10px 10px;
 	box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
 	background-color: white;
+
+	.seller {
+		display: flex;
+		justify-content: space-between;
+		border-bottom: 1px solid #ddd;
+		padding-bottom: 5px;
+
+		span {
+			color: gray;
+			text-decoration: underline;
+			cursor: pointer;
+		}
+	}
 
 	img {
 		width: 110px;
@@ -26,36 +43,31 @@
 	.detail {
 		margin-left: 40px;
 		.name {
-			margin-top: 10px;
+			margin-top: 0px;
 			font-weight: 500;
 			font-size: 1.1rem;
 			cursor: pointer;
 		}
 		.price {
 			font-weight: 500;
+			margin-top: 10px;
 		}
 	}
 
-	.quantity {
-		p {
-			font-size: 0.8rem;
-			margin-bottom: 6px;
-		}
+	.price {
+		display: flex;
 		div {
-			display: flex;
-			margin-bottom: 10px;
-
-			p {
-				margin: 0 10px;
-				font-size: 1.2rem;
-				font-weight: 500;
-			}
+			margin: 0 15px;
 		}
-		.price {
+		span {
+			font-size: 0.9rem;
+		}
+
+		p {
+			margin-top: 5px;
 			font-size: 1.2rem;
-			color: var(--orange-color);
 			font-weight: 500;
-			margin-top: -7px;
+			color: var(--orange-color);
 			margin-bottom: 20px;
 		}
 	}
@@ -204,4 +216,13 @@
 		border-radius: 5px;
 		background-color: transparent;
 	}
+}
+
+.email-template {
+	width: 600px;
+	margin: auto;
+	font-family: Arial, sans-serif;
+	color: #333;
+	background-color: white;
+	padding: 20px;
 }

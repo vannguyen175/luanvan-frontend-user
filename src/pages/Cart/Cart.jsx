@@ -97,7 +97,6 @@ function Cart() {
 	const handlePurchase = () => {
 		navigate(`/dat-hang`);
 	};
-console.log('cartDetail', cartDetail);
 
 	return (
 		<div style={{ display: "flex" }}>

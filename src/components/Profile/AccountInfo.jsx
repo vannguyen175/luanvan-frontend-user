@@ -58,8 +58,6 @@ function AccountInfo() {
 	};
 
 	const getAccountInfo = async () => {
-		console.log("getAccountInfo", user);
-
 		setDataSubmit({
 			...user,
 		});
@@ -118,10 +116,7 @@ function AccountInfo() {
 				</div>
 				{dataSubmit?.name && (
 					<div className={cx("account-info")}>
-						<img
-							src={dataSubmit?.avatar || "assets/images/user-avatar.jpg"}
-							alt="avatar"
-						/>
+						<img src={dataSubmit?.avatar} alt="avatar" />
 						<div style={{ width: "100%" }}>
 							<p className={cx("name")}>{dataSubmit.name}</p>
 							<div className={cx("info")}>

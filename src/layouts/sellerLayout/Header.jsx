@@ -17,11 +17,11 @@ function SellerLayout() {
 	const idUser = localStorage.getItem("id_user");
 
 	const checkUserBanned = async () => {
-		const res = await userService.checkUserBanned(idUser);
-		console.log("res seler", res);
-		
-		if (res.status === "BLOCKED") {
-			navigate("/block-account");
+		if (idUser) {
+			const res = await userService.checkUserBanned(idUser);
+			if (res.status === "BLOCKED") {
+				navigate("/block-account");
+			}
 		}
 	};
 
