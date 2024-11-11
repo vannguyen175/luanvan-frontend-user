@@ -18,6 +18,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Grid from "@mui/material/Grid";
 import { exportExcel } from "../../utils";
+import Pagination from "../../components/Pagination";
 
 const cx = classNames.bind(style);
 
@@ -31,6 +32,17 @@ function OrderManager() {
 	const [orders, setOrders] = useState([]);
 	const [orderSelected, setOrderSelected] = useState();
 
+	const [pageState, setPageState] = useState({
+		page: 1,
+		pageSize: 10,
+		totalCount: 0,
+	});
+
+	//Phân trang
+	useEffect(() => {
+		getOrders();
+	}, [pageState.page]);
+
 	const tabs = [
 		{ label: "Đang xử lý" },
 		{ label: "Đang vận chuyển" },
@@ -41,21 +53,27 @@ function OrderManager() {
 
 	const getOrders = async () => {
 		if (user.id) {
+			console.log(pageState);
 			const res = await OrderService.getAllOrders({
 				data: { seller: user.id, status: activeTab, token: token },
+				page: `page=${pageState.page}`,
+				limit: `limit=${pageState.pageSize}`,
 			});
+			if (pageState.totalCount !== res.totalCount) {
+				setPageState((prevData) => ({ ...prevData, totalCount: res.totalCount }));
+			}
 			setOrders(res.data);
 			setIsLoading(false);
 		}
 	};
 
+	//tìm kiếm order theo: id seller, tên SP, người mua, trạng thái
 	const searchOrder = async () => {
 		if (user.id) {
 			const res = await OrderService.searchOrders({
 				data: {
 					idSeller: user.id,
-					productName: searchRef.current.value,
-					buyerName: searchRef.current.value,
+					query: searchRef.current.value,
 					status: activeTab,
 				},
 			});
@@ -231,6 +249,7 @@ function OrderManager() {
 							</TableBody>
 						</Table>
 					</TableContainer>
+					<Pagination pageState={pageState} setPageState={setPageState} />
 				</div>
 
 				<Modal

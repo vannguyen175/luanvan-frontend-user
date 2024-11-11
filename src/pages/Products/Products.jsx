@@ -6,7 +6,8 @@ import * as ProductService from "~/service/ProductService";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
-import Search from "../../components/Search";
+import Pagination from "../../components/Pagination";
+import Fillter from "./FilterProduct";
 
 const cx = classNames.bind(style);
 
@@ -16,13 +17,25 @@ function Products() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [subCategory, setSubCategory] = useState();
 	const [products, setProducts] = useState();
-	const [pageState, setPageState] = useState({
-		isLoading: false,
-		data: [],
-		total: 0,
-		page: 1,
-		pageSize: 20,
+	const [filter, setFilter] = useState({
+		province: null,
+		isUsed: null,
+		date: null,
+		price: null,
 	});
+
+	const [pageState, setPageState] = useState({
+		page: 1,
+		pageSize: 2,
+		totalCount: 0,
+	});
+
+	//Phân trang
+	useEffect(() => {
+		if (subCateChosen && pageState.pageSize) {
+			getProductsBySubCate(filter.province, filter.isUsed, filter.date, filter.price);
+		}
+	}, [pageState.page, subCateChosen]);
 
 	const getSubCategory = async () => {
 		const res = await ProductService.getSubCategory(slug_category);
@@ -35,29 +48,37 @@ function Products() {
 		// eslint-disable-next-line
 	}, []);
 
-	const getProductsBySubCate = async () => {
+	const getProductsBySubCate = async (province, isUsed, date, price) => {
 		setIsLoading(true);
 		const res = await ProductService.getAllProducts({
-			data: { state: [], cate: [], subCate: [subCateChosen] }, //vd: chó
+			data: { state: [], cate: [], subCate: [subCateChosen], province, isUsed, date, price }, //vd: chó
 			page: `page=${pageState.page}`,
 			limit: `limit=${pageState.pageSize}`,
 		});
+		if (pageState.totalCount !== res.totalCount) {
+			setPageState((prevData) => ({ ...prevData, totalCount: res.totalCount }));
+		}
 		setProducts(res.data);
 		setIsLoading(false);
 	};
 
 	//thay đổi subCateChosen mỗi khi user nhấn chọn danh mục phụ
 	const handleShowProducts = (subCate) => {
+		setPageState((prevData) => ({ ...prevData, page: 1 }));
 		setSubCateChosen(subCate.name);
 	};
 
 	//mỗi lần subCateChosen thay đổi, getProductsBySubCate sẽ được refetch để lấy data products
-	useEffect(() => {
-		if (subCateChosen) {
-			getProductsBySubCate();
-		}
-		// eslint-disable-next-line
-	}, [subCateChosen]);
+	// useEffect(() => {
+	// 	if (subCateChosen) {
+	// 		getProductsBySubCate();
+	// 	}
+	// 	// eslint-disable-next-line
+	// }, [subCateChosen]);
+
+	const handleFilter = () => {
+		getProductsBySubCate(filter.province, filter.isUsed, filter.date, filter.price);
+	};
 
 	return (
 		<div className={cx("container")}>
@@ -73,24 +94,29 @@ function Products() {
 					</Button>
 				))}
 			</div>
-			<div className={cx("shop-new", "inner-content")}>
-				<p className={cx("title")}>Tin đăng mới</p>
-				<div style={{ display: "flex", flexWrap: "wrap" }}>
+			<div className={cx("inner-content")}>
+				<div className={cx("filter")}>
+					<Fillter filter={filter} setFilter={setFilter} handleFilter={handleFilter} />
+				</div>
+
+				<div className={cx("products")}>
 					{isLoading ? (
 						<div style={{ margin: "0 auto" }}>
 							<CircularProgress />
 						</div>
 					) : products?.length > 0 ? (
-						products?.map((product, key) => (
-							<CardProduct key={key} product={product} type="horizontal" />
-						))
+						<>
+							{products?.map((product, key) => (
+								<CardProduct key={key} product={product} type="horizontal" />
+							))}
+							<div className={cx("pagination")}>
+								<Pagination pageState={pageState} setPageState={setPageState} />
+							</div>
+						</>
 					) : (
 						<p style={{ margin: "0 auto" }}>Danh mục này hiện không có sản phẩm nào.</p>
 					)}
 				</div>
-			{/* <div>
-				<Search />
-			</div> */}
 			</div>
 		</div>
 	);

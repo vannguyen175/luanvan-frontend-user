@@ -63,7 +63,6 @@ function Header() {
 	const [cartLength, setCartLength] = useState(null);
 
 	const navigate = useNavigate();
-	const [productList, setProductList] = useState();
 	const handleLogout = () => {
 		localStorage.clear();
 		setToken(null);
@@ -86,17 +85,7 @@ function Header() {
 
 	useEffect(() => {
 		checkUserBanned();
-		getProductList();
 	}, []);
-
-	const getProductList = async () => {
-		const result = await productService.getAllProducts({
-			data: { state: [], cate: [], subCate: [] },
-			page: `page=1`,
-			limit: `limit=10000`,
-		});
-		setProductList(result);
-	};
 
 	const handleLogin = () => {
 		navigate("/login");

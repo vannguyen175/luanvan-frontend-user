@@ -138,9 +138,10 @@
 	}
 
 	.action {
-		margin-top: 5px;
-		border-top: 1px solid rgb(147, 147, 147);
-		padding-top: 10px;
+		button {
+			width: 130px;
+			margin: 5px 10px;
+		}
 		float: right;
 	}
 }

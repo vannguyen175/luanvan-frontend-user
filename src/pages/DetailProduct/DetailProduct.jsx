@@ -35,6 +35,8 @@ function DetailProduct() {
 	const [quantitySelected, setQuantitySelected] = useState(1);
 	const location = useLocation();
 	const [productBySubCate, setProductBySubCate] = useState();
+	const [isOpenDrawerCart, setIsOpenDrawerCart] = useState(false);
+	const [cartDetail, setCartDetail] = useState([]);
 	const [details, setDetails] = useState({
 		product: {},
 		seller: {},
@@ -53,8 +55,6 @@ function DetailProduct() {
 			product: res.data,
 		}));
 		if (res.data) {
-			console.log(res.data);
-
 			getProductsBySubCate(res.data.subCategory.name);
 		}
 		getDetailSeller(res.data.idUser._id);
@@ -108,7 +108,7 @@ function DetailProduct() {
 				quantity: quantitySelected,
 			});
 			if (addCart?.status === "SUCCESS") {
-				toast.success(addCart.message);
+				toast.success("Thêm sản phẩm vào giỏ hàng thành công");
 			} else if (addCart?.status === "EXIST") {
 				toast.warning("Sản phẩm đã tồn tại trong giỏ hàng");
 			}
@@ -296,10 +296,7 @@ function DetailProduct() {
 
 										<div className={cx("main-info")}>
 											<img
-												src={
-													details.seller?.avatar ||
-													"/assets/images/user-avatar.jpg"
-												}
+												src={details.seller?.avatar}
 												alt="anh-nguoi-ban"
 												className={cx("avatar")}
 											/>

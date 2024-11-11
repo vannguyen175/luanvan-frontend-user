@@ -12,22 +12,9 @@ function AddressForm({ setDataSubmit, data }) {
 
 	useEffect(() => {
 		if (data.district !== "") {
-			// setDataSubmit((prevData) => ({
-			// 	...prevData,
-			// 	address: {
-			// 		//...prevData.address,
-			// 		email: data.email,
-			// 		phone: data.phone,
-			// 		province: user.province,
-			// 		district: user.district,
-			// 		ward: user.ward,
-			// 		address: user.address,
-			// 	},
-			// }));
 			hanldeChangeProvince(data.province);
 			hanldeChangeDistrict(data.district);
 			hanldeChangeWard(data.ward);
-			console.log("TEST");
 			
 		}
 		// eslint-disable-next-line

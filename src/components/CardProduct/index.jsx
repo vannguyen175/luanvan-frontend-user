@@ -21,6 +21,7 @@ function CardProduct({ type, product }) {
 	const handleClick = () => {
 		navigate(`/detail-product/${product._id}`);
 	};
+	
 	return (
 		<div>
 			{type === "horizontal" ? ( //ngang
@@ -45,7 +46,7 @@ function CardProduct({ type, product }) {
 								<p>
 									<PersonOutlineOutlinedIcon className={cx("icon")} />
 
-									{product.sellerName}
+									{product.idUser.name}
 								</p>
 
 								<p className={cx("time-post")}>

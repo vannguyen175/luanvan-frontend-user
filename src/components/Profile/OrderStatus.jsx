@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Rating from "@mui/material/Rating";
 import CircularProgress from "@mui/material/CircularProgress";
+import Pagination from "../../components/Pagination";
 
 const cx = classNames.bind(style);
 
@@ -40,18 +41,36 @@ function OrderStatus() {
 	});
 	const [orders, setOrders] = useState([]);
 
+	//phân trang
+	const [pageState, setPageState] = useState({
+		page: 1,
+		pageSize: 5,
+		totalCount: 0,
+	});
+
+	//Phân trang
+	useEffect(() => {
+		getOrders();
+	}, [pageState.page]);
+
 	const getOrders = async () => {
 		setIsLoading(true);
 		if (user.id) {
 			const res = await OrderService.getAllOrders({
 				data: { buyer: user.id, status: alignment, token: token },
+				page: `page=${pageState.page}`,
+				limit: `limit=${pageState.pageSize}`,
 			});
+			if (pageState.totalCount !== res.totalCount) {
+				setPageState((prevData) => ({ ...prevData, totalCount: res.totalCount }));
+			}
 			setOrders(res.data);
 		}
 		setIsLoading(false);
 	};
 
 	useEffect(() => {
+		setPageState((prevData) => ({ ...prevData, page: 1 }));
 		getOrders();
 		// eslint-disable-next-line
 	}, [alignment, user]);
@@ -156,77 +175,105 @@ function OrderStatus() {
 						<CircularProgress />
 					</div>
 				) : orders.length > 0 ? (
-					orders.map((item, index) => (
-						<div className={cx("order-status-card")} key={index}>
-							<Grid container>
-								<Grid item xs={12} className={cx("shop")}>
-									<StorefrontIcon style={{ marginRight: 10 }} />
-
-									<span onClick={() => navigate(`/seller/${item.idSeller._id}`)}>
-										{item.idSeller.name}
-									</span>
-								</Grid>
-								<Grid item xs={1} className={cx("image-product")}>
-									<img src={item.idProduct.images[0]} alt="anh-san-pham" />
-								</Grid>
-								<Grid item xs={7} className={cx("detail-product")}>
-									<Grid container direction="column">
-										<Grid item xs={12} className={cx("name")}>
-											{item.idProduct.name}
+					<>
+						{orders.map((item, index) => (
+							<div className={cx("order-status-card")} key={index}>
+								<Grid container>
+									<Grid item xs={1} className={cx("image-product")}>
+										<img src={item.idProduct.images[0]} alt="anh-san-pham" />
+									</Grid>
+									<Grid item xs={6} className={cx("detail-product")}>
+										<Grid container direction="column">
+											<Grid item xs={12} className={cx("name")}>
+												{item.idProduct.name}
+											</Grid>
+											<Grid item xs={12}>
+												<Description
+													title="Người bán"
+													desc={
+														<>
+															<span
+																onClick={() =>
+																	navigate(
+																		`/seller/${item.idSeller._id}`
+																	)
+																}
+															>
+																{item.idSeller.name}
+															</span>
+														</>
+													}
+												/>
+											</Grid>
+											<Grid item xs={12}>
+												<Description
+													title="Danh mục"
+													desc={item.idProduct.subCategory.name}
+												/>
+											</Grid>
 										</Grid>
-										<Grid item xs={12}>
+									</Grid>
+									<Grid item xs={3} className={cx("price-product")}>
+										<Grid container direction="column">
 											<Description
-												title="Danh mục"
-												desc={item.idProduct.subCategory.name}
+												title="Giá tiền"
+												desc={`${Intl.NumberFormat().format(
+													(item.productPrice || 0) +
+														(item.shippingPrice || 0)
+												)}đ`}
+											/>
+											<Description
+												title="Hình thức"
+												desc={
+													item.isPaid
+														? "Chuyển khoản"
+														: "Thanh toán bằng tiền mặt"
+												}
 											/>
 										</Grid>
 									</Grid>
-								</Grid>
-								<Grid item xs={4} className={cx("price-product")}>
-									<Grid container direction="column">
-										<Description
-											title="Giá tiền"
-											desc={`${Intl.NumberFormat().format(
-												(item.productPrice || 0) + (item.shippingPrice || 0)
-											)}đ`}
-										/>
-										<Description
-											title="Hình thức"
-											desc={
-												item.isPaid
-													? "Chuyển khoản"
-													: "Thanh toán bằng tiền mặt"
-											}
-										/>
+									<Grid item xs={2} className={cx("action")}>
+										<Grid container direction="column">
+											{alignment === "0" ? (
+												<>
+													<button className={cx("button-primary")}>
+														Xem chi tiết
+													</button>
+													<button
+														onClick={() => handleCancelOpen(item._id)}
+														className={cx("button-primary")}
+													>
+														Hủy
+													</button>
+												</>
+											) : alignment === "3" ? (
+												<button
+													onClick={() => handleShowRatingModal(item)}
+													className={cx("button-primary")}
+												>
+													{item?.ratingInfo?.score
+														? "Đã đánh giá"
+														: "Đánh giá"}
+												</button>
+											) : (
+												""
+											)}
+										</Grid>
 									</Grid>
 								</Grid>
-								<Grid item container className={cx("action")}>
-									<Grid item xs={10}></Grid>
-									<Grid item xs={2}>
-										{alignment === "0" ? (
-											<button
-												onClick={() => handleCancelOpen(item._id)}
-												className={cx("button-primary")}
-											>
-												Hủy
-											</button>
-										) : alignment === "3" ? (
-											<button
-												onClick={() => handleShowRatingModal(item)}
-												className={cx("button-primary")}
-											>
-												{item?.ratingInfo?.score
-													? "Đã đánh giá"
-													: "Đánh giá"}
-											</button>
-										) : (
-											""
-										)}
-									</Grid>
-								</Grid>
-							</Grid>
+							</div>
+						))}
+						<div
+							style={{
+								display: "flex",
+								justifyContent: "flex-end",
+								paddingRight: 20,
+								paddingBottom: 20,
+							}}
+						>
+							<Pagination pageState={pageState} setPageState={setPageState} />
 						</div>
-					))
+					</>
 				) : (
 					<p style={{ textAlign: "center", margin: 20 }}>Không có dữ liệu</p>
 				)}
