@@ -245,7 +245,7 @@ function ProfileSeller() {
 												onChange={handleChangeInput}
 												type="textarea"
 												label="Địa chỉ cụ thể"
-												placeholder={dataSubmit.address}
+												value={dataSubmit.address}
 											/>
 										</>
 									)}

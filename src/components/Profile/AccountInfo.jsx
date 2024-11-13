@@ -148,19 +148,19 @@ function AccountInfo() {
 										name="name"
 										onChange={handleChangeInput}
 										label="Tên tài khoản"
-										placeholder={dataSubmit.name}
+										value={dataSubmit.name}
 									/>
 									<Input
 										name="email"
 										onChange={handleChangeInput}
 										label="Email"
-										placeholder={dataSubmit.email}
+										value={dataSubmit.email}
 									/>
 									<Input
 										name="phone"
 										onChange={handleChangeInput}
 										label="Số điện thoại"
-										placeholder={dataSubmit.phone}
+										value={dataSubmit.phone}
 									/>
 									<Input
 										name="password"
@@ -239,7 +239,7 @@ function AccountInfo() {
 												onChange={handleChangeInput}
 												type="textarea"
 												label="Địa chỉ cụ thể"
-												placeholder={dataSubmit.address}
+												value={dataSubmit.address}
 											/>
 										</>
 									)}

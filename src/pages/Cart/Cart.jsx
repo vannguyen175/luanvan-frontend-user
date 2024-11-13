@@ -23,10 +23,12 @@ function Cart() {
 		const result = await CartService.getCart(id);
 		setCartDetail(result.data);
 	};
+
 	useEffect(() => {
 		getCarts();
 		// eslint-disable-next-line
 	}, [id]);
+
 	const handleDeleteCart = async (idProduct) => {
 		const res = await CartService.deleteCart({ idUser: id, idProduct: idProduct });
 		if (res.status === "SUCCESS") {
@@ -99,89 +101,79 @@ function Cart() {
 	};
 
 	return (
-		<div style={{ display: "flex" }}>
-			<div className="inner-content" style={{ width: "70%" }}>
+		<div
+			className={cx("inner-content")}
+			style={{ width: "100%", display: "flex", justifyContent: "space-evenly" }}
+		>
+			<div style={{ width: "70%" }}>
 				<p className="title">Giỏ hàng của bạn</p>
-				<div>
-					{cartDetail?.map((cart, index) => {
-						return (
-							<div className={cx("cart", "row")} key={index}>
-								<div style={{ display: "flex" }}>
-									<div className="col-1">
-										<input
-											type="checkbox"
-											style={{ transform: "scale(1.5)" }}
-											onClick={(e) => handleSelectItem(e, index)}
+				{cartDetail?.map((cart, index) => {
+					return (
+						<div className={cx("cart", "row")} key={index}>
+							<div style={{ display: "flex" }}>
+								<div className="col-1">
+									<input
+										type="checkbox"
+										style={{ transform: "scale(1.5)" }}
+										onClick={(e) => handleSelectItem(e, index)}
+									/>
+								</div>
+								<img className="col-2" src={`${cart?.image}`} alt="anh-san-pham" />
+								<div className={cx("detail", "col-5")}>
+									<StoreMallDirectoryIcon /> {cart?.sellerName}
+									<p className={cx("name")}>{cart?.name}</p>
+									<p className={cx("price")}>
+										{Intl.NumberFormat().format(cart?.price)}đ
+									</p>
+									{cart?.statePost === "selled" && (
+										<p style={{ color: "red" }}>Hết hàng</p>
+									)}
+								</div>
+								<div className={cx("quantity", "col-3")}>
+									<p>Số lượng: </p>
+									<div>
+										<RemoveIcon
+											onClick={() =>
+												handleChangeQuantity("remove", index, cart.price)
+											}
+										/>
+										<p>{cart?.quantity}</p>
+										<AddIcon
+											onClick={() =>
+												handleChangeQuantity("add", index, cart.price)
+											}
 										/>
 									</div>
-									<img
-										className="col-2"
-										src={`${cart?.image}`}
-										alt="anh-san-pham"
-									/>
-									<div className={cx("detail", "col-5")}>
-										<StoreMallDirectoryIcon /> {cart?.sellerName}
-										<p className={cx("name")}>{cart?.name}</p>
-										<p className={cx("price")}>
-											{Intl.NumberFormat().format(cart?.price)}đ
-										</p>
-										{cart?.statePost === "selled" && (
-											<p style={{ color: "red" }}>Hết hàng</p>
-										)}
-									</div>
-									<div className={cx("quantity", "col-3")}>
-										<p>Số lượng: </p>
-										<div>
-											<RemoveIcon
-												onClick={() =>
-													handleChangeQuantity(
-														"remove",
-														index,
-														cart.price
-													)
-												}
-											/>
-											<p>{cart?.quantity}</p>
-											<AddIcon
-												onClick={() =>
-													handleChangeQuantity("add", index, cart.price)
-												}
-											/>
-										</div>
-										<p>Tổng tiền: </p>
-										<p className={cx("price")}>
-											{Intl.NumberFormat().format(
-												cart?.price * cart?.quantity
-											)}
-											đ
-										</p>
-									</div>
-									<div className={cx("col-1", "action")}>
-										<Button
-											danger
-											onClick={() => handleDeleteCart(cart.idProduct)}
-											style={{ width: 109 }}
-										>
-											Xóa
-										</Button>
-									</div>
+									<p>Tổng tiền: </p>
+									<p className={cx("price")}>
+										{Intl.NumberFormat().format(cart?.price * cart?.quantity)}đ
+									</p>
+								</div>
+								<div className={cx("col-1", "action")}>
+									<Button
+										danger
+										onClick={() => handleDeleteCart(cart.idProduct)}
+										style={{ width: 109 }}
+									>
+										Xóa
+									</Button>
 								</div>
 							</div>
-						);
-					})}
-				</div>
+						</div>
+					);
+				})}
 			</div>
-			<div className={cx("inner-content", "summary")} style={{ width: "30%" }}>
-				<p className="title">Tổng kết</p>
-				<p>Tổng sản phẩm đã chọn: {itemSelected.length}</p>
-				<p>Tổng tiền: {Intl.NumberFormat().format(totalPrice)}đ</p>
-				{itemSelected.length === 0 ? (
-					<Button disabled>Thanh toán</Button>
-				) : (
-					<Button primary onClick={handlePurchase}>
-						Thanh toán
-					</Button>
-				)}
+			<div style={{ width: "27%" }}>
+				<p className="title">Tạm tính</p>
+				<div className={cx("summary")}>
+					<p>Tổng sản phẩm đã chọn: {itemSelected.length}</p>
+					<p>Tổng tiền: {Intl.NumberFormat().format(totalPrice)}đ</p>
+					{itemSelected.length === 0 ? (
+						<button className={cx("disabled")}>Tiến hành thanh toán</button>
+					) : (
+						<button onClick={handlePurchase}>Tiến hành thanh toán</button>
+					)}
+				</div>
 			</div>
 		</div>
 	);

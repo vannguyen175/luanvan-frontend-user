@@ -276,6 +276,7 @@ function OrderProduct() {
 																{item?.name}
 															</p>
 															<p className={cx("price")}>
+																Giá: {" "}
 																{Intl.NumberFormat().format(
 																	item?.price
 																)}
@@ -321,7 +322,7 @@ function OrderProduct() {
 						<Grid container style={{ display: "flex", alignItems: "center" }}>
 							<Grid item xs={1}>
 								<span className={cx("avatar")}>
-									<img src={`/${details.buyer?.avatar}`} alt="avatar" />
+									<img src={`${details.buyer?.avatar}`} alt="avatar" />
 								</span>
 							</Grid>
 							<Grid item xs={7}>

@@ -2,7 +2,7 @@ import classNames from "classnames/bind";
 import style from "./UserLayouts.module.scss";
 import DropdownMenu from "~/components/DropdownMenu";
 import Button from "@mui/material/Button";
-import * as productService from "~/service/ProductService";
+import * as CartService from "~/service/CartService";
 import * as userService from "~/service/UserService";
 import { useApp } from "~/context/AppProvider";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
@@ -54,6 +54,10 @@ const ActionUserLogin = [
 		name: "Nhà bán hàng",
 		to: "/nha-ban-hang",
 	},
+	{
+		name: "Đăng tin",
+		to: "/dang-tin",
+	},
 ];
 
 function Header() {
@@ -61,6 +65,16 @@ function Header() {
 
 	const idUser = localStorage.getItem("id_user");
 	const [cartLength, setCartLength] = useState(null);
+
+	const getCarts = async () => {
+		const result = await CartService.getCart(idUser);
+		setCartLength(result.data.length);
+	};
+
+	useEffect(() => {
+		getCarts();
+		// eslint-disable-next-line
+	}, [idUser]);
 
 	const navigate = useNavigate();
 	const handleLogout = () => {

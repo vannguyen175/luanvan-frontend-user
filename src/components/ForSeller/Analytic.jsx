@@ -24,11 +24,6 @@ const cx = classNames.bind(style);
 const options = {
 	type: "bar",
 	responsive: true,
-	// scales: {
-	// 	y: {
-	// 		beginAtZero: true,
-	// 	},
-	// },
 };
 
 function Analytic() {
