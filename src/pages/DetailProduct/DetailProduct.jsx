@@ -29,14 +29,12 @@ TimeAgo.addLocale(vi);
 
 function DetailProduct() {
 	const { id } = useParams();
-	const { user } = useApp();
+	const { user, setChatbox } = useApp();
 	const navigate = useNavigate();
 	const [buyerDetail, setBuyerDetail] = useState();
 	const [quantitySelected, setQuantitySelected] = useState(1);
 	const location = useLocation();
 	const [productBySubCate, setProductBySubCate] = useState();
-	const [isOpenDrawerCart, setIsOpenDrawerCart] = useState(false);
-	const [cartDetail, setCartDetail] = useState([]);
 	const [details, setDetails] = useState({
 		product: {},
 		seller: {},
@@ -86,8 +84,8 @@ function DetailProduct() {
 	};
 
 	const handleChoseQuantity = (type) => {
-		if (quantitySelected == 1 && type === "remove") return;
-		else if (quantitySelected == details.product?.quantity && type === "add") return;
+		if (quantitySelected === 1 && type === "remove") return;
+		else if (quantitySelected === details.product?.quantity && type === "add") return;
 		else if (type === "remove") setQuantitySelected(quantitySelected - 1);
 		else if (type === "add") setQuantitySelected(quantitySelected + 1);
 	};
@@ -150,8 +148,8 @@ function DetailProduct() {
 								<h2 style={{ color: "var(--main-color)", marginTop: 10 }}>
 									{details.product?.name}
 								</h2>
-								{details.product?.sellerName &&
-									details.product?.sellerName === buyerDetail?.name && (
+								{details.product?.idUser.name &&
+									details.product?.idUser.name === buyerDetail?.name && (
 										<div style={{ display: "flex" }}>
 											<p style={{ marginRight: 10 }}>
 												Đây là sản phẩm của bạn
@@ -214,8 +212,8 @@ function DetailProduct() {
 											title="Tin đã được kiểm duyệt"
 											desc={<CheckCircleOutlineIcon />}
 										/>
-										{details.product?.sellerName &&
-										details.product?.sellerName === buyerDetail?.name ? (
+										{details.product?.idUser.name &&
+										details.product?.idUser.name === buyerDetail?.name ? (
 											<p style={{ textAlign: "center", marginTop: 20 }}>
 												Đây là sản phẩm của bạn
 											</p>
@@ -309,6 +307,9 @@ function DetailProduct() {
 											>
 												{details.seller?.name}
 											</p>
+											<button className={cx("chat-btn")} onClick={() => setChatbox(details.seller.user)}>
+												Chat với nhà bán hàng
+											</button>
 										</div>
 
 										<Description

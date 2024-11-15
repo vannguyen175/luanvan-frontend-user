@@ -47,7 +47,7 @@ export const getDetailUser = async (id, access_token) => {
 	return res.data;
 };
 
-export const getInfoUser = async (id) => {
+export const getInfoUser = async (id) => {	
 	const res = await Axios.get(`${process.env.REACT_APP_API_URL_BACKEND}/user/info/${id}`);
 	return res.data;
 };

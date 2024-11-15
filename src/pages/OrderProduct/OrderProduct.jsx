@@ -2,7 +2,7 @@ import classNames from "classnames/bind";
 import style from "./OrderProduct.module.scss";
 import Button from "~/components/Button";
 import Grid from "@mui/material/Grid";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import * as CartService from "~/service/CartService";
 import * as ProductService from "~/service/ProductService";
 

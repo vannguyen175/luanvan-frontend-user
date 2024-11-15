@@ -11,6 +11,7 @@ export const AppProvider = ({ children }) => {
 		id: null,
 		isAdmin: null,
 	});
+	const [chatbox, setChatbox] = useState();
 
 	const getUserInfo = async () => {
 		if (!token) {
@@ -74,7 +75,9 @@ export const AppProvider = ({ children }) => {
 	}, [token]);
 
 	return (
-		<AppContext.Provider value={{ user, setUser, token, setToken, socket, setSocket }}>
+		<AppContext.Provider
+			value={{ user, setUser, token, setToken, socket, setSocket, chatbox, setChatbox }}
+		>
 			{children}
 		</AppContext.Provider>
 	);

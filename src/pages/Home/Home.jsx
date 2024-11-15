@@ -6,7 +6,6 @@ import Button from "~/components/Button";
 import * as ProductService from "~/service/ProductService";
 import { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
-import Search from "../../components/Search";
 import { Link } from "react-router-dom";
 
 const cx = classNames.bind(style);
@@ -140,6 +139,7 @@ function UserHome() {
 					</div>
 				</div>
 			</section>
+			
 		</div>
 	);
 }

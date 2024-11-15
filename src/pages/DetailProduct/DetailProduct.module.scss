@@ -86,6 +86,20 @@
 			cursor: pointer;
 			color: var(--main-color);
 		}
+		.chat-btn {
+			background-color: white;
+			border-radius: 3px;
+			padding: 5px 10px;
+			margin-left: 30px;
+			color: var(--main-color);
+			font-weight: 500;
+			border: 1px solid var(--main-color);
+			cursor: pointer;
+			transition: 0.2s ease;
+		}
+		.chat-btn:hover {
+			background-color: var(--light-color);
+		}
 	}
 }
 
@@ -172,4 +186,3 @@
 		justify-content: center;
 	}
 }
-

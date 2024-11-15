@@ -72,7 +72,9 @@ function Header() {
 	};
 
 	useEffect(() => {
-		getCarts();
+		if (idUser) {
+			getCarts();
+		}
 		// eslint-disable-next-line
 	}, [idUser]);
 
