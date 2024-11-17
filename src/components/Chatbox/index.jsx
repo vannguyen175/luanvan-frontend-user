@@ -3,14 +3,20 @@ import style from "./Chatbox.module.scss";
 import { useEffect, useRef, useState } from "react";
 import SendIcon from "@mui/icons-material/Send";
 import * as UserService from "~/service/UserService";
+import * as MessageService from "~/service/MessageService";
 import socket from "../../socket";
+import { useApp } from "~/context/AppProvider";
+import ClearIcon from "@mui/icons-material/Clear";
+import Badge from "@mui/material/Badge";
+import RemoveIcon from "@mui/icons-material/Remove";
 
 const cx = classNames.bind(style);
 
-function Chatbox({ receiverID }) {
+function Chatbox() {
 	const idUser = localStorage.getItem("id_user");
+	const { chatbox, setChatbox } = useApp(); //chatbox chứa id đối phương nhận tin nhắn
 
-	const [open, setOpen] = useState(true);
+	const [open, setOpen] = useState(false);
 	const [mess, setMess] = useState([]);
 	const [receiveInfo, setReceiveInfo] = useState({
 		name: null,
@@ -21,7 +27,7 @@ function Chatbox({ receiverID }) {
 	const msgRef = useRef();
 
 	const getInfoReceiver = async () => {
-		const res = await UserService.getInfoUser(receiverID);
+		const res = await UserService.getInfoUser(chatbox);
 		if (res.status === "OK") {
 			setReceiveInfo({
 				name: res.data.name,
@@ -30,12 +36,22 @@ function Chatbox({ receiverID }) {
 		}
 	};
 
-	useEffect(() => {
-		//lấy tên, avatar người nhận message
-		if (receiverID) {
-			getInfoReceiver();
+	const getDataChat = async (idUser, chatbox) => {
+		const res = await MessageService.getChat(idUser, chatbox);
+		if (res.status === "SUCCESS") {
+			setMess(res.data.message);
 		}
+	};
 
+	useEffect(() => {
+		if (chatbox) {
+			//lấy tên, avatar người nhận message
+			getInfoReceiver();
+			getDataChat(idUser, chatbox);
+		}
+	}, [chatbox]);
+
+	useEffect(() => {
 		//lắng nghe sự kiện phía server
 		socket.on("sendMessageServer", (dataGot) => {
 			setMess((oldMsgs) => [...oldMsgs, dataGot.data]);
@@ -48,16 +64,16 @@ function Chatbox({ receiverID }) {
 	}, []);
 
 	const sendMessage = () => {
-		const message = msgRef.current.value;
-		if (message !== null) {
+		const message = msgRef.current.value.trim();
+		if (message !== null && message !== "") {
 			const msg = {
 				content: message,
 				sender: idUser, //id người gửi
-				receiver: receiverID, //id người nhận
+				receiver: chatbox, //id người nhận
 			};
 			setMess((oldMsgs) => [...oldMsgs, msg]);
 			socket.emit("sendMessageClient", msg);
-			msgRef.current.value = "";
+			msgRef.current.value = null;
 		}
 	};
 
@@ -84,17 +100,22 @@ function Chatbox({ receiverID }) {
 
 	return (
 		<div>
-			<img
-				onClick={() => setOpen(!open)}
-				className={cx("avatar")}
-				src="/assets/images/user-avatar.jpg"
-				alt="avatar"
-			/>
+			<Badge color="primary" variant="dot" overlap="circular">
+				<img
+					onClick={() => setOpen(!open)}
+					className={cx("avatar")}
+					src={receiveInfo.avatar}
+					alt="avatar"
+				/>
+			</Badge>
+
 			{open && (
 				<div className={cx("box-chat")}>
 					<div className={cx("header")}>
 						<img src={receiveInfo.avatar} alt="avatar" />
 						{receiveInfo.name}
+						<ClearIcon className={cx("close-chat")} onClick={() => setChatbox()} />
+						<RemoveIcon className={cx("hide-chat")} onClick={() => setOpen(false)} />
 					</div>
 					<div className={cx("box-chat_message")}>
 						{renderMess}

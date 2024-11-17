@@ -68,7 +68,9 @@ function Header() {
 
 	const getCarts = async () => {
 		const result = await CartService.getCart(idUser);
-		setCartLength(result.data.length);
+		if (result.status === "SUCCESS") {
+			setCartLength(result.data.length);
+		}
 	};
 
 	useEffect(() => {
