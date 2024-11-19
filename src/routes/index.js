@@ -7,6 +7,7 @@ import NoneFooterLayout from "../layouts/noneFooterLayout/noneFooterLayout";
 import SellerLayout from "../layouts/sellerLayout";
 import OrderProduct from "../pages/OrderProduct/OrderProduct";
 import Cart from "../pages/Cart/Cart";
+import NotificationPage from "../components/Notification/NotificationPage";
 
 import { Fragment } from "react";
 import Profile from "~/pages/Profile";
@@ -71,6 +72,11 @@ export const routes = [
 		layout: UserLayout,
 	},
 	{
+		path: "/thong-bao",
+		page: NotificationPage,
+		layout: UserLayout,
+	},
+	{
 		path: "/nha-ban-hang",
 		page: ForSeller,
 		layout: SellerLayout,
@@ -90,6 +96,7 @@ export const routes = [
 		page: PostingProduct,
 		layout: SellerLayout,
 	},
+
 	{
 		path: "/block-account",
 		page: BlockAccount,

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import * as UserService from "~/service/UserService";
+import * as MessageService from "~/service/MessageService";
 import { jwtDecode } from "jwt-decode";
 
 export const AppContext = createContext({});
@@ -11,7 +12,17 @@ export const AppProvider = ({ children }) => {
 		id: null,
 		isAdmin: null,
 	});
-	const [chatbox, setChatbox] = useState();
+	const [chatbox, setChatbox] = useState([]); //danh sách người nhắn tin
+
+	const getChatUnseen = async () => {
+		if (token) {
+			const decoded = jwtDecode(token);
+			const res = await MessageService.getChatUnseen(decoded?.id);
+			if (res.status === "SUCCESS") {
+				setChatbox(res.data.flat());
+			}
+		}
+	};
 
 	const getUserInfo = async () => {
 		if (!token) {
@@ -28,6 +39,8 @@ export const AppProvider = ({ children }) => {
 					blockReason: res.user.blockReason,
 				});
 			} else {
+				console.log("res?.seller?.totalSold", res?.seller?.totalSold);
+
 				setUser({
 					id: res?.user?._id,
 					name: res?.user?.name,
@@ -42,7 +55,7 @@ export const AppProvider = ({ children }) => {
 					address: res?.address?.address || null,
 
 					totalProduct: res?.seller?.totalProduct,
-					totalSold: res?.seller?.totalSold,
+					totalSold: res?.seller?.totalSold || 0,
 					rating: res?.seller?.rating,
 				});
 			}
@@ -72,6 +85,7 @@ export const AppProvider = ({ children }) => {
 
 	useEffect(() => {
 		getUserInfo();
+		getChatUnseen();
 	}, [token]);
 
 	return (

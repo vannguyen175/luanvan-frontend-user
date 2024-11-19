@@ -29,7 +29,7 @@ TimeAgo.addLocale(vi);
 
 function DetailProduct() {
 	const { id } = useParams();
-	const { user, setChatbox } = useApp();
+	const { user, setChatbox, chatbox } = useApp();
 	const navigate = useNavigate();
 	const [buyerDetail, setBuyerDetail] = useState();
 	const [quantitySelected, setQuantitySelected] = useState(1);
@@ -60,7 +60,7 @@ function DetailProduct() {
 
 	const getProductsBySubCate = async (subCate) => {
 		const res = await ProductService.getAllProducts({
-			data: { state: [], cate: [], subCate: [subCate] },
+			data: { state: ["approved"], cate: [], subCate: [subCate] },
 			page: `page=${1}`,
 			limit: `limit=${10}`,
 		});
@@ -117,6 +117,13 @@ function DetailProduct() {
 
 	const handleShowDetail = (value) => {
 		setDetails((prev) => ({ ...prev, stateShow: value }));
+	};
+
+	const addChatID = (newId) => {
+		//newId = id người nhận tin nhắn
+		if (!chatbox.includes(newId)) {
+			setChatbox((prevData) => [...prevData, newId]);
+		}
 	};
 
 	return (
@@ -307,7 +314,10 @@ function DetailProduct() {
 											>
 												{details.seller?.name}
 											</p>
-											<button className={cx("chat-btn")} onClick={() => setChatbox(details.seller.user)}>
+											<button
+												className={cx("chat-btn")}
+												onClick={() => addChatID(details.seller.user)}
+											>
 												Chat với nhà bán hàng
 											</button>
 										</div>

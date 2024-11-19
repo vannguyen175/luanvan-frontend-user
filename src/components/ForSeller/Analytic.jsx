@@ -176,7 +176,7 @@ function Analytic() {
 			<div className={cx("inner-content", "product")}>
 				<p className="title">Thống kê theo sản phẩm</p>
 				<div>
-					{resultProduct.totalPosted && (
+					{
 						<div style={{ display: "flex", justifyContent: "space-evenly" }}>
 							<div className={cx("data-product")}>
 								<p>Số sản phẩm đã đăng</p>
@@ -191,7 +191,7 @@ function Analytic() {
 								<strong>{resultProduct.totalRejected}</strong>
 							</div>
 						</div>
-					)}
+					}
 				</div>
 				<div className={cx("chart")}>
 					<select name="typeDate" onChange={handleChangeDataType}>
@@ -228,7 +228,9 @@ function Analytic() {
 							</div>
 							<div className={cx("data-order")}>
 								<p>Tổng doanh thu</p>
-								<strong>{Intl.NumberFormat().format(resultOrder.revenue)}đ</strong>
+								<strong>
+									{Intl.NumberFormat().format(resultOrder.revenue || 0)}đ
+								</strong>
 							</div>
 						</div>
 					)}

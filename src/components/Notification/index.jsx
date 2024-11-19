@@ -5,14 +5,13 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
 import Popover from "@mui/material/Popover";
 import { useEffect, useState } from "react";
-import { useApp } from "~/context/AppProvider";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
+import socket from "../../socket";
 
 const cx = classNames.bind(style);
 
 function Notification() {
-	const { socket } = useApp();
 	const [notifications, setNotifications] = useState([]);
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [unseenCount, setUnseenCount] = useState(null);
@@ -22,25 +21,33 @@ function Notification() {
 		const res = await notificationService.getNotification({
 			user: localStorage.getItem("id_user"),
 		});
-		setNotifications(res?.data?.info);
-		setUnseenCount(res.unseenCount);
+		const dataNoti = res?.data?.info;
+
+		if (Array.isArray(dataNoti) && dataNoti.length > 0) {
+			const paginatedInfo = dataNoti.slice(0, 5);
+			setNotifications(paginatedInfo);
+		}
+
+		setUnseenCount(res.unseenCount || 0);
 	};
 
 	useEffect(() => {
 		getNoti();
 
-		if (socket) {
-			socket.on("connect", () => {
-				const handleNotification = (data) => {
-					setUnseenCount(data.unseenCount);
-				};
-				socket.on("getNotification", handleNotification);
-				return () => {
-					socket.off("getNotification", handleNotification);
-				};
-			});
-		}
-	}, [socket]);
+		socket.on("connect", () => {
+			const handleNotification = (data) => {
+				setUnseenCount(data.unseenCount);
+			};
+			socket.on("getNotification", handleNotification);
+			return () => {
+				socket.off("getNotification", handleNotification);
+			};
+		});
+
+		return () => {
+			socket.disconnect();
+		};
+	}, []);
 
 	const handleShowNotification = (event) => {
 		setAnchorEl(event.currentTarget);
@@ -58,18 +65,22 @@ function Notification() {
 			getNoti(); //cập nhật lại list thông báo
 		}
 		if (info.navigate === "product") {
-			navigate(`/detail-product/${info.product}`);
+			navigate(`/nha-ban-hang`);
 		} else if (info.navigate === "order") {
 			localStorage.setItem("menu_profile", "3");
 			navigate(`/tai-khoan`);
 		} else if (info.navigate === "seller-profile") {
 			const idUser = localStorage.getItem("id_user");
 			navigate(`/seller/${idUser}`);
-		}
-		 else if (info.navigate === "seller-order") {
+		} else if (info.navigate === "seller-order") {
 			navigate(`/nha-ban-hang`);
 		}
 		setAnchorEl(null);
+	};
+
+	const handleDetailPage = () => {
+		setAnchorEl(null);
+		navigate("/thong-bao");
 	};
 
 	return (
@@ -129,6 +140,9 @@ function Notification() {
 									</Grid>
 								</div>
 							))}
+							<div className={cx("more-detail")} onClick={handleDetailPage}>
+								Xem thêm
+							</div>
 						</div>
 					)}
 				</div>

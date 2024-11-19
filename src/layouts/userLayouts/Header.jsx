@@ -61,7 +61,7 @@ const ActionUserLogin = [
 ];
 
 function Header() {
-	const { user, token, setToken } = useApp();
+	const { user, token, setToken, setChatbox } = useApp();
 
 	const idUser = localStorage.getItem("id_user");
 	const [cartLength, setCartLength] = useState(null);
@@ -84,6 +84,7 @@ function Header() {
 	const handleLogout = () => {
 		localStorage.clear();
 		setToken(null);
+		setChatbox([]);
 		navigate("/");
 	};
 
@@ -106,6 +107,7 @@ function Header() {
 	}, []);
 
 	const handleLogin = () => {
+		setChatbox([]);
 		navigate("/login");
 	};
 

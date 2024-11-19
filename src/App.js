@@ -14,6 +14,8 @@ const clientID = "105139517728-qa77n1q8768ek3tpmi2thvd94p2lqqdh.apps.googleuserc
 export function App() {
 	const { chatbox, setChatbox } = useApp();
 
+	console.log("chatbox", chatbox);
+
 	//login with google
 	useEffect(() => {
 		function start() {
@@ -27,17 +29,17 @@ export function App() {
 
 	useEffect(() => {
 		socket.on("sendID", (dataGot) => {
-			console.log("dataGot", dataGot);
+			//	console.log("dataGot", dataGot);
 		});
 		//lắng nghe sự kiện phía server
 		socket.on("sendMessageServer", (dataGot) => {
-			console.log(">>> dataGot", dataGot);
 			if (chatbox !== dataGot.data.sender) {
-				setChatbox(dataGot.data.sender);
+				if (!chatbox.includes(dataGot.data.sender)) {
+					setChatbox((prevData) => [...prevData, dataGot.data.sender]);
+				}
 			}
 		});
 	}, []);
-	
 
 	return (
 		<div>
@@ -57,7 +59,7 @@ export function App() {
 									element={
 										<Layout>
 											{isCheckAuth === true ? <Page /> : <NotFoundPage />}
-											{chatbox && <Chatbox />}
+											{chatbox.length > 0 && <Chatbox />}
 										</Layout>
 									}
 								/>
