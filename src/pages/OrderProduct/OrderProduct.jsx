@@ -170,7 +170,6 @@ function OrderProduct() {
 			.flat(); // Kết hợp tất cả các mảng sản phẩm thành một mảng duy nhất
 
 		setIsLoading(true);
-		console.log("ataOrder.paymentMethod", dataOrder.paymentMethod);
 
 		if (dataOrder.paymentMethod === "vnpay") {
 			localStorage.setItem("dataOrder", JSON.stringify(dataOrder));
@@ -196,6 +195,9 @@ function OrderProduct() {
 				}
 				setIsLoading(false);
 				setModalSuccess(true);
+			} else {
+				setIsLoading(false);
+				toast.error(res.message);
 			}
 		}
 	};
@@ -276,7 +278,7 @@ function OrderProduct() {
 																{item?.name}
 															</p>
 															<p className={cx("price")}>
-																Giá: {" "}
+																Giá:{" "}
 																{Intl.NumberFormat().format(
 																	item?.price
 																)}

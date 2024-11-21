@@ -14,7 +14,7 @@ const clientID = "105139517728-qa77n1q8768ek3tpmi2thvd94p2lqqdh.apps.googleuserc
 export function App() {
 	const { chatbox, setChatbox } = useApp();
 
-	console.log("chatbox", chatbox);
+	//console.log("chatbox", chatbox);
 
 	//login with google
 	useEffect(() => {

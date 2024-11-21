@@ -10,11 +10,13 @@ import { toast } from "react-toastify";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import subVn from "sub-vn";
+import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(style);
 
 function ProfileSeller() {
 	const { user, token } = useApp();
+	const navigate = useNavigate();
 	const [dataSubmit, setDataSubmit] = useState();
 	const [dataAddress, setDataAddress] = useState({
 		province: "",
@@ -113,7 +115,12 @@ function ProfileSeller() {
 					}}
 				>
 					<p className="title">Thông tin tài khoản</p>
-					<button className={cx("button-primary")}>Xem chi tiết</button>
+					<button
+						className={cx("button-primary")}
+						onClick={() => navigate(`/seller/${dataSubmit.id}`)}
+					>
+						Đến trang bán hàng
+					</button>
 				</div>
 				{dataSubmit && (
 					<div className={cx("account-info")}>
@@ -126,9 +133,7 @@ function ProfileSeller() {
 							<div className={cx("info")}>
 								<div>
 									<p>Vai trò</p>
-									{dataSubmit?.totalSold < 2
-										? "Nhà bán hàng mới"
-										: "Nhà bán hàng chuyên nghiệp"}
+									Nhà bán hàng
 								</div>
 								<div>
 									<p>Số điện thoại</p>

@@ -83,11 +83,27 @@ function DetailProduct() {
 		}));
 	};
 
-	const handleChoseQuantity = (type) => {
-		if (quantitySelected === 1 && type === "remove") return;
+	const handleChoseQuantity = (type, e) => {
+		if (e?.target?.value !== undefined) {
+			const value = e.target.value.replace(/[^0-9]/g, "");
+			if (/^\d+$/.test(value) && value <= details.product?.quantity) {
+				setQuantitySelected(parseInt(value, 10)); // Chỉ chấp nhận số
+			} else if (value === "") {
+				setQuantitySelected(""); // Cho phép xóa tạm thời
+			} else {
+				toast.warning("Số lượng nhập vào không được lớn hơn số lượng hàng tồn kho.");
+			}
+		} else if (quantitySelected === 1 && type === "remove") return;
 		else if (quantitySelected === details.product?.quantity && type === "add") return;
 		else if (type === "remove") setQuantitySelected(quantitySelected - 1);
 		else if (type === "add") setQuantitySelected(quantitySelected + 1);
+	};
+
+	// Xử lý khi người dùng rời khỏi input nhập số lượng
+	const handleBlurQuantityInput = () => {
+		if (quantitySelected === "" || quantitySelected < 1) {
+			setQuantitySelected(1); // Đặt về giá trị mặc định nếu không hợp lệ
+		}
 	};
 
 	const handleOrderNow = () => {
@@ -159,9 +175,8 @@ function DetailProduct() {
 									details.product?.idUser.name === buyerDetail?.name && (
 										<div style={{ display: "flex" }}>
 											<p style={{ marginRight: 10 }}>
-												Đây là sản phẩm của bạn
+												Đây là sản phẩm của bạn.
 											</p>
-											<a href="/#">Chỉnh sửa</a>
 										</div>
 									)}
 							</div>
@@ -243,13 +258,26 @@ function DetailProduct() {
 														</strong>
 													</div>
 													<div className={cx("actions-quantity")}>
-														<p>Số lượng</p>
+														<p>Số lượng:</p>
 														<RemoveIcon
 															onClick={() =>
 																handleChoseQuantity("remove")
 															}
 														/>
-														<strong>{quantitySelected}</strong>
+														<input
+															type="number"
+															value={quantitySelected}
+															onChange={(e) =>
+																handleChoseQuantity("", e)
+															}
+															onBlur={handleBlurQuantityInput}
+															className={cx("quantity-input")}
+															onKeyDown={(evt) =>
+																["e", "E", "+", "-", "."].includes(
+																	evt.key
+																) && evt.preventDefault()
+															}
+														/>
 														<AddIcon
 															onClick={() =>
 																handleChoseQuantity("add")
@@ -314,12 +342,18 @@ function DetailProduct() {
 											>
 												{details.seller?.name}
 											</p>
-											<button
-												className={cx("chat-btn")}
-												onClick={() => addChatID(details.seller.user)}
-											>
-												Chat với nhà bán hàng
-											</button>
+											{details.product?.idUser.name &&
+												details.product?.idUser.name !==
+													buyerDetail?.name && (
+													<button
+														className={cx("chat-btn")}
+														onClick={() =>
+															addChatID(details.seller.user)
+														}
+													>
+														Chat với nhà bán hàng
+													</button>
+												)}
 										</div>
 
 										<Description

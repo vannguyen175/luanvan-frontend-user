@@ -11,10 +11,17 @@ import { AppProvider } from "~/context/AppProvider";
 const theme = createTheme({
 	palette: {
 		primary: {
-			main: "#aaa86f",
+			main: "#419366",
 		},
 	},
 });
+
+const contextClass = {
+	success: "#419366",
+	error: "bg-red-600",
+	info: "bg-gray-600",
+	warning: "bg-orange-400",
+};
 
 // const root = ReactDOM.createRoot(document.getElementById("root"));
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -27,6 +34,7 @@ root.render(
 				position="top-center"
 				transition={Flip}
 				autoClose={2000}
+				theme="colored"
 			/>
 			<App />
 		</AppProvider>

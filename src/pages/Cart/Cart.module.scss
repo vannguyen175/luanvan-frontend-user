@@ -75,10 +75,12 @@
 
 	button {
 		width: 100%;
-		padding: 5px 20px;
+		padding: 8px 20px;
 		border: 1px solid gray;
 		transition: 0.2s ease;
 		background-color: var(--orange-color);
+		color: white;
+		border-radius: 3px;
 	}
 	.disabled {
 		background-color: rgb(216, 216, 216);

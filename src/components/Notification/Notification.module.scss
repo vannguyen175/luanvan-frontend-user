@@ -43,11 +43,12 @@
 		cursor: pointer;
 		padding: 3px 5px;
 		transition: 0.2s ease;
+		margin: 2px 0;
 	}
 	div:hover {
-		background-color: var(--light-color);
+		background-color: #9fd393;
 	}
 	.unSeen {
-		background-color: #edecd4;
+		background-color: #bcfcae;
 	}
 }

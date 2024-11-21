@@ -100,17 +100,27 @@
 }
 
 //Product Manager
-.button-edit-product {
-	a {
-		display: block;
-		background-color: var(--main-color);
-		border: 1px solid var(--main-color);
-		color: white;
-		font-weight: 500;
-		border-radius: 6px;
-		padding: 5px 10px;
-		cursor: pointer;
-	}
+.button-detail-product {
+	display: block;
+	background-color: var(--main-color);
+	font-size: 0.9rem;
+	font-weight: 500;
+	border-radius: 6px;
+	padding: 5px 10px;
+	cursor: pointer;
+	color: white !important;
+	margin-bottom: 5px;
+}
+.button-close-product {
+	display: block;
+	background-color: white;
+	font-size: 0.8rem;
+	font-weight: 500;
+	border-radius: 6px;
+	padding: 5px 10px;
+	cursor: pointer;
+	border: 1px solid red;
+	color: red;
 }
 
 //Order Manager
@@ -220,6 +230,40 @@
 		select {
 			width: 30%;
 			float: right;
+			padding: 5px 10px;
+		}
+
+		input {
+			padding: 5px 10px;
+		}
+
+		.date-range-container {
+			display: flex;
+			align-items: center;
+			gap: 10px; /* Spacing between elements */
+
+			input {
+				padding: 5px 10px;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				outline: none;
+				transition: border-color 0.3s ease;
+			}
+		}
+
+		.show-chart {
+			margin-top: 50px;
+			text-align: center;
+
+			button {
+				background-color: var(--main-color);
+				padding: 3px 10px;
+				border-radius: 3px;
+				border: none;
+				color: white;
+				margin: 10px auto 20px auto;
+				cursor: pointer;
+			}
 		}
 	}
 }

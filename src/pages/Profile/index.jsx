@@ -49,12 +49,6 @@ function Profile() {
 					>
 						Thống kê
 					</div>
-					<div
-						className={cx({ "menu-active": menuState === "5" })}
-						onClick={() => handleState("5")}
-					>
-						Cài đặt
-					</div>
 				</div>
 			</div>
 			<div className={cx("body")}>

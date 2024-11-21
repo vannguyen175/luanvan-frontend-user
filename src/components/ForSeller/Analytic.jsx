@@ -32,7 +32,7 @@ function Analytic() {
 
 	const weekValue = moment().format("YYYY-[W]WW");
 	const firstDayOfWeek = moment(weekValue, "YYYY-[W]WW").startOf("isoWeek").toDate();
-	const [isOnWeek, setIsOnWeek] = useState(true);
+	const [typeDate, setTypeDate] = useState("input-day");
 	const [isOnWeekOrder, setIsOnWeekOrder] = useState(true);
 
 	const [resultProduct, setResultProduct] = useState({
@@ -88,11 +88,14 @@ function Analytic() {
 	};
 
 	const handleChangeDataType = (e) => {
-		if (e.target.value === "week") {
-			setIsOnWeek(true);
+		if (e.target.value === "day") {
+			setTypeDate(true);
+			getAnalyticProduct(e.target.value, );
+		} else if (e.target.value === "week") {
+			setTypeDate(true);
 			getAnalyticProduct(e.target.value, firstDayOfWeek);
 		} else {
-			setIsOnWeek(false);
+			setTypeDate(false);
 			getAnalyticProduct(e.target.value, firstDayOfWeek);
 		}
 	};
@@ -113,14 +116,14 @@ function Analytic() {
 			{
 				label: "Đăng bán",
 				data: Object.values(resultProduct?.onSell),
-				backgroundColor: "rgba(75, 192, 192, 0.2)", //Xanh
+				backgroundColor: "rgba(75, 192, 192, 0.5)", //Xanh
 				borderColor: "rgba(75, 192, 192, 1)",
 				borderWidth: 1,
 			},
 			{
 				label: "Đã bán",
 				data: Object.values(resultProduct?.selled),
-				backgroundColor: "rgba(253, 188, 9, 0.3)", //Vàng cam
+				backgroundColor: "rgba(253, 188, 9, 0.5)", //Vàng cam
 				borderColor: "rgba(253, 188, 9, 1)",
 				borderWidth: 1,
 			},
@@ -156,9 +159,7 @@ function Analytic() {
 							<div className={cx("info")}>
 								<div>
 									<p>Vai trò</p>
-									{user?.totalSold < 2
-										? "Nhà bán hàng mới"
-										: "Nhà bán hàng chuyên nghiệp"}
+									Nhà bán hàng
 								</div>
 								<div>
 									<p>Số điện thoại</p>
@@ -195,17 +196,33 @@ function Analytic() {
 				</div>
 				<div className={cx("chart")}>
 					<select name="typeDate" onChange={handleChangeDataType}>
+						<option value="day">Theo ngày nhập</option>
 						<option value="week">Theo tuần</option>
 						<option value="month">Theo tháng</option>
 					</select>
-					{isOnWeek && (
+					{typeDate === "day" ? (
+						<div className={cx("date-range-container")}>
+							<label htmlFor="start-date">Từ ngày:</label>
+							<input type="date" name="start-date" />
+
+							<label htmlFor="end-date">Đến ngày:</label>
+							<input type="date" name="end-date" />
+						</div>
+					) : typeDate === "week" ? (
 						<input
 							type="week"
 							onChange={handleChangeWeekProduct}
 							defaultValue={weekValue}
+							className="week-input"
 						/>
+					) : (
+						<></>
 					)}
-					<Bar data={dataProduct} options={options} />
+
+					<div className={cx("show-chart")}>
+						<button>Thống kê</button>
+						<Bar data={dataProduct} options={options} />
+					</div>
 				</div>
 			</div>
 			<div className={cx("inner-content", "order")}>

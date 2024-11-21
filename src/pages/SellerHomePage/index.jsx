@@ -60,7 +60,7 @@ function SellerPage() {
 			<div className={cx("profile")}>
 				{detail.seller?.name && (
 					<div>
-						<div className="inner-content">
+						<div className="inner-content" style={{ paddingBottom: 30 }}>
 							<div style={{ display: "flex", alignItems: "center" }}>
 								<img
 									className={cx("avatar")}
@@ -69,11 +69,6 @@ function SellerPage() {
 								/>
 								<div>
 									<h2 className={cx("name")}>{detail?.seller?.name}</h2>
-									<strong>
-										{detail?.seller?.totalSold >= 2
-											? "Nhà bán hàng chuyên nghiệp"
-											: "Nhà bán hàng mới"}
-									</strong>
 								</div>
 							</div>
 							<div className={cx("rating")}>

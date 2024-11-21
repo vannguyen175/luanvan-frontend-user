@@ -20,10 +20,15 @@ function ForSeller() {
 	);
 
 	const [activeIndex, setActiveIndex] = useState();
-	const [activeSubMenu, setActiveSubMenu] = useState(1.1);
+
+	const [activeSubMenu, setActiveSubMenu] = useState(
+		localStorage.getItem("menu_seller_index") || 1.1
+	);
+	console.log("activeSubMenu", activeSubMenu);
 
 	const handleClick = (index) => {
 		setActiveIndex(index);
+		localStorage.setItem("menu_seller_index", index);
 	};
 
 	const toggleMenu = () => {
@@ -45,10 +50,10 @@ function ForSeller() {
 					</li>
 					<li className={cx("menu-item")}>
 						<p
-							className={cx(activeIndex === 1.1 && "menu-item-active")}
+							className={cx(activeIndex === '1.1' && "menu-item-active")}
 							onClick={() => {
-								handleClick(1.1);
-								setActiveSubMenu(1.1);
+								handleClick('1.1');
+								setActiveSubMenu('1.1');
 							}}
 						>
 							Tài Khoản Của Tôi
@@ -56,10 +61,10 @@ function ForSeller() {
 					</li>
 					<li className={cx("menu-item")}>
 						<p
-							className={cx({ "menu-item-active": activeIndex === 2 })}
+							className={cx({ "menu-item-active": activeIndex === '2' })}
 							onClick={() => {
-								handleClick(2);
-								setActiveSubMenu(2);
+								handleClick('2');
+								setActiveSubMenu('2');
 							}}
 						>
 							Sản Phẩm Đang Bán
@@ -67,10 +72,10 @@ function ForSeller() {
 					</li>
 					<li className={cx("menu-item")}>
 						<p
-							className={cx({ "menu-item-active": activeIndex === 3 })}
+							className={cx({ "menu-item-active": activeIndex === '3' })}
 							onClick={() => {
-								handleClick(3);
-								setActiveSubMenu(3);
+								handleClick('3');
+								setActiveSubMenu('3');
 							}}
 						>
 							Quản lý đơn hàng
@@ -78,10 +83,10 @@ function ForSeller() {
 					</li>
 					<li className={cx("menu-item")}>
 						<p
-							className={cx({ "menu-item-active": activeIndex === 4 })}
+							className={cx({ "menu-item-active": activeIndex === '4' })}
 							onClick={() => {
-								handleClick(4);
-								setActiveSubMenu(4);
+								handleClick('4');
+								setActiveSubMenu('4');
 							}}
 						>
 							Thống Kê
@@ -90,10 +95,10 @@ function ForSeller() {
 				</ul>
 			</div>
 			<div className={cx("body")}>
-				{activeSubMenu === 1.1 && <ProfileSeller />}
-				{activeSubMenu === 2 && <ProductManager />}
-				{activeSubMenu === 3 && <OrderManager />}
-				{activeSubMenu === 4 && <Analytic />}
+				{activeSubMenu === "1.1" && <ProfileSeller />}
+				{activeSubMenu === "2" && <ProductManager />}
+				{activeSubMenu === "3" && <OrderManager />}
+				{activeSubMenu === "4" && <Analytic />}
 			</div>
 		</div>
 	);

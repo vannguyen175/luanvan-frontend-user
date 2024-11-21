@@ -5,17 +5,19 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import CircularProgress from "@mui/material/CircularProgress";
+import moment from "moment/moment";
 
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import vi from "javascript-time-ago/locale/vi";
-import ReactTimeAgo from "react-time-ago";
 import TimeAgo from "javascript-time-ago";
 
 import classNames from "classnames/bind";
 import style from "./ForSeller.module.scss";
 import { Link } from "react-router-dom";
+
+import { toast } from "react-toastify";
 
 TimeAgo.addLocale(vi);
 
@@ -64,6 +66,22 @@ function ProductManager() {
 		setIsLoading(true);
 		getProductsBySubCate();
 	}, []);
+
+	const closeProduct = async (idProduct) => {
+		if (window.confirm("Bạn có chắc muốn đóng bài đăng này?")) {
+			const res = await ProductService.updateProduct(idProduct, {
+				data: {
+					statePost: "closed",
+				},
+			});
+			if (res.status === "SUCCESS") {
+				toast.success(res.message);
+				getProductsBySubCate();
+			} else {
+				toast.error(res.message);
+			}
+		}
+	};
 	return (
 		<div style={{ padding: "10px" }}>
 			<div>
@@ -122,10 +140,8 @@ function ProductManager() {
 													<TableCell>{row?.address.address}</TableCell>
 													<TableCell>Đang chờ duyệt</TableCell>
 													<TableCell>
-														<ReactTimeAgo
-															date={Date.parse(row.createdAt)}
-															locale="vi-VN"
-														/>
+														moment({row.createdAt}).format("DD-MM-YYYY
+														HH:mm")
 													</TableCell>
 													<TableCell align="center">
 														<Link
@@ -205,11 +221,11 @@ function ProductManager() {
 													<TableCell>{row?.address.address}</TableCell>
 													<TableCell>Đang chờ duyệt</TableCell>
 													<TableCell>
-														<ReactTimeAgo
-															date={Date.parse(row.createdAt)}
-															locale="vi-VN"
-														/>
+														{moment(row.createdAt).format(
+															"DD-MM-YYYY HH:mm"
+														)}
 													</TableCell>
+
 													<TableCell align="center">
 														<Link
 															className={cx("button-edit-product")}
@@ -244,9 +260,10 @@ function ProductManager() {
 								<TableCell>Danh mục</TableCell>
 								<TableCell>Giá tiền</TableCell>
 								<TableCell>Địa chỉ</TableCell>
-								<TableCell>Trạng thái</TableCell>
+								<TableCell>Số lượng</TableCell>
+								<TableCell>Đã bán</TableCell>
 								<TableCell>Thời điểm</TableCell>
-								<TableCell>Chỉnh sửa</TableCell>
+								<TableCell></TableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody className="animate__animated animate__fadeIn">
@@ -286,20 +303,26 @@ function ProductManager() {
 													{Intl.NumberFormat().format(row.price)}đ
 												</TableCell>
 												<TableCell>{row?.address.address}</TableCell>
-												<TableCell>Đang bán</TableCell>
+												<TableCell>{row.quantity}</TableCell>
+												<TableCell>{row.quantityState}</TableCell>
 												<TableCell>
-													<ReactTimeAgo
-														date={Date.parse(row.createdAt)}
-														locale="vi-VN"
-													/>
+													{moment(row.createdAt).format(
+														"DD-MM-YYYY HH:mm"
+													)}
 												</TableCell>
 												<TableCell align="center">
 													<Link
-														className={cx("button-edit-product")}
+														className={cx("button-detail-product")}
 														to={`/detail-product/${row._id}`}
 													>
-														Xem chi tiết
+														Chi tiết
 													</Link>
+													<div
+														className={cx("button-close-product")}
+														onClick={() => closeProduct(row._id)}
+													>
+														Đóng sản phẩm
+													</div>
 												</TableCell>
 											</TableRow>
 										))
@@ -316,7 +339,7 @@ function ProductManager() {
 			</div>
 
 			<div className="inner-content">
-				<div className="title">Sản phẩm đã bán ({productsSelled?.length})</div>
+				<div className="title">Sản phẩm đã bán hết ({productsSelled?.length})</div>
 				<TableContainer component={Paper}>
 					<Table sx={{ minWidth: 650 }} aria-label="simple table">
 						<TableHead>
@@ -326,9 +349,10 @@ function ProductManager() {
 								<TableCell>Danh mục</TableCell>
 								<TableCell>Giá tiền</TableCell>
 								<TableCell>Địa chỉ</TableCell>
-								<TableCell>Trạng thái</TableCell>
+								<TableCell>Số lượng</TableCell>
+								<TableCell>Đã bán</TableCell>
 								<TableCell>Thời điểm</TableCell>
-								<TableCell>Chỉnh sửa</TableCell>
+								<TableCell></TableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody className="animate__animated animate__fadeIn">
@@ -366,12 +390,12 @@ function ProductManager() {
 													{Intl.NumberFormat().format(row.price)}đ
 												</TableCell>
 												<TableCell>{row?.address.address}</TableCell>
-												<TableCell>Đã bán</TableCell>
+												<TableCell>{row.quantity}</TableCell>
+												<TableCell>{row.quantityState}</TableCell>
 												<TableCell>
-													<ReactTimeAgo
-														date={Date.parse(row.createdAt)}
-														locale="vi-VN"
-													/>
+													{moment(row.createdAt).format(
+														"DD-MM-YYYY HH:mm"
+													)}
 												</TableCell>
 												<TableCell align="center">
 													<Link

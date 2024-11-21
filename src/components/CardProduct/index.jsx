@@ -21,7 +21,7 @@ function CardProduct({ type, product }) {
 	const handleClick = () => {
 		navigate(`/detail-product/${product._id}`);
 	};
-	
+
 	return (
 		<div>
 			{type === "horizontal" ? ( //ngang

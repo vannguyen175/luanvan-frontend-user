@@ -12,7 +12,7 @@
 	transition: 0.1s ease;
 
 	&:hover {
-		background-color: var(--light-color);
+		background-color: var(--secondary-color);
 		cursor: pointer;
 	}
 }
@@ -82,7 +82,7 @@
 	transition: 0.1s ease;
 
 	&:hover {
-		background-color: var(--light-color);
+		background-color: var(--secondary-color);
 	}
 }
 
