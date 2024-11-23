@@ -24,8 +24,6 @@ function ForSeller() {
 	const [activeSubMenu, setActiveSubMenu] = useState(
 		localStorage.getItem("menu_seller_index") || 1.1
 	);
-	console.log("activeSubMenu", activeSubMenu);
-
 	const handleClick = (index) => {
 		setActiveIndex(index);
 		localStorage.setItem("menu_seller_index", index);

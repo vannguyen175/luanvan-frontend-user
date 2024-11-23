@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import * as AnalyticService from "../../service/AnalyticService";
 import moment from "moment";
 import classNames from "classnames/bind";
 import style from "./ForSeller.module.scss";
 import { useApp } from "~/context/AppProvider";
+import AutoGraphIcon from "@mui/icons-material/AutoGraph";
+import IconButton from "@mui/material/IconButton";
 
 import {
 	Chart as ChartJS,
@@ -32,11 +34,24 @@ function Analytic() {
 
 	const weekValue = moment().format("YYYY-[W]WW");
 	const firstDayOfWeek = moment(weekValue, "YYYY-[W]WW").startOf("isoWeek").toDate();
-	const [typeDate, setTypeDate] = useState("input-day");
+	const [typeDateChart, setTypeDateChart] = useState("week");
+	const [typeDateTable, setTypeDateTable] = useState("all");
 	const [isOnWeekOrder, setIsOnWeekOrder] = useState(true);
 
+	const startWeekProductRef = useRef();
+	const startDayRefProduct = useRef();
+	const endDayRefProduct = useRef();
+
+	const startWeekOrderRef = useRef();
+	const startDayRefOrder = useRef();
+	const endDayRefOrder = useRef();
+
+	const [message, setMessage] = useState({
+		product: null,
+		revenue: null,
+	});
+
 	const [resultProduct, setResultProduct] = useState({
-		onSell: "",
 		selled: "",
 	});
 
@@ -46,20 +61,50 @@ function Analytic() {
 		totalRevenueChart: {},
 	});
 
-	const getAnalyticProduct = async (dataType, startDay) => {
+	const checkInputDay = (type, startDate, endDate) => {
+		if (!startDate) {
+			setMessage({ [type]: "Vui lòng nhập ngày bắt đầu" });
+			return false;
+		}
+		if (!endDate) {
+			setMessage({ [type]: "Vui lòng nhập ngày kết thúc" });
+			return false;
+		}
+		const start = new Date(startDate);
+		const end = new Date(endDate);
+		const current = new Date();
+
+		if (start > current) {
+			setMessage({ [type]: "Ngày bắt đầu không được lớn hơn ngày hiện tại." });
+			return false; // Không hợp lệ
+		}
+		if (end > current) {
+			setMessage({ [type]: "Ngày kết thúc không được lớn hơn ngày hiện tại." });
+			return false; // Không hợp lệ
+		}
+		if (start > end) {
+			setMessage({ [type]: "Ngày bắt đầu không được lớn hơn ngày kết thúc." });
+			return false; // Không hợp lệ
+		}
+		setMessage();
+		return true; // Hợp lệ
+	};
+
+	const getAnalyticProduct = async (dataType, startDay, endDay) => {
 		const res = await AnalyticService.analyticProducts({
 			idUser: idUser,
 			typeDate: dataType,
 			typeUser: "seller",
 			startDay: startDay,
+			endDay: endDay,
 		});
-		setResultProduct({
-			onSell: res.onSell,
+		setResultProduct((prev) => ({
+			...prev,
 			selled: res.selled,
 			totalPosted: res.totalPosted,
 			totalSelled: res.totalSelled,
 			totalRejected: res.totalRejected,
-		});
+		}));
 	};
 
 	const getAnalyticOrder = async (dataType, startDay) => {
@@ -68,42 +113,109 @@ function Analytic() {
 			typeDate: dataType,
 			startDay: startDay,
 		});
-
-		setResultOrder({
+		setResultOrder((prev) => ({
+			...prev,
 			revenue: res.totalRevenue[0]?.totalRevenue,
 			stateOrders: res.stateOrders,
 			totalRevenueChart: res.totalRevenueChart,
-		});
+		}));
 	};
 
-	const handleChangeWeekProduct = (e) => {
-		const weekValue = e.target.value;
-		const weekChanged = moment(weekValue, "YYYY-[W]WW").startOf("isoWeek").toDate();
-		getAnalyticProduct("week", weekChanged);
+	const getAnalyticCategoryProduct = async (typeDate, startDay, endDay) => {
+		if (typeDate === "day") {
+			const checkInput = checkInputDay("product", startDay, endDay);
+			if (checkInput) {
+				const res = await AnalyticService.analyticCategory({
+					idUser: idUser,
+					typeDate: typeDate,
+					startDay: startDay,
+					endDay: endDay,
+				});
+				setResultProduct((prev) => ({
+					...prev,
+					resultCate: res.data,
+					resultCateDetail: res.dataDetail,
+				}));
+			}
+		} else {
+			const res = await AnalyticService.analyticCategory({
+				idUser: idUser,
+				typeDate: typeDate,
+			});
+			setResultProduct((prev) => ({
+				...prev,
+				resultCate: res.data,
+				resultCateDetail: res.dataDetail,
+			}));
+		}
 	};
+
+	const getAnalyticCategoryRevenue = async (typeDate, startDay, endDay) => {
+		if (typeDate === "day") {
+			const checkInput = checkInputDay("revenue", startDay, endDay);
+			if (checkInput) {
+				const res = await AnalyticService.analyticCategoryRevenue({
+					idUser: idUser,
+					typeDate: typeDate,
+					startDay: startDay,
+					endDay: endDay,
+				});
+				setResultOrder((prev) => ({
+					...prev,
+					resultCate: res.data,
+					resultCateDetail: res.dataDetail,
+				}));
+			}
+		} else {
+			const res = await AnalyticService.analyticCategoryRevenue({
+				idUser: idUser,
+				typeDate: typeDate,
+			});
+			setResultOrder((prev) => ({
+				...prev,
+				resultCate: res.data,
+				resultCateDetail: res.dataDetail,
+			}));
+		}
+	};
+
 	const handleChangeWeekOrder = (e) => {
 		const weekValue = e.target.value;
 		const weekChanged = moment(weekValue, "YYYY-[W]WW").startOf("isoWeek").toDate();
 		getAnalyticOrder("week", weekChanged);
 	};
 
-	const handleChangeDataType = (e) => {
-		if (e.target.value === "day") {
-			setTypeDate(true);
-			getAnalyticProduct(e.target.value, );
-		} else if (e.target.value === "week") {
-			setTypeDate(true);
-			getAnalyticProduct(e.target.value, firstDayOfWeek);
-		} else {
-			setTypeDate(false);
-			getAnalyticProduct(e.target.value, firstDayOfWeek);
+	//thay đổi điều kiện tìm kiếm (typeDate) của Product
+	const handleChangeDataType = (e, type) => {
+		if (type === "product-chart") {
+			setTypeDateChart(e.target.value);
+			handleAnalytic("product", e.target.value);
+		} else if (type === "product-table") {
+			if (e.target.value === "day") {
+				setResultProduct((prev) => ({
+					...prev,
+					resultCate: null,
+					resultCateDetail: null,
+				}));
+				setTypeDateTable(e.target.value);
+			} else {
+				setResultProduct((prev) => ({
+					...prev,
+					resultCate: null,
+					resultCateDetail: null,
+				}));
+				setTypeDateTable(e.target.value);
+				handleAnalytic("category", e.target.value);
+			}
 		}
 	};
-
+	//thay đổi điều kiện tìm kiếm (typeDate) của Order
 	const handleChangeDataTypeOrder = (e) => {
 		if (e.target.value === "week") {
 			setIsOnWeekOrder(true);
 			getAnalyticOrder(e.target.value, firstDayOfWeek);
+		} else if (e.target.value === "day") {
+			return;
 		} else {
 			setIsOnWeekOrder(false);
 			getAnalyticOrder("month", firstDayOfWeek);
@@ -114,16 +226,9 @@ function Analytic() {
 		labels: Object.keys(resultProduct?.selled),
 		datasets: [
 			{
-				label: "Đăng bán",
-				data: Object.values(resultProduct?.onSell),
-				backgroundColor: "rgba(75, 192, 192, 0.5)", //Xanh
-				borderColor: "rgba(75, 192, 192, 1)",
-				borderWidth: 1,
-			},
-			{
-				label: "Đã bán",
+				label: "Lượt bán",
 				data: Object.values(resultProduct?.selled),
-				backgroundColor: "rgba(253, 188, 9, 0.5)", //Vàng cam
+				backgroundColor: "#419366", //Vàng cam
 				borderColor: "rgba(253, 188, 9, 1)",
 				borderWidth: 1,
 			},
@@ -146,7 +251,30 @@ function Analytic() {
 	useEffect(() => {
 		getAnalyticProduct("week", firstDayOfWeek);
 		getAnalyticOrder("week", firstDayOfWeek);
+		getAnalyticCategoryProduct("all");
+		getAnalyticCategoryRevenue("all");
 	}, []);
+
+	const handleAnalytic = (type, typeDate) => {
+		if (type === "product") {
+			getAnalyticProduct(
+				typeDate || typeDateChart,
+				moment(startWeekProductRef.current?.value, "YYYY-[W]WW").startOf("isoWeek").toDate()
+			);
+		} else if (type === "category") {
+			getAnalyticCategoryProduct(
+				typeDate || typeDateTable,
+				startDayRefProduct.current?.value,
+				endDayRefProduct.current?.value
+			);
+		} else if (type === "category-revenue") {
+			getAnalyticCategoryRevenue(
+				"day",
+				startDayRefOrder.current?.value,
+				endDayRefOrder.current?.value
+			);
+		}
+	};
 
 	return (
 		<div>
@@ -184,7 +312,7 @@ function Analytic() {
 								<strong>{resultProduct.totalPosted}</strong>
 							</div>
 							<div className={cx("data-product")}>
-								<p>Số sản phẩm đã bán</p>
+								<p>Số lượt bán thành công</p>
 								<strong>{resultProduct.totalSelled}</strong>
 							</div>
 							<div className={cx("data-product")}>
@@ -194,55 +322,114 @@ function Analytic() {
 						</div>
 					}
 				</div>
-				<div className={cx("chart")}>
-					<select name="typeDate" onChange={handleChangeDataType}>
-						<option value="day">Theo ngày nhập</option>
-						<option value="week">Theo tuần</option>
-						<option value="month">Theo tháng</option>
-					</select>
-					{typeDate === "day" ? (
-						<div className={cx("date-range-container")}>
-							<label htmlFor="start-date">Từ ngày:</label>
-							<input type="date" name="start-date" />
+				<div style={{ display: "flex" }}>
+					<div className={cx("chart")}>
+						<select
+							name="typeDateChart"
+							onChange={(e) => handleChangeDataType(e, "product-chart")}
+						>
+							<option value="week">Theo tuần</option>
+							<option value="month">Theo tháng</option>
+						</select>
+						{typeDateChart === "week" ? (
+							<input
+								type="week"
+								defaultValue={weekValue}
+								ref={startWeekProductRef}
+								className="week-input"
+								onChange={(e) => handleAnalytic("product")}
+							/>
+						) : (
+							<></>
+						)}
 
-							<label htmlFor="end-date">Đến ngày:</label>
-							<input type="date" name="end-date" />
+						<div className={cx("show-chart")}>
+							{resultProduct?.selled ? (
+								<Bar data={dataProduct} options={options} />
+							) : (
+								<p>Vui lòng nhập thời gian thống kê.</p>
+							)}
 						</div>
-					) : typeDate === "week" ? (
-						<input
-							type="week"
-							onChange={handleChangeWeekProduct}
-							defaultValue={weekValue}
-							className="week-input"
-						/>
-					) : (
-						<></>
-					)}
+					</div>
+					<div className={cx("chart-table")}>
+						<select
+							name="typeDateTable"
+							onChange={(e) => handleChangeDataType(e, "product-table")}
+							style={{ display: "block" }}
+						>
+							<option value="all">Tất cả</option>
+							<option value="day">Theo ngày</option>
+						</select>
+						<div className={cx("date-range-container")}>
+							{typeDateTable === "day" && (
+								<div>
+									<div>
+										<label htmlFor="start-date">Từ:</label>
+										<input
+											type="date"
+											name="start-date"
+											ref={startDayRefProduct}
+										/>
 
-					<div className={cx("show-chart")}>
-						<button>Thống kê</button>
-						<Bar data={dataProduct} options={options} />
+										<label htmlFor="end-date">Đến:</label>
+										<input type="date" name="end-date" ref={endDayRefProduct} />
+										<IconButton
+											color="primary"
+											onClick={() => handleAnalytic("category", "day")}
+										>
+											<AutoGraphIcon />
+										</IconButton>
+									</div>
+									{message?.product && (
+										<p style={{ color: "red" }}>{message.product}</p>
+									)}
+								</div>
+							)}
+						</div>
+
+						<div className={cx("table")}>
+							<table border="1" style={{ borderCollapse: "collapse", width: "100%" }}>
+								<thead>
+									<tr>
+										<th>Danh mục</th>
+										<th>Danh mục phụ</th>
+										<th>Lượt bán ra</th>
+									</tr>
+								</thead>
+								<tbody>
+									{Object.keys(resultProduct.resultCateDetail || {}).map(
+										(key, index) => (
+											<Fragment key={index}>
+												{Object.keys(
+													resultProduct.resultCateDetail[key] || {}
+												).map((keySub, indexSub) => (
+													<tr key={indexSub}>
+														<td>{key}</td>
+														<td>{keySub}</td>
+														<td>
+															{
+																resultProduct.resultCateDetail[key][
+																	keySub
+																]
+															}
+														</td>
+													</tr>
+												))}
+											</Fragment>
+										)
+									)}
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 			</div>
-			<div className={cx("inner-content", "order")}>
+			<div className={cx("inner-content", "product")}>
 				<p className="title">Thống kê theo doanh thu</p>
 
 				<div>
 					{resultOrder.stateOrders && (
 						<div style={{ display: "flex", justifyContent: "space-evenly" }}>
-							<div className={cx("data-order")}>
-								<p>Tổng đơn hàng đang chờ</p>
-								<strong>{resultOrder.stateOrders.waiting}</strong>
-							</div>
-							<div className={cx("data-order")}>
-								<p>Tổng đơn hàng đã bán</p>
-								<strong>{resultOrder.stateOrders.approved}</strong>
-							</div>
-							<div className={cx("data-order")}>
-								<p>Tổng đơn hàng bị hủy</p>
-								<strong>{resultOrder.stateOrders.rejected}</strong>
-							</div>
 							<div className={cx("data-order")}>
 								<p>Tổng doanh thu</p>
 								<strong>
@@ -252,21 +439,99 @@ function Analytic() {
 						</div>
 					)}
 				</div>
-				<div className={cx("chart")}>
-					<select name="typeDate" onChange={handleChangeDataTypeOrder}>
-						<option value="week">Theo tuần</option>
-						<option value="month">Theo tháng</option>
-					</select>
-					{isOnWeekOrder && (
-						<input
-							type="week"
-							onChange={handleChangeWeekOrder}
-							defaultValue={weekValue}
-						/>
-					)}
-					{Object.keys(resultOrder?.totalRevenueChart || {})[0] && (
-						<Bar data={dataRevenue} options={options} />
-					)}
+
+				{/* thống kê theo doanh thu */}
+				<div style={{ display: "flex" }}>
+					<div className={cx("chart")}>
+						<select name="typeDate" onChange={handleChangeDataTypeOrder}>
+							<option value="week">Theo tuần</option>
+							<option value="month">Theo tháng</option>
+						</select>
+						{isOnWeekOrder && (
+							<input
+								type="week"
+								onChange={handleChangeWeekOrder}
+								defaultValue={weekValue}
+							/>
+						)}
+						{Object.keys(resultOrder?.totalRevenueChart || {})[0] && (
+							<Bar data={dataRevenue} options={options} />
+						)}
+					</div>
+					<div className={cx("chart-table")}>
+						<select
+							name="typeDateTable"
+							onChange={(e) => handleChangeDataType(e, "product-table")}
+							style={{ display: "block" }}
+						>
+							<option value="all">Tất cả</option>
+							<option value="day">Theo ngày</option>
+						</select>
+						<div className={cx("date-range-container")}>
+							{typeDateTable === "day" && (
+								<div>
+									<div>
+										<label htmlFor="start-date">Từ:</label>
+										<input
+											type="date"
+											name="start-date"
+											ref={startDayRefOrder}
+										/>
+
+										<label htmlFor="end-date">Đến:</label>
+										<input type="date" name="end-date" ref={endDayRefOrder} />
+										<IconButton
+											color="primary"
+											onClick={() =>
+												handleAnalytic("category-revenue", "day")
+											}
+										>
+											<AutoGraphIcon />
+										</IconButton>
+									</div>
+									{message?.revenue && (
+										<p style={{ color: "red" }}>{message.revenue}</p>
+									)}
+								</div>
+							)}
+						</div>
+
+						<div className={cx("table")}>
+							<table border="1" style={{ borderCollapse: "collapse", width: "100%" }}>
+								<thead>
+									<tr>
+										<th>Danh mục</th>
+										<th>Danh mục phụ</th>
+										<th>Doanh thu</th>
+									</tr>
+								</thead>
+								<tbody>
+									{Object.keys(resultOrder.resultCateDetail || {}).map(
+										(key, index) => (
+											<Fragment key={index}>
+												{Object.keys(
+													resultOrder.resultCateDetail[key] || {}
+												).map((keySub, indexSub) => (
+													<tr key={indexSub}>
+														<td>{key}</td>
+														<td>{keySub}</td>
+														<td>
+															{Intl.NumberFormat().format(
+																resultOrder.resultCateDetail[key][
+																	keySub
+																]
+															)}
+															đ
+														</td>
+													</tr>
+												))}
+											</Fragment>
+										)
+									)}
+								</tbody>
+							</table>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

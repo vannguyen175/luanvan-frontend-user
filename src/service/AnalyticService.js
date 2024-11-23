@@ -22,3 +22,17 @@ export const analyticTotalPaid = async (data) => {
 	);
 	return res.data;
 };
+export const analyticCategory = async (data) => {
+	const res = await Axios.post(
+		`${process.env.REACT_APP_API_URL_BACKEND}/analytic/category-seller`,
+		data
+	);
+	return res.data;
+};
+export const analyticCategoryRevenue = async (data) => {
+	const res = await Axios.post(
+		`${process.env.REACT_APP_API_URL_BACKEND}/analytic/category-revenue-seller`,
+		data
+	);
+	return res.data;
+};
