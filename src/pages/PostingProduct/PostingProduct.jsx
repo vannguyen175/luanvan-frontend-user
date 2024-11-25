@@ -113,11 +113,8 @@ function PostingProduct() {
 					/>
 				)
 			) : (
-				<div style={{ display: "flex" }}>
-					<div className={cx("inner-content", "guideline")}>
-						<p className="title">Gợi ý điền thông tin</p>
-					</div>
-					<div style={{ width: "100%" }}>
+				<div style={{ display: "flex", justifyContent: "center" }}>
+					<div style={{ width: "70%" }}>
 						<div className={cx("inner-content")}>
 							<div className={cx("steps")}>
 								{steps.map((item, index) => (

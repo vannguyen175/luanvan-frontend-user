@@ -1,12 +1,14 @@
 .pagination {
-	padding-top: 20px;
+	margin-top: 20px;
+	padding: 5px 0;
+	//border: 1px solid rgb(121, 121, 121);
 }
 
 .pagination-btn,
 .pagination-number {
 	width: 30px;
 	height: 30px;
-	border: 1px solid #e0e0e0;
+	border: 1px solid #343434;
 	background-color: #fff;
 	color: #000000;
 	margin: 0 5px;

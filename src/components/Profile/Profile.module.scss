@@ -106,7 +106,7 @@
 
 .order-status-card {
 	background-color: white;
-	box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
+	box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
 	border-radius: 5px;
 	overflow: hidden;
 	padding: 10px 20px;
@@ -198,57 +198,157 @@
 		margin-top: 20px;
 		width: 30%;
 		text-align: center;
-		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+		box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 8px;
 		padding: 5px 10px;
 		border-radius: 5px;
+
 		p {
 			font-size: 0.8rem;
-			color: gray;
+			color: #757575;
 		}
 		strong {
-			font-size: 1.4rem;
+			font-size: 1.6rem;
+			color: var(--main-color);
 		}
 	}
 
 	.chart {
-		margin: 30px 10%;
-		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+		margin: 30px 2%;
+		box-shadow: rgba(0, 0, 0, 0.7) 0px 3px 8px;
 		padding: 10px;
-		//width: 100%;
+		width: 60%;
 
 		select {
 			width: 30%;
 			float: right;
+			padding: 5px 10px;
+		}
+
+		input {
+			padding: 5px 10px;
+		}
+
+		.date-range-container {
+			display: flex;
+			align-items: center;
+			gap: 10px; /* Spacing between elements */
+
+			input {
+				padding: 5px 10px;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				outline: none;
+				transition: border-color 0.3s ease;
+			}
+		}
+
+		.show-chart {
+			margin-top: 30px;
+			text-align: center;
+
+			button {
+				background-color: var(--main-color);
+				padding: 3px 10px;
+				border-radius: 3px;
+				border: none;
+				color: white;
+				margin: 10px auto 20px auto;
+				cursor: pointer;
+			}
 		}
 	}
-}
 
-.order {
-	.data-order {
-		margin-top: 20px;
-		width: 20%;
-		text-align: center;
-		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-		padding: 5px 10px;
-		border-radius: 5px;
-		p {
-			font-size: 0.8rem;
-			color: gray;
-		}
-		strong {
-			font-size: 1.4rem;
-		}
-	}
-
-	.chart {
-		min-height: 50px;
-		margin: 30px 10%;
-		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+	.chart-table {
+		margin: 30px 2%;
+		box-shadow: rgba(0, 0, 0, 0.7) 0px 3px 8px;
 		padding: 10px;
+		width: 50%;
 
 		select {
 			width: 30%;
-			float: right;
+			padding: 5px 10px;
+		}
+
+		input {
+			padding: 5px 10px;
+		}
+
+		.date-range-container {
+			margin-top: 5px;
+			display: flex;
+			align-items: center;
+			gap: 15px; /* Spacing between elements */
+
+			input {
+				padding: 5px 10px;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				outline: none;
+				transition: border-color 0.3s ease;
+				margin: 0 5px;
+			}
+		}
+
+		.table {
+			margin-top: 20px;
+			box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+			width: 100%;
+			padding: 20px;
+			table {
+				border-collapse: collapse;
+				width: 100%;
+				td,
+				th {
+					border: 1px solid #757575;
+					text-align: left;
+					padding: 8px;
+				}
+			}
+		}
+
+		.show-chart {
+			margin-top: 10px;
+			text-align: center;
+
+			button {
+				background-color: var(--main-color);
+				padding: 3px 10px;
+				border-radius: 3px;
+				border: none;
+				color: white;
+				margin: 10px auto 20px auto;
+				cursor: pointer;
+			}
 		}
 	}
 }
+
+// .order {
+// 	.data-order {
+// 		margin-top: 20px;
+// 		width: 20%;
+// 		text-align: center;
+// 		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+// 		padding: 5px 10px;
+// 		border-radius: 5px;
+// 		p {
+// 			font-size: 0.8rem;
+// 			color: gray;
+// 		}
+// 		strong {
+// 			font-size: 1.4rem;
+// 		}
+// 	}
+
+// 	.chart {
+// 		min-height: 50px;
+// 		margin: 30px 10%;
+// 		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+// 		padding: 10px;
+
+// 		select {
+// 			width: 30%;
+// 			float: right;
+// 		}
+// 	}
+// }

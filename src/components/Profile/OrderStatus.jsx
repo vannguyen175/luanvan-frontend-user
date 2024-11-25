@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import Rating from "@mui/material/Rating";
 import CircularProgress from "@mui/material/CircularProgress";
 import Pagination from "../../components/Pagination";
+import moment from "moment/moment";
 
 const cx = classNames.bind(style);
 
@@ -175,9 +176,16 @@ function OrderStatus() {
 						<CircularProgress />
 					</div>
 				) : orders.length > 0 ? (
-					<>
+					<div className={cx("inner-content")}>
 						{orders.map((item, index) => (
-							<div className={cx("order-status-card")} key={index}>
+							<div
+								className={cx(
+									"order-status-card",
+									"animate__animated",
+									"animate__fadeIn"
+								)}
+								key={index}
+							>
 								<Grid container>
 									<Grid item xs={1} className={cx("image-product")}>
 										<img src={item.idProduct.images[0]} alt="anh-san-pham" />
@@ -207,8 +215,10 @@ function OrderStatus() {
 											</Grid>
 											<Grid item xs={12}>
 												<Description
-													title="Danh mục"
-													desc={item.idProduct.subCategory.name}
+													title="Ngày mua"
+													desc={moment(item.createdAt).format(
+														"DD-MM-YYYY HH:mm"
+													)}
 												/>
 											</Grid>
 										</Grid>
@@ -224,11 +234,7 @@ function OrderStatus() {
 											/>
 											<Description
 												title="Hình thức"
-												desc={
-													item.isPaid
-														? "Chuyển khoản"
-														: "Thanh toán bằng tiền mặt"
-												}
+												desc={item.isPaid ? "Chuyển khoản" : "Tiền mặt"}
 											/>
 										</Grid>
 									</Grid>
@@ -273,9 +279,11 @@ function OrderStatus() {
 						>
 							<Pagination pageState={pageState} setPageState={setPageState} />
 						</div>
-					</>
+					</div>
 				) : (
-					<p style={{ textAlign: "center", margin: 20 }}>Không có dữ liệu</p>
+					<div className={cx("inner-content")}>
+						<p style={{ textAlign: "center", margin: 20 }}>Không có đơn hàng.</p>
+					</div>
 				)}
 
 				<Modal

@@ -36,13 +36,13 @@ function Analytic() {
 	const firstDayOfWeek = moment(weekValue, "YYYY-[W]WW").startOf("isoWeek").toDate();
 	const [typeDateChart, setTypeDateChart] = useState("week");
 	const [typeDateTable, setTypeDateTable] = useState("all");
+	const [typeDateTableRevenue, setTypeDateTableRevenue] = useState("all");
 	const [isOnWeekOrder, setIsOnWeekOrder] = useState(true);
 
 	const startWeekProductRef = useRef();
 	const startDayRefProduct = useRef();
 	const endDayRefProduct = useRef();
 
-	const startWeekOrderRef = useRef();
 	const startDayRefOrder = useRef();
 	const endDayRefOrder = useRef();
 
@@ -215,7 +215,12 @@ function Analytic() {
 			setIsOnWeekOrder(true);
 			getAnalyticOrder(e.target.value, firstDayOfWeek);
 		} else if (e.target.value === "day") {
-			return;
+			setTypeDateTableRevenue("day");
+			setResultOrder((prev) => ({
+				...prev,
+				resultCate: null,
+				resultCateDetail: null,
+			}));
 		} else {
 			setIsOnWeekOrder(false);
 			getAnalyticOrder("month", firstDayOfWeek);
@@ -461,14 +466,14 @@ function Analytic() {
 					<div className={cx("chart-table")}>
 						<select
 							name="typeDateTable"
-							onChange={(e) => handleChangeDataType(e, "product-table")}
+							onChange={(e) => handleChangeDataTypeOrder(e, "product-table")}
 							style={{ display: "block" }}
 						>
 							<option value="all">Tất cả</option>
 							<option value="day">Theo ngày</option>
 						</select>
 						<div className={cx("date-range-container")}>
-							{typeDateTable === "day" && (
+							{typeDateTableRevenue === "day" && (
 								<div>
 									<div>
 										<label htmlFor="start-date">Từ:</label>

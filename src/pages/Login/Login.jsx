@@ -90,6 +90,8 @@ function Login() {
 			setToken(result?.access_token);
 			const decoded = jwtDecode(result?.access_token);
 			localStorage.setItem("id_user", decoded?.id);
+			localStorage.setItem("toggle_menu_profile", true);
+			localStorage.setItem("menu_profile", 1);
 			setUser({
 				id: decoded?.id,
 				isAdmin: decoded?.isAdmin,

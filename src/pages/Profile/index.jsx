@@ -13,7 +13,9 @@ import Analytics from "../../components/Profile/Analytics";
 const cx = classNames.bind(style);
 
 function Profile() {
-	const [menuClose, setMenuClose] = useState(true);
+	const [menuClose, setMenuClose] = useState(
+		localStorage.getItem("toggle_menu_profile") === "true"
+	);
 	const [menuState, setMenuState] = useState(localStorage.getItem("menu_profile"));
 
 	const handleState = (value) => {
@@ -21,11 +23,16 @@ function Profile() {
 		localStorage.setItem("menu_profile", value);
 	};
 
+	const handleCloseMenu = () => {
+		setMenuClose(!menuClose);
+		localStorage.setItem("toggle_menu_profile", !menuClose);
+	};
+
 	return (
 		<div style={{ display: "flex" }}>
 			<div className={cx("menu-navigate", "inner-content", { close: !menuClose })}>
 				<div className={cx("menu-navigate-header")}>
-					<IconButton onClick={() => setMenuClose(!menuClose)}>
+					<IconButton onClick={handleCloseMenu}>
 						{menuClose ? <ArrowBackIosIcon /> : <MenuIcon />}
 					</IconButton>
 				</div>

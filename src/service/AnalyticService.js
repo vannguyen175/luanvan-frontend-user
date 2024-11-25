@@ -36,3 +36,17 @@ export const analyticCategoryRevenue = async (data) => {
 	);
 	return res.data;
 };
+export const analyticCategoryBuyer = async (data) => {
+	const res = await Axios.post(
+		`${process.env.REACT_APP_API_URL_BACKEND}/analytic/category-buyer`,
+		data
+	);
+	return res.data;
+};
+export const analyticCategoryRevenueBuyer = async (data) => {
+	const res = await Axios.post(
+		`${process.env.REACT_APP_API_URL_BACKEND}/analytic/category-revenue-buyer`,
+		data
+	);
+	return res.data;
+};
