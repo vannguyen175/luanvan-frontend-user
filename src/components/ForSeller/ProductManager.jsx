@@ -25,54 +25,23 @@ const cx = classNames.bind(style);
 
 function ProductManager() {
 	const idUser = localStorage.getItem("id_user"); //idSeller
-	const [productsRejected, setProductsRejected] = useState([]);
-	const [productsWaiting, setProductsWaiting] = useState([]);
-	const [productsApproved, setProductsApproved] = useState([]);
-	const [productsSelled, setProductsSelled] = useState([]);
-	const [productsClosed, setProductsClosed] = useState([]);
+	const [state, setState] = useState("approved");
+	const [products, setProducts] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const getProductsBySubCate = async () => {
-		const resRejected = await ProductService.getAllProducts({
-			data: { state: ["reject"], cate: [], subCate: [], seller: idUser },
+	const getProductsBySubCate = async (state) => {
+		setIsLoading(true);
+		const res = await ProductService.getAllProducts({
+			data: { state: [state], cate: [], subCate: [], seller: idUser },
 			page: `page=${1}`,
 			limit: `limit=${20}`,
 		});
-		setProductsRejected(resRejected.data);
-
-		const resWaiting = await ProductService.getAllProducts({
-			data: { state: ["waiting"], cate: [], subCate: [], seller: idUser },
-			page: `page=${1}`,
-			limit: `limit=${20}`,
-		});
-
-		setProductsWaiting(resWaiting.data);
-		const resApproved = await ProductService.getAllProducts({
-			data: { state: ["approved"], cate: [], subCate: [], seller: idUser },
-			page: `page=${1}`,
-			limit: `limit=${20}`,
-		});
-
-		setProductsApproved(resApproved.data);
-		const resSelled = await ProductService.getAllProducts({
-			data: { state: ["selled"], cate: [], subCate: [], seller: idUser },
-			page: `page=${1}`,
-			limit: `limit=${20}`,
-		});
-		setProductsSelled(resSelled.data);
-
-		const resClosed = await ProductService.getAllProducts({
-			data: { state: ["closed"], cate: [], subCate: [], seller: idUser },
-			page: `page=${1}`,
-			limit: `limit=${20}`,
-		});
-		setProductsClosed(resClosed.data);
+		setProducts(res.data);
 		setIsLoading(false);
 	};
 
 	useEffect(() => {
-		setIsLoading(true);
-		getProductsBySubCate();
+		getProductsBySubCate("approved");
 	}, []);
 
 	const closeProduct = async (idProduct) => {
@@ -105,187 +74,67 @@ function ProductManager() {
 			}
 		}
 	};
+
+	const handleChangeState = (e) => {
+		setState(e.target.value);
+		getProductsBySubCate(e.target.value);
+	};
+
 	return (
-		<div style={{ padding: "10px" }}>
-			<div>
-				<div className="inner-content">
-					<div className="title">Sản phẩm bị từ chối ({productsRejected?.length})</div>
-					<TableContainer component={Paper}>
-						<Table sx={{ minWidth: 650 }} aria-label="simple table">
-							<TableHead>
-								<TableRow>
-									<TableCell></TableCell>
-									<TableCell>Tên SP</TableCell>
-									<TableCell>Danh mục</TableCell>
-									<TableCell>Giá tiền</TableCell>
-									<TableCell>Địa chỉ</TableCell>
-									<TableCell>Trạng thái</TableCell>
-									<TableCell>Thời điểm</TableCell>
-									<TableCell>Chỉnh sửa</TableCell>
-								</TableRow>
-							</TableHead>
-							<TableBody className="animate__animated animate__fadeIn">
-								{isLoading ? (
-									<TableRow>
-										<TableCell colSpan={12} align="center">
-											<CircularProgress />
-										</TableCell>
-									</TableRow>
-								) : (
-									<>
-										{productsRejected[0]?.name ? (
-											productsRejected.map((row) => (
-												<TableRow
-													key={row.name}
-													sx={{
-														"&:last-child td, &:last-child th": {
-															border: 0,
-														},
-													}}
-												>
-													<TableCell component="th" scope="row">
-														<img
-															style={{ width: 50, height: 50 }}
-															src={row.images[0]}
-															alt="anh-SP"
-														/>
-													</TableCell>
-													<TableCell component="th" scope="row">
-														{row.name}
-													</TableCell>
-													<TableCell>
-														{row.subCategory.category.name} -{" "}
-														{row.subCategory.name}
-													</TableCell>
-													<TableCell align="right">
-														{Intl.NumberFormat().format(row.price)}đ
-													</TableCell>
-													<TableCell>{row?.address.address}</TableCell>
-													<TableCell>Đang chờ duyệt</TableCell>
-													<TableCell>
-														moment({row.createdAt}).format("DD-MM-YYYY
-														HH:mm")
-													</TableCell>
-													<TableCell align="center">
-														<Link
-															className={cx("button-edit-product")}
-															to={``}
-														>
-															Xem chi tiết
-														</Link>
-													</TableCell>
-												</TableRow>
-											))
-										) : (
-											<TableCell colSpan={12} align="center">
-												Không có sản phẩm.
-											</TableCell>
-										)}
-									</>
-								)}
-							</TableBody>
-						</Table>
-					</TableContainer>
+		<div style={{ padding: "10px" }} className="inner-content">
+			<p className="title">Quản lý sản phẩm</p>
+			<div className={cx("action")}>
+				<div className={cx("search")}>
+					<label>Tìm kiếm sản phẩm:</label>
+					<input type="text" />
+					<button>Tìm kiếm</button>
+				</div>
+				<div>
+					<label>Trạng thái sản phẩm:</label>
+					<select onChange={handleChangeState} defaultValue="approved">
+						<option value="waiting">Chờ duyệt</option>
+						<option value="approved">Đang bán</option>
+						<option value="selled">Bán hết</option>
+						<option value="rejected">Bị hủy</option>
+						<option value="closed">Đã đóng</option>
+					</select>
 				</div>
 			</div>
-			<div>
-				<div className="inner-content">
-					<div className="title">Sản phẩm đang chờ duyệt ({productsWaiting?.length})</div>
-					<TableContainer component={Paper}>
-						<Table sx={{ minWidth: 650 }} aria-label="simple table">
-							<TableHead>
-								<TableRow>
-									<TableCell></TableCell>
-									<TableCell>Tên SP</TableCell>
-									<TableCell>Danh mục</TableCell>
-									<TableCell>Giá tiền</TableCell>
-									<TableCell>Địa chỉ</TableCell>
-									<TableCell>Trạng thái</TableCell>
-									<TableCell>Thời điểm</TableCell>
-									<TableCell>Chỉnh sửa</TableCell>
-								</TableRow>
-							</TableHead>
-							<TableBody className="animate__animated animate__fadeIn">
-								{isLoading ? (
-									<TableRow>
-										<TableCell colSpan={12} align="center">
-											<CircularProgress />
-										</TableCell>
-									</TableRow>
-								) : (
-									<>
-										{productsWaiting[0]?.name ? (
-											productsWaiting.map((row) => (
-												<TableRow
-													key={row.name}
-													sx={{
-														"&:last-child td, &:last-child th": {
-															border: 0,
-														},
-													}}
-												>
-													<TableCell component="th" scope="row">
-														<img
-															style={{ width: 50, height: 50 }}
-															src={row.images[0]}
-															alt="anh-SP"
-														/>
-													</TableCell>
-													<TableCell component="th" scope="row">
-														{row.name}
-													</TableCell>
-													<TableCell>
-														{row.subCategory.category.name} -{" "}
-														{row.subCategory.name}
-													</TableCell>
-													<TableCell align="right">
-														{Intl.NumberFormat().format(row.price)}đ
-													</TableCell>
-													<TableCell>{row?.address.address}</TableCell>
-													<TableCell>Đang chờ duyệt</TableCell>
-													<TableCell>
-														{moment(row.createdAt).format(
-															"DD-MM-YYYY HH:mm"
-														)}
-													</TableCell>
-
-													<TableCell align="center">
-														<Link
-															className={cx("button-edit-product")}
-															to={`/detail-product/${row._id}`}
-														>
-															Xem chi tiết
-														</Link>
-													</TableCell>
-												</TableRow>
-											))
-										) : (
-											<TableCell colSpan={12} align="center">
-												Không có sản phẩm.
-											</TableCell>
-										)}
-									</>
-								)}
-							</TableBody>
-						</Table>
-					</TableContainer>
-				</div>
+			<div style={{ marginLeft: 20, fontWeight: 500 }}>
+				{state === "waiting"
+					? "Sản phẩm chờ duyệt"
+					: state === "approved"
+					? "Sản phẩm đang bán"
+					: state === "selled"
+					? "Sản phẩm bán hết"
+					: state === "rejected"
+					? "Sản phẩm bị hủy"
+					: "Sản phẩm đã đóng"}{" "}
+				({products?.length})
 			</div>
-
-			<div className="inner-content">
-				<div className="title">Sản phẩm đang bán ({productsApproved?.length})</div>
+			<div className={cx("table")}>
 				<TableContainer component={Paper}>
 					<Table sx={{ minWidth: 650 }} aria-label="simple table">
 						<TableHead>
 							<TableRow>
 								<TableCell></TableCell>
-								<TableCell>Tên SP</TableCell>
+								<TableCell
+									className=""
+									style={{
+										width: "300px",
+										maxWidth: "300px",
+										overflow: "hidden",
+										textOverflow: "ellipsis",
+									}}
+								>
+									Tên SP
+								</TableCell>
 								<TableCell>Danh mục</TableCell>
 								<TableCell>Giá tiền</TableCell>
 								<TableCell>Địa chỉ</TableCell>
 								<TableCell>Số lượng</TableCell>
 								<TableCell>Đã bán</TableCell>
-								<TableCell>Thời điểm</TableCell>
+								<TableCell>Thời điểm đăng bán</TableCell>
 								<TableCell></TableCell>
 							</TableRow>
 						</TableHead>
@@ -298,8 +147,8 @@ function ProductManager() {
 								</TableRow>
 							) : (
 								<>
-									{productsApproved[0]?.name ? (
-										productsApproved.map((row) => (
+									{products[0]?.name ? (
+										products.map((row) => (
 											<TableRow
 												key={row.name}
 												sx={{
@@ -310,7 +159,7 @@ function ProductManager() {
 											>
 												<TableCell component="th" scope="row">
 													<img
-														style={{ width: 50, height: 50 }}
+														style={{ width: 80, height: 80 }}
 														src={row.images[0]}
 														alt="anh-SP"
 													/>
@@ -344,169 +193,7 @@ function ProductManager() {
 														className={cx("button-close-product")}
 														onClick={() => closeProduct(row._id)}
 													>
-														Đóng sản phẩm
-													</div>
-												</TableCell>
-											</TableRow>
-										))
-									) : (
-										<TableCell colSpan={12} align="center">
-											Không có sản phẩm.
-										</TableCell>
-									)}
-								</>
-							)}
-						</TableBody>
-					</Table>
-				</TableContainer>
-			</div>
-
-			<div className="inner-content">
-				<div className="title">Sản phẩm đã bán hết ({productsSelled?.length})</div>
-				<TableContainer component={Paper}>
-					<Table sx={{ minWidth: 650 }} aria-label="simple table">
-						<TableHead>
-							<TableRow>
-								<TableCell></TableCell>
-								<TableCell>Tên SP</TableCell>
-								<TableCell>Danh mục</TableCell>
-								<TableCell>Giá tiền</TableCell>
-								<TableCell>Địa chỉ</TableCell>
-								<TableCell>Số lượng</TableCell>
-								<TableCell>Đã bán</TableCell>
-								<TableCell>Thời điểm</TableCell>
-								<TableCell></TableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody className="animate__animated animate__fadeIn">
-							{isLoading ? (
-								<TableRow>
-									<TableCell colSpan={12} align="center">
-										<CircularProgress />
-									</TableCell>
-								</TableRow>
-							) : (
-								<>
-									{productsSelled[0]?.name ? (
-										productsSelled.map((row) => (
-											<TableRow
-												key={row.name}
-												sx={{
-													"&:last-child td, &:last-child th": {
-														border: 0,
-													},
-												}}
-											>
-												<TableCell component="th" scope="row">
-													<img
-														style={{ width: 50, height: 50 }}
-														src={row.images[0]}
-														alt="anh-SP"
-													/>
-												</TableCell>
-												<TableCell>{row.name}</TableCell>
-												<TableCell>
-													{row.subCategory.category.name} -{" "}
-													{row.subCategory.name}
-												</TableCell>
-												<TableCell align="right">
-													{Intl.NumberFormat().format(row.price)}đ
-												</TableCell>
-												<TableCell>{row?.address.address}</TableCell>
-												<TableCell>{row.quantity}</TableCell>
-												<TableCell>{row.quantityState}</TableCell>
-												<TableCell>
-													{moment(row.createdAt).format(
-														"DD-MM-YYYY HH:mm"
-													)}
-												</TableCell>
-												<TableCell align="center">
-													<Link
-														className={cx("button-edit-product")}
-														to={`/detail-product/${row._id}`}
-													>
-														Xem chi tiết
-													</Link>
-												</TableCell>
-											</TableRow>
-										))
-									) : (
-										<TableCell colSpan={12} align="center">
-											Không có sản phẩm.
-										</TableCell>
-									)}
-								</>
-							)}
-						</TableBody>
-					</Table>
-				</TableContainer>
-			</div>
-
-			<div className="inner-content">
-				<div className="title">Sản phẩm đã đóng ({productsClosed?.length})</div>
-				<TableContainer component={Paper}>
-					<Table sx={{ minWidth: 650 }} aria-label="simple table">
-						<TableHead>
-							<TableRow>
-								<TableCell></TableCell>
-								<TableCell>Tên SP</TableCell>
-								<TableCell>Danh mục</TableCell>
-								<TableCell>Giá tiền</TableCell>
-								<TableCell>Địa chỉ</TableCell>
-								<TableCell>Số lượng</TableCell>
-								<TableCell>Đã bán</TableCell>
-								<TableCell>Thời điểm</TableCell>
-								<TableCell></TableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody className="animate__animated animate__fadeIn">
-							{isLoading ? (
-								<TableRow>
-									<TableCell colSpan={12} align="center">
-										<CircularProgress />
-									</TableCell>
-								</TableRow>
-							) : (
-								<>
-									{productsClosed[0]?.name ? (
-										productsClosed.map((row) => (
-											<TableRow
-												key={row.name}
-												sx={{
-													"&:last-child td, &:last-child th": {
-														border: 0,
-													},
-												}}
-											>
-												<TableCell component="th" scope="row">
-													<img
-														style={{ width: 50, height: 50 }}
-														src={row.images[0]}
-														alt="anh-SP"
-													/>
-												</TableCell>
-												<TableCell>{row.name}</TableCell>
-												<TableCell>
-													{row.subCategory.category.name} -{" "}
-													{row.subCategory.name}
-												</TableCell>
-												<TableCell align="right">
-													{Intl.NumberFormat().format(row.price)}đ
-												</TableCell>
-												<TableCell>{row?.address.address}</TableCell>
-												<TableCell>{row.quantity}</TableCell>
-												<TableCell>{row.quantityState}</TableCell>
-												<TableCell>
-													{moment(row.createdAt).format(
-														"DD-MM-YYYY HH:mm"
-													)}
-												</TableCell>
-												<TableCell align="center">
-													<div
-														className={cx("button-open-product")}
-														onClick={() => openProduct(row._id)}
-													>
-														Mở bán lại
+														Đóng
 													</div>
 												</TableCell>
 											</TableRow>

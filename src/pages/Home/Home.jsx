@@ -47,7 +47,7 @@ function UserHome() {
 
 	return (
 		<div className={cx("container")}>
-			<section
+			{/* <section
 				style={{ backgroundImage: "url(/assets/images/anh-bia.jpg)" }}
 				className={cx("section-1")}
 			>
@@ -57,8 +57,14 @@ function UserHome() {
 						Bắt đầu mua sắm
 					</Button>
 				</div>
+			</section> */}
+			<section>
+				<img
+					style={{ width: "100%" }}
+					src="https://cdn.chotot.com/admincentre/ZgRIq2LzRUpeArA4408ArEpQlLzpg60kvJ2jUuFuZFo/preset:raw/plain/5476426ac38b2476d651606b33d3f6b7-2906265463940861597.jpg"
+					alt="anh-bia"
+				/>
 			</section>
-
 			<section className={cx("inner-content")}>
 				<p className={cx("title")}>Khám phá danh mục</p>
 				<div
@@ -139,7 +145,6 @@ function UserHome() {
 					</div>
 				</div>
 			</section>
-			
 		</div>
 	);
 }
