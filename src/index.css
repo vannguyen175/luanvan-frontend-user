@@ -4,7 +4,7 @@
 	--main-color: #419366;
 	--secondary-color: #cde6df;
 	--light-color: #cedbd1;
-	--orange-color: #f09927;
+	--orange-color: #d4831a;
 	--light-orange-color: #ecb372;
 	--black-color: #24232c;
 	--test-color: #574e40;
@@ -121,6 +121,18 @@ p {
 	display: flex;
 	justify-content: space-evenly;
 	align-items: center;
+}
+
+.main-button {
+	background-color: white;
+	padding: 3px 10px;
+	border: none;
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+.button:hover {
+	font-weight: 500;
 }
 
 svg {

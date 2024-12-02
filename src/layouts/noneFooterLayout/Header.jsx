@@ -115,7 +115,7 @@ function Header() {
 		>
 			<Grid item xs={2} className={cx("col")}>
 				<Link to={"/"} className={cx("logo")}>
-					TradeGoods
+					CHODOCU
 				</Link>
 			</Grid>
 

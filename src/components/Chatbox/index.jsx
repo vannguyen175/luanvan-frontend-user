@@ -8,6 +8,7 @@ import socket from "../../socket";
 import { useApp } from "~/context/AppProvider";
 import ClearIcon from "@mui/icons-material/Clear";
 import RemoveIcon from "@mui/icons-material/Remove";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const cx = classNames.bind(style);
 
@@ -17,6 +18,7 @@ function Chatbox() {
 
 	const [openChat, setOpenChat] = useState(); //mở hộp hội thoại chứa id người chat
 	const [mess, setMess] = useState([]);
+	const [userOnMess, setUserOnMess] = useState();
 	const [receiveInfo, setReceiveInfo] = useState([
 		{
 			id: null,
@@ -28,15 +30,21 @@ function Chatbox() {
 	const messagesEnd = useRef();
 	const msgRef = useRef();
 
-	const getInfoReceiver = async () => {
+	const getInfoReceiver = async (idUser) => {
 		try {
-			const responses = await Promise.all(chatbox.map((id) => UserService.getInfoUser(id)));
-
+			if (idUser) {
+				const res = await UserService.getInfoUser(idUser);
+				setUserOnMess({
+					id: res.data.user,
+					avatar: res.data.avatar,
+					name: res.data.name,
+				});
+			}
+			const responses = await Promise.all(chatbox?.map((id) => UserService.getInfoUser(id)));
 			const validResponses = responses
 				.filter((res) => res.status === "OK")
 				.map((res) => ({
 					id: res.data.user,
-					name: res.data.name,
 					avatar: res.data.avatar,
 				}));
 			setReceiveInfo(validResponses);
@@ -49,6 +57,8 @@ function Chatbox() {
 		const res = await MessageService.getChat(idUser, openChat);
 		if (res.status === "SUCCESS") {
 			setMess(res.data.message);
+		} else {
+			setMess();
 		}
 	};
 
@@ -58,7 +68,9 @@ function Chatbox() {
 			getInfoReceiver();
 		}
 		if (openChat) {
+			setUserOnMess();
 			getDataChat(idUser, openChat);
+			getInfoReceiver(openChat);
 		}
 	}, [openChat, chatbox]);
 
@@ -94,7 +106,7 @@ function Chatbox() {
 		}
 	};
 
-	const renderMess = mess.map((m, index) => (
+	const renderMess = mess?.map((m, index) => (
 		<div
 			key={index}
 			className={cx(m.sender === idUser ? "your-message" : "other-people", "chat-item")}
@@ -110,7 +122,9 @@ function Chatbox() {
 	};
 
 	const closeChat = () => {
-		setChatbox((prevData) => prevData.filter((item) => item !== openChat));
+		const data = chatbox.filter((item) => item !== openChat);
+		setChatbox(data);
+		localStorage.setItem("chatbox", JSON.stringify(data));
 		setOpenChat();
 	};
 
@@ -118,7 +132,7 @@ function Chatbox() {
 		<div>
 			<div className={cx("popup")}>
 				{receiveInfo.length > 0 &&
-					receiveInfo.map((item, index) => (
+					receiveInfo?.map((item, index) => (
 						<div key={index} className={cx("item")}>
 							{item.isSeen && <span className={cx("status-unseen")}></span>}
 							<img
@@ -134,8 +148,15 @@ function Chatbox() {
 			{openChat && (
 				<div className={cx("box-chat")}>
 					<div className={cx("header")}>
-						<img src={receiveInfo.avatar} alt="avatar" />
-						{receiveInfo.name}
+						{userOnMess ? (
+							<>
+								<img src={userOnMess.avatar} alt="avatar" />
+								{userOnMess.name}
+							</>
+						) : (
+							<CircularProgress color="inherit" size={25} />
+						)}
+
 						<ClearIcon className={cx("close-chat")} onClick={closeChat} />
 						<RemoveIcon className={cx("hide-chat")} onClick={() => setOpenChat()} />
 					</div>

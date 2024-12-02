@@ -237,16 +237,55 @@
 		padding: 5px 10px;
 		cursor: pointer;
 	}
+	.product-name {
+		font-weight: 500;
+		max-width: 300px;
+		display: -webkit-box; /* Sử dụng box layout của webkit */
+		-webkit-box-orient: vertical; /* Đặt hướng box thành vertical (dọc) */
+		-webkit-line-clamp: 1;
+		line-clamp: 1; /* Giới hạn số dòng là 2 */
+		overflow: hidden; /* Ẩn phần vượt quá khung chứa */
+		text-overflow: ellipsis; /* Thêm dấu ba chấm ở cuối văn bản bị cắt */
+		max-width: 100%; /* Đảm bảo phần tử không vượt quá khung chứa */
+		line-height: 1.5; /* Chiều cao dòng, điều chỉnh theo thiết kế của bạn */
+		height: 1.5em;
+		margin-bottom: 7px;
+		cursor: pointer;
+	}
 }
 
 .modal {
 	.info-section {
-		padding: 10px;
-		box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
-		min-height: 200px;
+		padding: 20px 30px;
+		box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+		height: fit-content;
+		margin: 10px 20px;
 		.title-section {
-			margin-bottom: 20px;
-			font-weight: 500;
+			svg {
+				margin-right: 15px;
+				padding-top: -5px;
+				color: var(--main-color);
+			}
+			display: flex;
+			align-items: center;
+			margin-bottom: 10px;
+			margin-right: 20px;
+			font-weight: 700;
+			font-size: 1.2rem;
+		}
+		.chat-btn {
+			margin-top: 20px;
+			background-color: var(--light-color);
+			border: 1px solid var(--main-color);
+			padding: 3px 10px;
+			border-radius: 3px;
+			cursor: pointer;
+			transition: 0.3s ease;
+		}
+
+		.chat-btn:hover {
+			background-color: var(--main-color);
+			color: white;
 		}
 	}
 }

@@ -21,6 +21,8 @@ function Cart() {
 
 	const getCarts = async () => {
 		const result = await CartService.getCart(id);
+		console.log("res", result);
+
 		setCartDetail(result.data);
 	};
 
@@ -116,12 +118,30 @@ function Cart() {
 										type="checkbox"
 										style={{ transform: "scale(1.5)" }}
 										onClick={(e) => handleSelectItem(e, index)}
+										disabled={cart.blockExpireDate}
 									/>
 								</div>
 								<img className="col-2" src={`${cart?.image}`} alt="anh-san-pham" />
 								<div className={cx("detail", "col-5")}>
-									<StoreMallDirectoryIcon /> {cart?.sellerName}
-									<p className={cx("name")}>{cart?.name}</p>
+									<div
+										onClick={() => navigate(`/seller/${cart.idSeller}`)}
+										className={cx("seller")}
+									>
+										<StoreMallDirectoryIcon /> {cart?.sellerName}{" "}
+										{cart.blockExpireDate && (
+											<p style={{ color: "red" }}>
+												Người bán đang bị tạm khóa
+											</p>
+										)}
+									</div>
+									<p
+										className={cx("name")}
+										onClick={() =>
+											navigate(`/detail-product/${cart.idProduct}`)
+										}
+									>
+										{cart?.name}
+									</p>
 									<p className={cx("price")}>
 										{Intl.NumberFormat().format(cart?.price)}đ
 									</p>

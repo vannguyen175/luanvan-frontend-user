@@ -33,7 +33,13 @@ function SellerPage() {
 
 	const getProducts = async () => {
 		const res = await ProductService.getAllProducts({
-			data: { state: ["approved"], cate: [], subCate: [], seller: id },
+			data: {
+				state: ["approved"],
+				cate: [],
+				subCate: [],
+				seller: id,
+				isBlocked: true,
+			},
 			page: `page=${pageState.page}`,
 			limit: `limit=${pageState.pageSize}`,
 		});
@@ -43,8 +49,6 @@ function SellerPage() {
 	useEffect(() => {
 		const getDetailBuyer = async () => {
 			const res = await UserService.getInfoUser(id);
-			console.log(res.data);
-
 			setDetail((prevData) => ({ ...prevData, seller: res.data }));
 		};
 		getDetailBuyer();
@@ -76,11 +80,18 @@ function SellerPage() {
 									<>
 										<Rating
 											name="read-only"
-											value={detail?.seller?.avgRating[0]?.averageRating}
+											value={
+												Math.round(
+													detail?.seller?.avgRating[0]?.averageRating * 10
+												) / 10
+											}
 											readOnly
 										/>
 										<strong>
-											{detail?.seller?.avgRating[0]?.averageRating}/5
+											{Math.round(
+												detail?.seller?.avgRating[0]?.averageRating * 10
+											) / 10}
+											/5
 										</strong>
 										<p>
 											{detail?.seller?.avgRating[0]?.totalReviews} lượt đánh

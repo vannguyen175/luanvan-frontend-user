@@ -18,7 +18,7 @@ function UserHome() {
 		data: [],
 		total: 0,
 		page: 1,
-		pageSize: 12,
+		pageSize: 10,
 	});
 
 	//Lấy danh sách sản phẩm đang bán

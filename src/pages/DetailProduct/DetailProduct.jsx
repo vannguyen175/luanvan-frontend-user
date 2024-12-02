@@ -31,7 +31,7 @@ function DetailProduct() {
 	const { id } = useParams();
 	const { user, setChatbox, chatbox } = useApp();
 	const navigate = useNavigate();
-	const [buyerDetail, setBuyerDetail] = useState();
+	//const [buyerDetail, setBuyerDetail] = useState();
 	const [quantitySelected, setQuantitySelected] = useState(1);
 	const location = useLocation();
 	const [productBySubCate, setProductBySubCate] = useState();
@@ -41,10 +41,12 @@ function DetailProduct() {
 		buyer: {},
 		stateShow: "product",
 	});
-	const getDetailBuyer = async () => {
-		const res = await UserService.getInfoUser(user?.id);
-		setBuyerDetail(res.data);
-	};
+	// const getDetailBuyer = async () => {
+	// 	const res = await UserService.getInfoUser(user?.id);
+	// 	console.log("getDetailBuyer", res);
+
+	// 	setBuyerDetail(res.data);
+	// };
 
 	const getDetailProduct = async () => {
 		const res = await ProductService.detailProduct(id);
@@ -69,9 +71,9 @@ function DetailProduct() {
 	};
 	useEffect(() => {
 		getDetailProduct();
-		if (user?.id) {
-			getDetailBuyer();
-		}
+		// if (user?.id) {
+		// 	getDetailBuyer();
+		// }
 		// eslint-disable-next-line
 	}, []);
 
@@ -171,8 +173,8 @@ function DetailProduct() {
 								<h2 style={{ color: "var(--main-color)", marginTop: 10 }}>
 									{details.product?.name}
 								</h2>
-								{details.product?.idUser.name &&
-									details.product?.idUser.name === buyerDetail?.name && (
+								{details.product?.idUser._id &&
+									details.product?.idUser._id === user?.id && (
 										<div style={{ display: "flex" }}>
 											<p style={{ marginRight: 10 }}>
 												Đây là sản phẩm của bạn.
@@ -234,10 +236,21 @@ function DetailProduct() {
 											title="Tin đã được kiểm duyệt"
 											desc={<CheckCircleOutlineIcon />}
 										/>
-										{details.product?.idUser.name &&
-										details.product?.idUser.name === buyerDetail?.name ? (
+										{details.product?.idUser._id &&
+										details.product?.idUser._id === user?.id ? (
 											<p style={{ textAlign: "center", marginTop: 20 }}>
 												Đây là sản phẩm của bạn
+											</p>
+										) : new Date(details.seller?.blockExpireDate) >
+										  new Date() ? (
+											<p
+												style={{
+													textAlign: "center",
+													marginTop: 20,
+													color: "red",
+												}}
+											>
+												Nhà bán hàng đang bị tạm khóa
 											</p>
 										) : (
 											<div className={cx("actions")}>
@@ -342,9 +355,12 @@ function DetailProduct() {
 											>
 												{details.seller?.name}
 											</p>
-											{details.product?.idUser.name &&
-												details.product?.idUser.name !==
-													buyerDetail?.name && (
+											{details.product?.idUser._id &&
+												!(
+													new Date(details.seller?.blockExpireDate) >
+													new Date()
+												) &&
+												details.product?.idUser._id !== user?.id && (
 													<button
 														className={cx("chat-btn")}
 														onClick={() =>
@@ -365,16 +381,18 @@ function DetailProduct() {
 															<Rating
 																name="read-only"
 																value={
-																	details.seller?.avgRating[0]
-																		?.averageRating
+																	Math.round(
+																		details.seller?.avgRating[0]
+																			?.averageRating * 10
+																	) / 10
 																}
 																readOnly
 															/>
 															<span style={{ marginLeft: 10 }}>
-																{
-																	details.seller?.avgRating[0]
-																		?.averageRating
-																}
+																{Math.round(
+																	details?.seller?.avgRating[0]
+																		?.averageRating * 10
+																) / 10}
 																/5
 															</span>
 														</>
@@ -387,20 +405,38 @@ function DetailProduct() {
 										/>
 
 										<Description
+											title="Email"
+											desc={formatPhoneNumber(details.seller?.email)}
+										/>
+										<Description
 											title="Số điện thoại"
 											desc={formatPhoneNumber(details.seller?.phone)}
 										/>
 										<Description
 											title="Địa chỉ"
 											desc={
-												[
-													details.seller?.address,
-													details.seller?.ward,
-													details.seller?.district,
-													details.seller?.province,
-												].join(", ") || ""
+												(details.seller?.address &&
+													[
+														details.seller?.address,
+														details.seller?.ward,
+														details.seller?.district,
+														details.seller?.province,
+													].join(", ")) ||
+												"Chưa có"
 											}
 										/>
+
+										{new Date(details.seller?.blockExpireDate) > new Date() && (
+											<p
+												style={{
+													textAlign: "center",
+													marginTop: 20,
+													color: "red",
+												}}
+											>
+												Nhà bán hàng đang bị tạm khóa
+											</p>
+										)}
 									</div>
 								)}
 							</div>

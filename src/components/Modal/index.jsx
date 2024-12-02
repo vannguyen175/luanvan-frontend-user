@@ -2,6 +2,7 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import classNames from "classnames/bind";
 import style from "./Modal.module.scss";
+import { Padding } from "@mui/icons-material";
 
 const cx = classNames.bind(style);
 
@@ -10,6 +11,9 @@ const styleModal = {
 	top: "50%",
 	left: "50%",
 	transform: "translate(-50%, -50%)",
+	overflow: "scroll",
+	height: "95%",
+	display: "block",
 	minWidth: 400,
 	bgcolor: "background.paper",
 	border: "2px solid #000",

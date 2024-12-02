@@ -12,8 +12,8 @@ export const AppProvider = ({ children }) => {
 		id: null,
 		isAdmin: null,
 	});
-	const [chatbox, setChatbox] = useState([]); //danh sách người nhắn tin
 
+	const [chatbox, setChatbox] = useState(localStorage.getItem("chatbox") || []); //danh sách người nhắn tin
 	const getChatUnseen = async () => {
 		if (token) {
 			const decoded = jwtDecode(token);
@@ -32,6 +32,8 @@ export const AppProvider = ({ children }) => {
 		const decoded = jwtDecode(token);
 		try {
 			const res = await UserService.getDetailUser(decoded?.id, token);
+			console.log("RES", res);
+
 			if (res.user.blockExpireDate) {
 				setUser({
 					isBlocked: true,
@@ -39,8 +41,6 @@ export const AppProvider = ({ children }) => {
 					blockReason: res.user.blockReason,
 				});
 			} else {
-				console.log("res?.seller?.totalSold", res?.seller?.totalSold);
-
 				setUser({
 					id: res?.user?._id,
 					name: res?.user?.name,
@@ -87,6 +87,12 @@ export const AppProvider = ({ children }) => {
 		getUserInfo();
 		getChatUnseen();
 	}, [token]);
+
+	useEffect(() => {
+		if (chatbox.length > 0) {
+			localStorage.setItem("chatbox", JSON.stringify(chatbox));
+		}
+	}, [chatbox]);
 
 	return (
 		<AppContext.Provider

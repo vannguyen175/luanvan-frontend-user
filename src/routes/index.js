@@ -84,12 +84,12 @@ export const routes = [
 	{
 		path: "/login",
 		page: Login,
-		layout: Fragment,
+		layout: NoneFooterLayout,
 	},
 	{
 		path: "/register",
 		page: Register,
-		layout: Fragment,
+		layout: NoneFooterLayout,
 	},
 	{
 		path: "/dang-tin",

@@ -1,12 +1,13 @@
 import { useApp } from "~/context/AppProvider";
 import ReactTimeAgo from "react-time-ago";
 import moment from "moment";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import * as userService from "../../service/UserService";
 import { useEffect, useState } from "react";
 
 function BlockAccount() {
-	const { user } = useApp();
+	const { setToken } = useApp();
+	const navigate = useNavigate();
 	const idUser = localStorage.getItem("id_user");
 
 	const [detail, setDetail] = useState({
@@ -30,6 +31,12 @@ function BlockAccount() {
 		checkUserBanned();
 	}, []);
 
+	const handleBackLogin = () => {
+		localStorage.clear();
+		setToken(null);
+		navigate("/login");
+	};
+
 	return (
 		<div
 			style={{
@@ -49,9 +56,12 @@ function BlockAccount() {
 						{moment(detail.blockExpireDate).format("hh:mm, DD-MM-YYYY")} (
 						<ReactTimeAgo date={Date.parse(detail.blockExpireDate)} locale="vi-VN" />)
 					</h5>
-					<Link to={"/login"} style={{ display: "inline-block", marginTop: 30 }}>
+					<button
+						onClick={handleBackLogin}
+						className="btn"
+					>
 						Quay về trang đăng nhập
-					</Link>
+					</button>
 				</>
 			)}
 		</div>

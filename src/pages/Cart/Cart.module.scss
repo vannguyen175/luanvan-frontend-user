@@ -19,6 +19,13 @@
 
 	.detail {
 		margin-left: 40px;
+		.seller {
+			cursor: pointer;
+			&:hover {
+				font-weight: 500;
+			}
+		}
+		
 		.name {
 			margin-top: 10px;
 			font-weight: 500;
