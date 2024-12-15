@@ -14,25 +14,27 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Notification from "../../components/Notification";
+import * as ProductService from "~/service/ProductService";
+
 import Search from "../../components/Search";
 import { Badge } from "@mui/material";
 
 const cx = classNames.bind(style);
 
-const categories = [
-	{
-		name: "Đồ nội thất",
-		to: "/san-pham/noi-that",
-	},
-	{
-		name: "Thiết bị điện tử",
-		to: "/san-pham/do-dien-tu",
-	},
-	{
-		name: "Thú cưng",
-		to: "/san-pham/thu-cung",
-	},
-];
+// const categories = [
+// 	{
+// 		name: "Đồ nội thất",
+// 		to: "/san-pham/noi-that",
+// 	},
+// 	{
+// 		name: "Thiết bị điện tử",
+// 		to: "/san-pham/do-dien-tu",
+// 	},
+// 	{
+// 		name: "Thú cưng",
+// 		to: "/san-pham/thu-cung",
+// 	},
+// ];
 
 const ActionsUnLogin = [
 	{
@@ -54,6 +56,7 @@ const ActionUserLogin = [
 		name: "Nhà bán hàng",
 		to: "/nha-ban-hang",
 	},
+
 	{
 		name: "Đăng tin",
 		to: "/dang-tin",
@@ -65,6 +68,13 @@ function Header() {
 
 	const idUser = localStorage.getItem("id_user");
 	const [cartLength, setCartLength] = useState(null);
+	const [categories, setCategories] = useState(null);
+
+	//Lấy danh sách danh mục
+	const getCategory = async () => {
+		const res = await ProductService.getAllCategories();
+		setCategories(res.data);
+	};
 
 	const getCarts = async () => {
 		const result = await CartService.getCart(idUser);
@@ -104,6 +114,7 @@ function Header() {
 
 	useEffect(() => {
 		checkUserBanned();
+		getCategory();
 	}, []);
 
 	const handleLogin = () => {
@@ -128,7 +139,7 @@ function Header() {
 			</Grid>
 
 			<Grid item xs={2} className={cx("col")}>
-				<DropdownMenu title="Danh mục" listActions={categories} />
+				<DropdownMenu title="Danh mục" listActions={categories} category/>
 			</Grid>
 
 			{/* Tìm kiếm sản phẩm */}

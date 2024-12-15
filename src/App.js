@@ -28,12 +28,17 @@ export function App() {
 	}, []);
 
 	useEffect(() => {
-		socket.on("sendID", (dataGot) => {});
+		socket.on("sendID", (dataGot) => {
+			console.log("idsocket", dataGot);
+		});
+
 		//lắng nghe sự kiện phía server
 		socket.on("sendMessageServer", (dataGot) => {
-			const chatbox_users = localStorage.getItem("chatbox"); //danh sách user đang chat
-			if (!chatbox_users.includes(dataGot.data.sender)) {
-				setChatbox((prevData) => [...prevData, dataGot.data.sender]);
+			// if (!chatbox.includes(dataGot.data.sender)) {
+			// 	setChatbox((prevData) => [...prevData, dataGot.data.sender]);
+			// }
+			if (chatbox.length === 0) {
+				setChatbox([dataGot.data.sender]);
 			}
 		});
 	}, []);
@@ -56,7 +61,7 @@ export function App() {
 									element={
 										<Layout>
 											{isCheckAuth === true ? <Page /> : <NotFoundPage />}
-											{chatbox.length > 0 && <Chatbox />}
+											{chatbox?.length > 0 && <Chatbox />}
 										</Layout>
 									}
 								/>

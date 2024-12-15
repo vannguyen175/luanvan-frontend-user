@@ -11,6 +11,7 @@ import OrderManager from "../../components/ForSeller/OrderManager";
 import ProductManager from "../../components/ForSeller/ProductManager";
 import ProfileSeller from "../../components/ForSeller/ProfileSeller";
 import Analytic from "../../components/ForSeller/Analytic";
+import RatingAnalytic from "../../components/ForSeller/RatingAnalytic";
 
 const cx = classNames.bind(style);
 
@@ -19,7 +20,7 @@ function ForSeller() {
 		localStorage.getItem("toggle_menu_seller") === "true"
 	);
 
-	const [activeIndex, setActiveIndex] = useState();
+	const [activeIndex, setActiveIndex] = useState(1.1);
 
 	const [activeSubMenu, setActiveSubMenu] = useState(
 		localStorage.getItem("menu_seller_index") || 1.1
@@ -48,10 +49,10 @@ function ForSeller() {
 					</li>
 					<li className={cx("menu-item")}>
 						<p
-							className={cx(activeIndex === '1.1' && "menu-item-active")}
+							className={cx(activeIndex === "1.1" && "menu-item-active")}
 							onClick={() => {
-								handleClick('1.1');
-								setActiveSubMenu('1.1');
+								handleClick("1.1");
+								setActiveSubMenu("1.1");
 							}}
 						>
 							Tài Khoản Của Tôi
@@ -59,21 +60,21 @@ function ForSeller() {
 					</li>
 					<li className={cx("menu-item")}>
 						<p
-							className={cx({ "menu-item-active": activeIndex === '2' })}
+							className={cx({ "menu-item-active": activeIndex === "2" })}
 							onClick={() => {
-								handleClick('2');
-								setActiveSubMenu('2');
+								handleClick("2");
+								setActiveSubMenu("2");
 							}}
 						>
-							Sản Phẩm Đang Bán
+							Quản lý sản phẩm
 						</p>
 					</li>
 					<li className={cx("menu-item")}>
 						<p
-							className={cx({ "menu-item-active": activeIndex === '3' })}
+							className={cx({ "menu-item-active": activeIndex === "3" })}
 							onClick={() => {
-								handleClick('3');
-								setActiveSubMenu('3');
+								handleClick("3");
+								setActiveSubMenu("3");
 							}}
 						>
 							Quản lý đơn hàng
@@ -81,10 +82,21 @@ function ForSeller() {
 					</li>
 					<li className={cx("menu-item")}>
 						<p
-							className={cx({ "menu-item-active": activeIndex === '4' })}
+							className={cx({ "menu-item-active": activeIndex === "4" })}
 							onClick={() => {
-								handleClick('4');
-								setActiveSubMenu('4');
+								handleClick("4");
+								setActiveSubMenu("4");
+							}}
+						>
+							Xem đánh giá
+						</p>
+					</li>
+					<li className={cx("menu-item")}>
+						<p
+							className={cx({ "menu-item-active": activeIndex === "5" })}
+							onClick={() => {
+								handleClick("5");
+								setActiveSubMenu("5");
 							}}
 						>
 							Thống Kê
@@ -96,7 +108,8 @@ function ForSeller() {
 				{activeSubMenu === "1.1" && <ProfileSeller />}
 				{activeSubMenu === "2" && <ProductManager />}
 				{activeSubMenu === "3" && <OrderManager />}
-				{activeSubMenu === "4" && <Analytic />}
+				{activeSubMenu === "4" && <RatingAnalytic />}
+				{activeSubMenu === "5" && <Analytic />}
 			</div>
 		</div>
 	);

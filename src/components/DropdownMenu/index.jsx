@@ -5,14 +5,21 @@ import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
 import { useNavigate, useLocation } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-function DropdownMenu({ title, listActions }) {
+function DropdownMenu({ title, listActions, category }) {
 	const navigate = useNavigate();
 	const location = useLocation();
 
 	const handleClick = (item) => {
-		navigate(item.to);
-		if (location.pathname.includes("san-pham")) {
-			navigate(0); //reload page
+		if (category) {
+			navigate(`/san-pham/${item.to || item.slug}`);
+			if (location.pathname.includes("san-pham")) {
+				navigate(0); //reload page
+			}
+		} else {
+			navigate(item.to);
+			if (location.pathname.includes("san-pham")) {
+				navigate(0); //reload page
+			}
 		}
 	};
 	return (

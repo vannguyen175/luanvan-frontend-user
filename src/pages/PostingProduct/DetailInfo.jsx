@@ -90,11 +90,12 @@ function DetailInfo({ dataSubmit, setDataSubmit }) {
 						<Grid item xs={9}>
 							<Autocomplete
 								disablePortal
+								defaultValue={
+									dataSubmit.stateProduct === "used" ? "Đã sử dụng" : "Mới"
+								}
 								options={["Chưa sử dụng", "Đã sử dụng"]}
 								onChange={onChangeStateProduct}
-								renderInput={(params) => (
-									<TextField {...params} label="Tình trạng" />
-								)}
+								renderInput={(params) => <TextField {...params} label="" />}
 							/>
 						</Grid>
 					</>

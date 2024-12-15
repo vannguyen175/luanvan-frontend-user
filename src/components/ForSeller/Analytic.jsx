@@ -313,7 +313,7 @@ function Analytic() {
 					{
 						<div style={{ display: "flex", justifyContent: "space-evenly" }}>
 							<div className={cx("data-product")}>
-								<p>Số sản phẩm đã đăng</p>
+								<p>Số sản phẩm đang bán</p>
 								<strong>{resultProduct.totalPosted}</strong>
 							</div>
 							<div className={cx("data-product")}>
@@ -434,10 +434,18 @@ function Analytic() {
 
 				<div>
 					{resultOrder.stateOrders && (
-						<div style={{ display: "flex", justifyContent: "space-evenly", textAlign: "center" }}>
+						<div
+							style={{
+								display: "flex",
+								justifyContent: "space-evenly",
+								textAlign: "center",
+							}}
+						>
 							<div className={cx("data-order")}>
 								<p>Tổng doanh thu</p>
-								<strong style={{  fontSize: "1.6rem", color: "var(--orange-color)" }}>
+								<strong
+									style={{ fontSize: "1.6rem", color: "var(--orange-color)" }}
+								>
 									{Intl.NumberFormat().format(resultOrder.revenue || 0)}đ
 								</strong>
 							</div>

@@ -12,7 +12,7 @@ const styleModal = {
 	left: "50%",
 	transform: "translate(-50%, -50%)",
 	overflow: "scroll",
-	height: "95%",
+	maxHeight: "95%",
 	display: "block",
 	minWidth: 400,
 	bgcolor: "background.paper",
@@ -22,11 +22,26 @@ const styleModal = {
 	borderRadius: 2,
 };
 
-function ModalForm({ title, isOpen = false, setIsOpen, children, width = 400, ...rests }) {
+function ModalForm({
+	title,
+	isOpen = false,
+	setIsOpen,
+	isBlockClosed,
+	children,
+	width = 400,
+	...rests
+}) {
+	const handleClosed = () => {
+		if (isBlockClosed === true) {
+			return;
+		} else {
+			setIsOpen(false);
+		}
+	};
 	return (
 		<Modal
 			open={isOpen}
-			onClose={() => setIsOpen(false)}
+			onClose={handleClosed}
 			style={{ backdropFilter: "blur(3px)" }}
 			aria-labelledby="modal-modal-title"
 			aria-describedby="modal-modal-description"

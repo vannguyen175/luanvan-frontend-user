@@ -118,7 +118,9 @@ function Cart() {
 										type="checkbox"
 										style={{ transform: "scale(1.5)" }}
 										onClick={(e) => handleSelectItem(e, index)}
-										disabled={cart.blockExpireDate}
+										disabled={
+											cart.blockExpireDate || cart.statePost === "closed"
+										}
 									/>
 								</div>
 								<img className="col-2" src={`${cart?.image}`} alt="anh-san-pham" />
@@ -142,9 +144,13 @@ function Cart() {
 									>
 										{cart?.name}
 									</p>
+
 									<p className={cx("price")}>
 										{Intl.NumberFormat().format(cart?.price)}đ
 									</p>
+									{cart.statePost === "closed" && (
+										<p style={{ color: "red" }}>Sản phẩm đã ngưng bán.</p>
+									)}
 									{cart?.statePost === "selled" && (
 										<p style={{ color: "red" }}>Hết hàng</p>
 									)}

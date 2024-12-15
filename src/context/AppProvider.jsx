@@ -12,14 +12,15 @@ export const AppProvider = ({ children }) => {
 		id: null,
 		isAdmin: null,
 	});
-
-	const [chatbox, setChatbox] = useState(localStorage.getItem("chatbox") || []); //danh sách người nhắn tin
+	const [chatbox, setChatbox] = useState([]); //danh sách người nhắn tin
 	const getChatUnseen = async () => {
 		if (token) {
 			const decoded = jwtDecode(token);
 			const res = await MessageService.getChatUnseen(decoded?.id);
 			if (res.status === "SUCCESS") {
-				setChatbox(res.data.flat());
+				console.log('wefewf');
+				
+				setChatbox([res.data.flat()[0]]);
 			}
 		}
 	};
@@ -32,8 +33,6 @@ export const AppProvider = ({ children }) => {
 		const decoded = jwtDecode(token);
 		try {
 			const res = await UserService.getDetailUser(decoded?.id, token);
-			console.log("RES", res);
-
 			if (res.user.blockExpireDate) {
 				setUser({
 					isBlocked: true,
@@ -88,11 +87,11 @@ export const AppProvider = ({ children }) => {
 		getChatUnseen();
 	}, [token]);
 
-	useEffect(() => {
-		if (chatbox.length > 0) {
-			localStorage.setItem("chatbox", JSON.stringify(chatbox));
-		}
-	}, [chatbox]);
+	// useEffect(() => {
+	// 	if (chatbox.length > 0) {
+	// 		localStorage.setItem("chatbox", JSON.stringify(chatbox));
+	// 	}
+	// }, [chatbox]);
 
 	return (
 		<AppContext.Provider

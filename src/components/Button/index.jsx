@@ -40,7 +40,6 @@ function Button({
 		<Comp style={{ ...styleBtn }} className={classes} onClick={onClick}>
 			{children}
 		</Comp>
-		// <button className={classes}  >CAI DIT CONME  EBHJGJK</button>
 	);
 }
 

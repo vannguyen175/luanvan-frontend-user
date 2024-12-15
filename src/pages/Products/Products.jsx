@@ -26,7 +26,7 @@ function Products() {
 
 	const [pageState, setPageState] = useState({
 		page: 1,
-		pageSize: 2,
+		pageSize: 10,
 		totalCount: 0,
 	});
 

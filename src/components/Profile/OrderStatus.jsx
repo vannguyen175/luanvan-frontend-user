@@ -22,6 +22,12 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Pagination from "../../components/Pagination";
 import moment from "moment/moment";
 
+import EventRepeatIcon from "@mui/icons-material/EventRepeat";
+import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import Inventory2Icon from "@mui/icons-material/Inventory2";
+import EventNoteIcon from "@mui/icons-material/EventNote";
+import Button from "../Button";
+
 const cx = classNames.bind(style);
 
 function OrderStatus() {
@@ -32,6 +38,9 @@ function OrderStatus() {
 	const [alignment, setAlignment] = useState("0");
 	const [showReviewModal, setShowReviewModal] = useState(false);
 	const [cancelOpen, setCancelOpen] = useState(false);
+	const [detailOpen, setDetailOpen] = useState(false);
+	const [orderSelected, setOrderSelected] = useState();
+
 	const [ratingInfo, setRatingInfo] = useState({
 		info: {},
 		score: 0,
@@ -149,6 +158,11 @@ function OrderStatus() {
 		}
 	};
 
+	const handleDetailOpen = async (item) => {
+		console.log("handleDetailOpen", item);
+		setOrderSelected(item);
+		setDetailOpen(true);
+	};
 	return (
 		<div style={{ overflow: "unset" }}>
 			<div className={cx("inner-content")}>
@@ -236,21 +250,38 @@ function OrderStatus() {
 												title="Hình thức"
 												desc={item.isPaid ? "Chuyển khoản" : "Tiền mặt"}
 											/>
+											{alignment === "3" && (
+												<Grid item xs={12}>
+													<Description
+														title="Ngày giao"
+														desc={moment(item.updatedAt).format(
+															"DD-MM-YYYY HH:mm"
+														)}
+													/>
+												</Grid>
+											)}
 										</Grid>
 									</Grid>
 									<Grid item xs={2} className={cx("action")}>
 										<Grid container direction="column">
 											{alignment === "0" ? (
 												<>
-													<button className={cx("button-primary")}>
+													<button
+														className={cx("button-primary")}
+														onClick={() => handleDetailOpen(item)}
+													>
 														Xem chi tiết
 													</button>
-													<button
-														onClick={() => handleCancelOpen(item._id)}
-														className={cx("button-primary")}
-													>
-														Hủy
-													</button>
+													{item.idOrder.paymentMethod === "cash" && (
+														<button
+															onClick={() =>
+																handleCancelOpen(item._id)
+															}
+															className={cx("button-primary")}
+														>
+															Hủy đơn
+														</button>
+													)}
 												</>
 											) : alignment === "3" ? (
 												<button
@@ -368,7 +399,7 @@ function OrderStatus() {
 								<Rating
 									name="simple-controlled"
 									value={ratingInfo.score}
-									precision={0.5}
+									precision={1}
 									size="large"
 									onChange={(event, newValue) => {
 										setRatingInfo((prevData) => ({
@@ -393,6 +424,126 @@ function OrderStatus() {
 								<button className={cx("button-primary")} onClick={handleSendReview}>
 									{ratingInfo?.idRating ? "Cập nhật đánh giá" : "Gửi đánh giá"}
 								</button>
+							</div>
+						</div>
+					)}
+				</Modal>
+
+				<Modal isOpen={detailOpen} title="" setIsOpen={setDetailOpen} width={1000}>
+					{orderSelected?.idProduct && (
+						<div className={cx("modal")}>
+							<div className={cx("info-section")}>
+								<div className={cx("title-section")}>
+									<EventRepeatIcon />
+									TRẠNG THÁI ĐƠN HÀNG: {orderSelected.status}
+								</div>
+								<p>
+									{orderSelected.status === "Đang xử lý"
+										? "Đang chờ Người bán xác nhận đơn hàng, chuẩn bị đơn và bàn giao cho đơn vị vận chuyển."
+										: ""}
+								</p>
+							</div>
+							<div className={cx("info-section")}>
+								<div className={cx("title-section")}>
+									<Inventory2Icon />
+									THÔNG TIN SẢN PHẨM:
+								</div>
+								<div>
+									{orderSelected.idProduct.images.map((image, index) => (
+										<img
+											key={index}
+											style={{ width: 70, height: 70, margin: 5 }}
+											src={image}
+											alt="anh-SP"
+										/>
+									))}
+
+									<Description
+										title="ID sản phẩm"
+										desc={orderSelected.idProduct?._id}
+										important
+									/>
+									<Description
+										title="Tên SP"
+										desc={orderSelected.idProduct?.name}
+									/>
+									<Description
+										title="Giá"
+										desc={`${Intl.NumberFormat().format(
+											orderSelected.productPrice
+										)}đ`}
+									/>
+									<Description
+										title="Danh mục"
+										desc={orderSelected.idProduct.subCategory?.name}
+									/>
+								</div>
+							</div>
+
+							<div className={cx("info-section")}>
+								<div className={cx("title-section")}>
+									<EventNoteIcon />
+									THÔNG TIN ĐƠN HÀNG:
+								</div>
+								<div style={{ display: "flex", justifyContent: "space-between" }}>
+									<div style={{ width: "53%" }}>
+										<Description
+											title="ID đơn hàng"
+											desc={orderSelected._id}
+											important
+										/>
+										<Description
+											title="Giá sản phẩm (SL:1)"
+											desc={`${Intl.NumberFormat().format(
+												orderSelected.productPrice
+											)}đ`}
+										/>
+										<Description
+											title="Số lượng"
+											desc={orderSelected.quantity}
+										/>
+
+										<Description
+											title="Địa chỉ giao hàng"
+											desc={orderSelected.idOrder.shippingDetail?.address}
+										/>
+									</div>
+									<div style={{ width: "43%" }}>
+										<Description
+											title="Phí vận chuyển"
+											desc={`${Intl.NumberFormat().format(
+												orderSelected.shippingPrice
+											)}đ`}
+										/>
+										<Description
+											title="Hình thức thanh toán"
+											desc={
+												orderSelected.paymentMethod === "cash"
+													? "Thanh toán khi nhận hàng"
+													: "Thanh toán online"
+											}
+										/>
+										<Description
+											title="Tổng tiền"
+											desc={`${Intl.NumberFormat().format(
+												orderSelected.shippingPrice +
+													orderSelected.productPrice
+											)}đ`}
+											important
+										/>
+									</div>
+								</div>
+								<div style={{ textAlign: "center", paddingTop: 30 }}>
+									<Button onClick={() => setDetailOpen(false)}>Thoát</Button>
+									{orderSelected.idOrder.paymentMethod === "cash" && (
+										<Button
+											onClick={() => handleCancelOpen(orderSelected._id)}
+											primary
+										>
+											Hủy đơn
+										</Button>
+									)}
+								</div>
 							</div>
 						</div>
 					)}

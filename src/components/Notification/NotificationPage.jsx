@@ -14,7 +14,7 @@ function NotificationPage() {
 
 	const [pageState, setPageState] = useState({
 		page: 1,
-		pageSize: 3,
+		pageSize: 10,
 		totalCount: 0,
 	});
 
@@ -51,7 +51,7 @@ function NotificationPage() {
 		if (info.navigate === "product") {
 			navigate(`/nha-ban-hang`);
 		} else if (info.navigate === "order") {
-			localStorage.setItem("menu_profile", "3");
+			localStorage.setItem("menu_profile", "4");
 			navigate(`/tai-khoan`);
 		} else if (info.navigate === "seller-profile") {
 			const idUser = localStorage.getItem("id_user");

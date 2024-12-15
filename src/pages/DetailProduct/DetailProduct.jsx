@@ -140,7 +140,8 @@ function DetailProduct() {
 	const addChatID = (newId) => {
 		//newId = id người nhận tin nhắn
 		if (!chatbox.includes(newId)) {
-			setChatbox((prevData) => [...prevData, newId]);
+			const updatedChatbox = [...chatbox, newId];
+			setChatbox(updatedChatbox);
 		}
 	};
 
@@ -217,7 +218,7 @@ function DetailProduct() {
 										/>
 										<Description
 											title="Số lượng"
-											desc={details.product?.quantity}
+											desc={details.product?.quantityState}
 										/>
 										<Description
 											title="Thời điểm đăng"
@@ -252,6 +253,15 @@ function DetailProduct() {
 											>
 												Nhà bán hàng đang bị tạm khóa
 											</p>
+										) : details.product?.quantityState === 0 ? (
+											<div
+												style={{
+													textAlign: "center",
+													color: "var(--orange-color)",
+												}}
+											>
+												<h4>Hết hàng.</h4>
+											</div>
 										) : (
 											<div className={cx("actions")}>
 												<div
@@ -327,6 +337,15 @@ function DetailProduct() {
 												/>
 											</p>
 										))}
+
+										<Description
+											title="Trạng thái sản phẩm"
+											desc={
+												details.product?.stateProduct === "used"
+													? "Đã sử dụng"
+													: "Mới"
+											}
+										/>
 										<Description
 											title="Mô tả sản phẩm"
 											desc={details.product?.description || "Không có"}
@@ -356,6 +375,7 @@ function DetailProduct() {
 												{details.seller?.name}
 											</p>
 											{details.product?.idUser._id &&
+												user.id &&
 												!(
 													new Date(details.seller?.blockExpireDate) >
 													new Date()
@@ -459,7 +479,7 @@ function DetailProduct() {
 			)}
 			<div className={cx("inner-content", "animate__animated", "animate__fadeIn")}>
 				<div className="title">Những sản phẩm bạn có thể thích</div>
-				<div style={{ display: "flex", flex: "wrap" }}>
+				<div style={{ display: "flex", flex: "wrap", width: "100%" }}>
 					{productBySubCate &&
 						productBySubCate?.map((product, key) => (
 							<CardProduct key={key} product={product} />

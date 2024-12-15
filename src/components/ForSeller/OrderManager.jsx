@@ -16,15 +16,16 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Grid from "@mui/material/Grid";
 import { exportExcel } from "../../utils";
 import Pagination from "../../components/Pagination";
 import Tooltip from "@mui/material/Tooltip";
+import IconButton from "@mui/material/IconButton";
 
 import EventRepeatIcon from "@mui/icons-material/EventRepeat";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import EventNoteIcon from "@mui/icons-material/EventNote";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 const cx = classNames.bind(style);
 
@@ -58,8 +59,6 @@ function OrderManager() {
 	];
 
 	const getOrders = async () => {
-		console.log("user.id", user.id);
-
 		if (user.id) {
 			const res = await OrderService.getAllOrders({
 				data: { seller: user.id, status: activeTab, token: token },
@@ -69,8 +68,6 @@ function OrderManager() {
 			if (pageState.totalCount !== res.totalCount) {
 				setPageState((prevData) => ({ ...prevData, totalCount: res.totalCount }));
 			}
-			console.log("res", res);
-
 			setOrders(res.data);
 			setIsLoading(false);
 		}
@@ -137,8 +134,6 @@ function OrderManager() {
 		}
 	};
 
-	console.log("orders", orders);
-
 	return (
 		<div>
 			<div className={cx("inner-content")}>
@@ -153,29 +148,32 @@ function OrderManager() {
 							{item.label}
 						</button>
 					))}
+					<IconButton color="primary">
+						<RefreshIcon />
+					</IconButton>
 				</div>
 				<div className={cx("search-order")}>
 					<input
 						type="text"
-						placeholder="Nhập ID đơn hàng, tên khách hàng, tên sản phẩm..."
+						placeholder="Nhập ID đơn hàng, tên sản phẩm..."
 						ref={searchRef}
 					/>
 					<button onClick={searchOrder}>Tìm kiếm</button>
 					<button onClick={handleClickExport}>Xuất file excel</button>
 				</div>
-
+				<p style={{ margin: "20px 0 0 20px" }}>Tổng đơn hàng: {orders?.length}</p>
 				<div className={cx("table-order")}>
 					<TableContainer>
 						<Table sx={{ minWidth: 650 }} aria-label="simple table">
 							<TableHead>
 								<TableRow>
-									<TableCell>ID</TableCell>
 									<TableCell></TableCell>
 									<TableCell>Tên SP</TableCell>
 									<TableCell>Giá tiền</TableCell>
+									<TableCell>Số lượng</TableCell>
 									<TableCell>Thanh toán</TableCell>
 									<TableCell>Ngày mua</TableCell>
-									<TableCell>Ngày giao hàng</TableCell>
+									<TableCell>Ngày giao</TableCell>
 									<TableCell></TableCell>
 								</TableRow>
 							</TableHead>
@@ -199,7 +197,6 @@ function OrderManager() {
 													}}
 													className="animate__animated animate__fadeIn"
 												>
-													<TableCell>{row._id}</TableCell>
 													<TableCell>
 														<img
 															style={{ width: 50, height: 50 }}
@@ -209,13 +206,12 @@ function OrderManager() {
 													</TableCell>
 													<TableCell>
 														<div>
+															{row._id}
 															<Tooltip title={row.idProduct?.name}>
 																<p className={cx("product-name")}>
 																	{row.idProduct?.name}
 																</p>
 															</Tooltip>
-
-															<p>SL: {row.quantity}</p>
 														</div>
 													</TableCell>
 
@@ -226,29 +222,38 @@ function OrderManager() {
 															}}
 														>
 															{Intl.NumberFormat().format(
-																row.productPrice + row.shippingPrice
+																row.productPrice * row.quantity +
+																	row.shippingPrice
 															)}
 															đ
 														</p>
 													</TableCell>
-													<TableCell>
-														{row.idOrder?.paymentMethod === "cash"
-															? "Tiền mặt"
-															: "Thanh toán online"}
-													</TableCell>
+													<TableCell>{row.quantity}</TableCell>
 													<TableCell>
 														<p>
-															{moment(row.createdAt).format(
-																"DD-MM-YYYY"
-															)}
-														</p>
-														<p>
-															{moment(row.createdAt).format(
-																"HH:mm:ss"
-															)}
+															{row.idOrder?.paymentMethod === "cash"
+																? "Tiền mặt"
+																: "Thanh toán online"}
 														</p>
 													</TableCell>
-													<TableCell></TableCell>
+													<TableCell>
+														{moment(row.createdAt).format("DD-MM-YYYY")}
+														<br />
+														{moment(row.createdAt).format("HH:mm:ss")}
+													</TableCell>
+													<TableCell>
+														{row.status === "Đã giao" && (
+															<>
+																{moment(row.updatedAt).format(
+																	"DD-MM-YYYY"
+																)}
+																<br />
+																{moment(row.updatedAt).format(
+																	"HH:mm:ss"
+																)}
+															</>
+														)}
+													</TableCell>
 
 													<TableCell>
 														<button
@@ -292,7 +297,7 @@ function OrderManager() {
 							<div style={{ display: "flex" }}>
 								<div
 									className={cx("info-section")}
-									style={{ width: "48%", height: "330px" }}
+									style={{ width: "48%", height: "350px" }}
 								>
 									<div className={cx("title-section")}>
 										<AssignmentIndIcon />
@@ -315,15 +320,12 @@ function OrderManager() {
 											title="Địa chỉ"
 											desc={orderSelected.idOrder.shippingDetail?.address}
 										/>
-										<button className={cx("chat-btn")}>
-											Nhắn tin với người mua
-										</button>
 									</div>
 								</div>
 
 								<div
 									className={cx("info-section")}
-									style={{ width: "48%", height: "330px" }}
+									style={{ width: "48%", height: "350px" }}
 								>
 									<div className={cx("title-section")}>
 										<Inventory2Icon />
@@ -367,40 +369,53 @@ function OrderManager() {
 									<EventNoteIcon />
 									THÔNG TIN ĐƠN HÀNG:
 								</div>
-								<div>
-									<Description
-										title="ID đơn hàng"
-										desc={orderSelected._id}
-										important
-									/>
-									<Description
-										title="Giá sản phẩm (SL:1)"
-										desc={`${Intl.NumberFormat().format(
-											orderSelected.productPrice
-										)}đ`}
-									/>
-									<Description title="Số lượng" desc={orderSelected.quantity} />
-									<Description
-										title="Phí vận chuyển"
-										desc={`${Intl.NumberFormat().format(
-											orderSelected.shippingPrice
-										)}đ`}
-									/>
-									<Description
-										title="Hình thức thanh toán"
-										desc={
-											orderSelected.paymentMethod === "cash"
-												? "Thanh toán khi nhận hàng"
-												: "Thanh toán online"
-										}
-									/>
-									<Description
-										title="Tổng tiền"
-										desc={`${Intl.NumberFormat().format(
-											orderSelected.shippingPrice + orderSelected.productPrice
-										)}đ`}
-										important
-									/>
+								<div style={{ display: "flex", justifyContent: "space-between" }}>
+									<div style={{ width: "53%" }}>
+										<Description
+											title="ID đơn hàng"
+											desc={orderSelected._id}
+											important
+										/>
+										<Description
+											title="Giá sản phẩm (SL:1)"
+											desc={`${Intl.NumberFormat().format(
+												orderSelected.productPrice
+											)}đ`}
+										/>
+										<Description
+											title="Số lượng"
+											desc={orderSelected.quantity}
+										/>
+
+										<Description
+											title="Địa chỉ giao hàng"
+											desc={orderSelected.idOrder.shippingDetail?.address}
+										/>
+									</div>
+									<div style={{ width: "43%" }}>
+										<Description
+											title="Phí vận chuyển"
+											desc={`${Intl.NumberFormat().format(
+												orderSelected.shippingPrice
+											)}đ`}
+										/>
+										<Description
+											title="Hình thức thanh toán"
+											desc={
+												orderSelected.paymentMethod === "cash"
+													? "Thanh toán khi nhận hàng"
+													: "Thanh toán online"
+											}
+										/>
+										<Description
+											title="Tổng tiền"
+											desc={`${Intl.NumberFormat().format(
+												orderSelected.shippingPrice +
+													orderSelected.productPrice
+											)}đ`}
+											important
+										/>
+									</div>
 								</div>
 								<div style={{ textAlign: "center", paddingTop: 30 }}>
 									<Button onClick={() => setModalDetail(false)}>Thoát</Button>

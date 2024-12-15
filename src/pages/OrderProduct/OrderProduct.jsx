@@ -19,6 +19,8 @@ import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import emailjs from "@emailjs/browser";
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
 
 const cx = classNames.bind(style);
 
@@ -31,8 +33,7 @@ function OrderProduct() {
 	const [paymentMethod, setPaymentMethod] = useState("cash");
 	const [isLoading, setIsLoading] = useState(false);
 	const [modalSuccess, setModalSuccess] = useState(false);
-	//const [addressInfo, setAddressInfo] = useState({ address: {} });
-	const [noteIndex, setNoteIndex] = useState();
+	const [isExistClosedProduct, setIsExistClosedProduct] = useState();
 	const [totalPrice, setTotalPrice] = useState(0);
 	const [details, setDetails] = useState({
 		product: {},
@@ -66,6 +67,12 @@ function OrderProduct() {
 			const selectedProducts = result?.data?.filter((_, index) =>
 				cartSelected.includes(index)
 			);
+			//check xem dsach sản phẩm có chứa SP đang ở trạng thái "closed" hay không
+			const isClosedProductExist = selectedProducts.some(
+				(product) => product.statePost === "closed"
+			);
+			setIsExistClosedProduct(isClosedProductExist);
+
 			data = selectedProducts.map((product) => ({
 				...product,
 				shippingPrice: 15000,
@@ -145,59 +152,65 @@ function OrderProduct() {
 
 	//tiến hành lưu thông tin order
 	const handleOrder = async () => {
-		const dataOrder = {
-			products: details.product, //array
-			paymentMethod: paymentMethod,
-			shippingDetail: {
-				email: details.address.email,
-				phone: details.address.phone,
-				address:
-					details.address.address +
-					", " +
-					details.address.ward +
-					", " +
-					details.address.district +
-					", " +
-					details.address.province,
-				shippingPrice: (cartSelected?.length || 1) * 15000,
-			},
-			idBuyer: details.buyer.id,
-			totalPaid: totalPrice + (cartSelected?.length || 1) * 15000,
-		};
-
-		const allProducts = Object.values(dataOrder.products)
-			.map((seller) => seller.products) // Lấy mảng sản phẩm của mỗi người bán
-			.flat(); // Kết hợp tất cả các mảng sản phẩm thành một mảng duy nhất
-
-		setIsLoading(true);
-
-		if (dataOrder.paymentMethod === "vnpay") {
-			localStorage.setItem("dataOrder", JSON.stringify(dataOrder));
-			const res = await PaymentService.createPayment({
-				amount: dataOrder.totalPaid,
-				bankCode: "",
-				language: "vn",
-			});
-			window.location.href = res.redirect;
+		if (isExistClosedProduct) {
+			toast.error(
+				"Đơn hàng hiện có chứa sản phẩm đã ngừng bán. Vui lòng xóa sản phẩm đó và thực hiện thanh toán lại."
+			);
 		} else {
-			const res = await OrderService.createOrder({ ...dataOrder, products: allProducts });
+			const dataOrder = {
+				products: details.product, //array
+				paymentMethod: paymentMethod,
+				shippingDetail: {
+					email: details.address.email,
+					phone: details.address.phone,
+					address:
+						details.address.address +
+						", " +
+						details.address.ward +
+						", " +
+						details.address.district +
+						", " +
+						details.address.province,
+					shippingPrice: (cartSelected?.length || 1) * 15000,
+				},
+				idBuyer: details.buyer.id,
+				totalPaid: totalPrice + (cartSelected?.length || 1) * 15000,
+			};
 
-			if (res.status === "SUCCESS") {
-				//gửi email thông báo đơn hàng mới đến sellers
-				const emailSeller = Object.keys(dataOrder.products);
-				for (let index = 0; index < emailSeller.length; index++) {
-					if (
-						emailSeller[index] === "vanngnran@gmail.com" ||
-						emailSeller[index] === "ntthuyvan1705@gmail.com"
-					) {
-						sendEmail(dataOrder.products[emailSeller[index]]);
-					}
-				}
-				setIsLoading(false);
-				setModalSuccess(true);
+			const allProducts = Object.values(dataOrder.products)
+				.map((seller) => seller.products) // Lấy mảng sản phẩm của mỗi người bán
+				.flat(); // Kết hợp tất cả các mảng sản phẩm thành một mảng duy nhất
+
+			setIsLoading(true);
+
+			if (dataOrder.paymentMethod === "vnpay") {
+				localStorage.setItem("dataOrder", JSON.stringify(dataOrder));
+				const res = await PaymentService.createPayment({
+					amount: dataOrder.totalPaid,
+					bankCode: "",
+					language: "vn",
+				});
+				window.location.href = res.redirect;
 			} else {
-				setIsLoading(false);
-				toast.error(res.message);
+				const res = await OrderService.createOrder({ ...dataOrder, products: allProducts });
+
+				if (res.status === "SUCCESS") {
+					//gửi email thông báo đơn hàng mới đến sellers
+					const emailSeller = Object.keys(dataOrder.products);
+					for (let index = 0; index < emailSeller.length; index++) {
+						if (
+							emailSeller[index] === "vanngnran@gmail.com" ||
+							emailSeller[index] === "ntthuyvan1705@gmail.com"
+						) {
+							sendEmail(dataOrder.products[emailSeller[index]]);
+						}
+					}
+					setIsLoading(false);
+					setModalSuccess(true);
+				} else {
+					setIsLoading(false);
+					toast.error(res.message);
+				}
 			}
 		}
 	};
@@ -240,6 +253,13 @@ function OrderProduct() {
 					console.log("FAILED...", error.text);
 				}
 			);
+	};
+
+	const removeProduct = async (id) => {
+		const res = await CartService.deleteCart({ idUser: idUser, idProduct: id });
+		if (res.status === "SUCCESS") {
+			getProducts();
+		}
 	};
 
 	return (
@@ -285,6 +305,23 @@ function OrderProduct() {
 																đ
 															</p>
 															<p>Số lượng: {item?.quantity}</p>
+															{item?.statePost === "closed" && (
+																<div className={cx("remove-btn")}>
+																	<p style={{ color: "red" }}>
+																		Sản phẩm đã ngưng bán.
+																	</p>
+																	<IconButton
+																		color="secondary"
+																		onClick={() =>
+																			removeProduct(
+																				item.idProduct
+																			)
+																		}
+																	>
+																		<DeleteIcon />
+																	</IconButton>
+																</div>
+															)}
 														</div>
 														<div className={cx("price", "col-5")}>
 															<div>
@@ -447,7 +484,12 @@ function OrderProduct() {
 				>
 					<CircularProgress color="inherit" />
 				</Backdrop>
-				<Modal isOpen={modalSuccess} setIsOpen={setModalSuccess} width={600}>
+				<Modal
+					isOpen={modalSuccess}
+					setIsOpen={setModalSuccess}
+					width={600}
+					isBlockClosed={true}
+				>
 					<div className={cx("confirm-success")}>
 						<CheckCircleIcon color="success" fontSize="large" />
 						<h5>Đặt hàng thành công!</h5>

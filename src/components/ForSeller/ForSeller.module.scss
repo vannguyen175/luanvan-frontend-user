@@ -105,32 +105,16 @@
 	padding: 5px;
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 	margin-right: 20px;
 	margin-bottom: 20px;
-
-	label {
-		margin-right: 10px;
-		font-weight: 1.2rem;
-		font-weight: 500;
-	}
 
 	input {
 		padding: 3px 10px;
 		width: 300px;
 		outline: none;
-	}
-
-	button {
-		background-color: transparent;
-		padding: 3px 10px;
-		cursor: pointer;
-		border: 1px solid #757575;
-		transition: 0.3s ease;
-	}
-
-	button:hover {
-		background-color: var(--main-color);
-		color: white;
+		border-radius: 3px 0 0 3px;
+		border: 1px solid grey;
 	}
 
 	select {
@@ -138,19 +122,55 @@
 		width: 150px;
 		text-align: center;
 	}
+
+	.tab-order {
+		display: flex;
+		margin-top: -5px;
+
+		button {
+			border: none;
+			padding: 5px;
+			background-color: white;
+			margin: 0px 10px;
+			transition: 0.2s ease;
+		}
+
+		.active-tab {
+			border-bottom: 2px solid var(--main-color);
+			font-weight: 500;
+			color: var(--main-color);
+		}
+	}
 }
 
 .table {
 	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 	margin: 0 10px;
+
+	.product-name {
+		font-weight: 500;
+		max-width: 300px;
+		display: -webkit-box; /* Sử dụng box layout của webkit */
+		-webkit-box-orient: vertical; /* Đặt hướng box thành vertical (dọc) */
+		-webkit-line-clamp: 1;
+		line-clamp: 1; /* Giới hạn số dòng là 2 */
+		overflow: hidden; /* Ẩn phần vượt quá khung chứa */
+		text-overflow: ellipsis; /* Thêm dấu ba chấm ở cuối văn bản bị cắt */
+		max-width: 100%; /* Đảm bảo phần tử không vượt quá khung chứa */
+		line-height: 1.5; /* Chiều cao dòng, điều chỉnh theo thiết kế của bạn */
+		height: 1.5em;
+		margin-top: 5px;
+		cursor: pointer;
+	}
 }
 .button-detail-product {
 	display: block;
 	background-color: var(--main-color);
 	font-size: 0.9rem;
 	font-weight: 500;
-	border-radius: 6px;
-	padding: 5px 10px;
+	border-radius: 3px;
+	border: none;
+	padding: 5px 15px;
 	cursor: pointer;
 	color: white !important;
 	margin-bottom: 5px;
@@ -227,7 +247,7 @@
 }
 
 .table-order {
-	margin-top: 30px;
+	//margin-top: 30px;
 	.button-show-order {
 		background-color: var(--main-color);
 		border: 1px solid var(--main-color);
@@ -286,6 +306,19 @@
 		.chat-btn:hover {
 			background-color: var(--main-color);
 			color: white;
+		}
+
+		.analytic {
+			box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px,
+				rgb(209, 213, 219) 0px 0px 0px 1px inset;
+			padding: 10px 20px;
+			width: 30%;
+			text-align: center;
+			border-radius: 5px;
+
+			strong {
+				font-size: 1.4rem;
+			}
 		}
 	}
 }
@@ -429,32 +462,61 @@
 	}
 }
 
-// .order {
-// 	.data-order {
-// 		margin-top: 20px;
-// 		width: 20%;
-// 		text-align: center;
-// 		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-// 		padding: 5px 10px;
-// 		border-radius: 5px;
-// 		p {
-// 			font-size: 0.8rem;
-// 			color: gray;
-// 		}
-// 		strong {
-// 			font-size: 1.4rem;
-// 		}
-// 	}
+//RATING
+.show-rating-btn {
+	margin-top: 20px;
+	button {
+		padding: 5px 15px;
+		background-color: white;
+		margin: 0 10px;
+		border-radius: 3px;
+	}
 
-// 	.chart {
-// 		min-height: 50px;
-// 		margin: 30px 10%;
-// 		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-// 		padding: 10px;
+	.active-btn {
+		border: 1px solid var(--main-color);
+		color: var(--main-color);
+	}
+}
 
-// 		select {
-// 			width: 30%;
-// 			float: right;
-// 		}
-// 	}
-// }
+.rating {
+	padding-left: 20px;
+	margin-top: 10px;
+
+	span {
+		scale: 1.2;
+	}
+
+	p,
+	strong {
+		margin-left: 20px;
+	}
+}
+
+.rating-card {
+	padding: 5px;
+	width: 90%;
+	margin: 10px auto;
+
+	.img-product {
+		img {
+			width: 100px;
+			height: 100px;
+			border-radius: 5px;
+			vertical-align: middle;
+			margin-top: 20px;
+		}
+	}
+	.details {
+		padding: 10px;
+		.name {
+			font-weight: 500;
+		}
+		.rating-score {
+			margin-left: 25px;
+			margin-top: 10px;
+		}
+		.review {
+			margin-top: 10px;
+		}
+	}
+}

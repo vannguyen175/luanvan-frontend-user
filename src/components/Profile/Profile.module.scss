@@ -147,6 +147,55 @@
 	}
 }
 
+.modal {
+	.info-section {
+		padding: 20px 30px;
+		box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+		height: fit-content;
+		margin: 10px 20px;
+		.title-section {
+			svg {
+				margin-right: 15px;
+				padding-top: -5px;
+				color: var(--main-color);
+			}
+			display: flex;
+			align-items: center;
+			margin-bottom: 10px;
+			margin-right: 20px;
+			font-weight: 700;
+			font-size: 1.2rem;
+		}
+		.chat-btn {
+			margin-top: 20px;
+			background-color: var(--light-color);
+			border: 1px solid var(--main-color);
+			padding: 3px 10px;
+			border-radius: 3px;
+			cursor: pointer;
+			transition: 0.3s ease;
+		}
+
+		.chat-btn:hover {
+			background-color: var(--main-color);
+			color: white;
+		}
+
+		.analytic {
+			box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px,
+				rgb(209, 213, 219) 0px 0px 0px 1px inset;
+			padding: 10px 20px;
+			width: 30%;
+			text-align: center;
+			border-radius: 5px;
+
+			strong {
+				font-size: 1.4rem;
+			}
+		}
+	}
+}
+
 .rating {
 	.info {
 		display: flex;

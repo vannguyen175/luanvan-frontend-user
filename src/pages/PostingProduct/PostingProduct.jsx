@@ -164,7 +164,9 @@ function PostingProduct() {
 									<div style={{ marginLeft: "70%", marginTop: 20 }}>
 										<Button>Hủy</Button>
 										<Button onClick={previousStep}>Quay lại</Button>
-										{dataSubmit.info && dataSubmit.price > 0 ? (
+										{dataSubmit.info &&
+										dataSubmit.price > 0 &&
+										dataSubmit.stateProduct ? (
 											<Button primary onClick={nextStep}>
 												Tiếp theo
 											</Button>

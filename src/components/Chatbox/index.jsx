@@ -19,13 +19,7 @@ function Chatbox() {
 	const [openChat, setOpenChat] = useState(); //mở hộp hội thoại chứa id người chat
 	const [mess, setMess] = useState([]);
 	const [userOnMess, setUserOnMess] = useState();
-	const [receiveInfo, setReceiveInfo] = useState([
-		{
-			id: null,
-			name: null,
-			avatar: null,
-		},
-	]);
+	const [receiveInfo, setReceiveInfo] = useState([]);
 
 	const messagesEnd = useRef();
 	const msgRef = useRef();
@@ -40,14 +34,20 @@ function Chatbox() {
 					name: res.data.name,
 				});
 			}
-			const responses = await Promise.all(chatbox?.map((id) => UserService.getInfoUser(id)));
-			const validResponses = responses
-				.filter((res) => res.status === "OK")
-				.map((res) => ({
-					id: res.data.user,
-					avatar: res.data.avatar,
-				}));
-			setReceiveInfo(validResponses);
+			if (chatbox.length > 0) {
+				console.log("checkchatbox", chatbox);
+				
+				const responses = await Promise.all(
+					chatbox.map((id) => UserService.getInfoUser(id))
+				);
+				const validResponses = responses
+					.filter((res) => res.status === "OK")
+					.map((res) => ({
+						id: res.data.user,
+						avatar: res.data.avatar,
+					}));
+				setReceiveInfo(validResponses);
+			}
 		} catch (error) {
 			console.error("Error fetching receiver info:", error);
 		}
@@ -58,12 +58,12 @@ function Chatbox() {
 		if (res.status === "SUCCESS") {
 			setMess(res.data.message);
 		} else {
-			setMess();
+			setMess([]);
 		}
 	};
 
 	useEffect(() => {
-		if (chatbox.length > 0) {
+		if (chatbox?.length > 0) {
 			//lấy tên, avatar người nhận message
 			getInfoReceiver();
 		}
@@ -122,11 +122,16 @@ function Chatbox() {
 	};
 
 	const closeChat = () => {
-		const data = chatbox.filter((item) => item !== openChat);
+		const data = chatbox?.filter((item) => item !== openChat);
 		setChatbox(data);
-		localStorage.setItem("chatbox", JSON.stringify(data));
 		setOpenChat();
 	};
+
+	// useEffect(() => {
+	// 	if (chatbox.length > 0) {
+	// 		localStorage.setItem("chatbox", JSON.stringify(chatbox));
+	// 	}
+	// }, [chatbox]);
 
 	return (
 		<div>
@@ -139,7 +144,7 @@ function Chatbox() {
 								onClick={() => setOpenChat(item.id)}
 								className={cx("avatar", "animate__animated", "animate__pulse ")}
 								src={item.avatar}
-								alt="avatar"
+								alt=""
 							/>
 						</div>
 					))}

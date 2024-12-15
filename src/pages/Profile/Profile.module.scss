@@ -5,9 +5,9 @@
 	display: block;
 	width: 340px;
 	transition: all 0.4s ease;
-	background-color: var(--main-color);
+	background-color: #419366;
 	height: fit-content;
-	
+
 	.menu-navigate-header {
 		float: right;
 	}
@@ -22,7 +22,8 @@
 			cursor: pointer;
 		}
 
-		div:hover, .menu-active {
+		div:hover,
+		.menu-active {
 			background-color: var(--light-color);
 			color: var(--main-color);
 		}

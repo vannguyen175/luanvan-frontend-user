@@ -124,11 +124,12 @@ p {
 }
 
 .main-button {
-	background-color: white;
+	background-color: var(--main-color);
 	padding: 3px 10px;
 	border: none;
 	border-radius: 3px;
 	cursor: pointer;
+	color: white;
 }
 
 .button:hover {
